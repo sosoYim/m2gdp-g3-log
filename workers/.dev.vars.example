@@ -1,0 +1,5 @@
+# Firebase service account JSON (full JSON as a single string)
+FIREBASE_SERVICE_ACCOUNT=
+
+# Random 32+ chars for signing session IDs
+SESSION_SECRET=

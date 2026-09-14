@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LOG — Échanges de logement étudiant</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f9fafb;
+      color: #111827;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      background: #111827;
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      margin-bottom: 1.5rem;
+    }
+    h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+    p  { color: #6b7280; max-width: 28rem; margin-bottom: 2rem; line-height: 1.6; }
+    .status {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      width: 100%;
+      max-width: 20rem;
+    }
+    .status-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      padding: 0.625rem 1rem;
+      font-size: 0.875rem;
+    }
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      flex-shrink: 0;
+    }
+    .dot.pending { background: #f59e0b; }
+    footer {
+      margin-top: 3rem;
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+  </style>
+</head>
+<body>
+  <span class="badge">En cours de développement</span>
+  <h1>LOG</h1>
+  <p>Plateforme d'échanges de logement étudiant à Lyon — sous-location courte durée entre étudiants.</p>
+
+  <div class="status">
+    <div class="status-item">
+      <span>Repo &amp; skeleton</span>
+      <span class="dot"></span>
+    </div>
+    <div class="status-item">
+      <span>Cloudflare Worker</span>
+      <span class="dot pending"></span>
+    </div>
+    <div class="status-item">
+      <span>Firebase Hosting</span>
+      <span class="dot pending"></span>
+    </div>
+    <div class="status-item">
+      <span>PWA (React)</span>
+      <span class="dot pending"></span>
+    </div>
+  </div>
+
+  <footer>M2CIM « Gestion de Projet » 2026/2027 — Université Lyon 2</footer>
+</body>
+</html>

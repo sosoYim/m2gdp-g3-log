@@ -1,5 +1,7 @@
-# Environment variables
+# Environment variables (allow example files)
 .env*
+!.env.example
+!**/.env.example
 
 # Service account keys
 *service-account*.json
