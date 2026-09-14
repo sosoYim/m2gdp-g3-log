@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "default": "m2gdp-g3-log"
+  },
+  "targets": {
+    "m2gdp-g3-log": {
+      "hosting": {
+        "landing": [
+          "m2gdp-g3-log"
+        ],
+        "app": [
+          "app-m2gdp-g3-log"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

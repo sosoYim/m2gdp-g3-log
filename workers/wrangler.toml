@@ -1,0 +1,17 @@
+name = "log-api"
+main = "src/index.ts"
+compatibility_date = "2026-09-14"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "sessions"
+database_id = "30bc3e5a-baae-4df4-b3c5-c61dbebac206"
+
+# R2 bucket — add after enabling R2 in Cloudflare Dashboard
+# [[r2_buckets]]
+# binding = "FILES"
+# bucket_name = "files"
+
+[vars]
+FIREBASE_PROJECT_ID = "m2gdp-g3-log"
+ALLOWED_ORIGINS = "http://localhost:5173"
