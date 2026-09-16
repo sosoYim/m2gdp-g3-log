@@ -17,9 +17,9 @@ form.addEventListener("submit", async (event) => {
   const email = emailInput.value.trim();
 
   const actionCodeSettings = {
-    url: "http://localhost:5173/",
-    handleCodeInApp: true
-  };
+  url: window.location.origin,
+  handleCodeInApp: true
+};
 
   try {
     await sendSignInLinkToEmail(
