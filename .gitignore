@@ -3,6 +3,8 @@
 !.env.example
 !**/.env.example
 
+.secrets/
+
 # Service account keys
 *service-account*.json
 

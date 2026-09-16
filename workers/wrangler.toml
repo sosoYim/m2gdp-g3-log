@@ -14,4 +14,4 @@ database_id = "30bc3e5a-baae-4df4-b3c5-c61dbebac206"
 
 [vars]
 FIREBASE_PROJECT_ID = "m2gdp-g3-log"
-ALLOWED_ORIGINS = "http://localhost:5173"
+ALLOWED_ORIGINS = "https://app-m2gdp-g3-log.web.app,http://localhost:5173"

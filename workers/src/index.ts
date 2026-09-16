@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { getAccessToken, firestorePatch } from './lib/firestore'
 
 type Bindings = {
   DB: D1Database
@@ -21,7 +22,18 @@ app.use('*', async (c, next) => {
   return cors({ origin: origins, allowHeaders: ['Authorization', 'Content-Type'] })(c, next)
 })
 
-app.get('/api/health', (c) => c.json({ ok: true }))
+app.get('/api/health', async (c) => {
+  const sa = JSON.parse(c.env.FIREBASE_SERVICE_ACCOUNT) as {
+    client_email: string
+    private_key: string
+  }
+  const token = await getAccessToken(sa)
+  await firestorePatch(c.env.FIREBASE_PROJECT_ID, token, '_health/ping', {
+    ok: true,
+    at: new Date().toISOString(),
+  })
+  return c.json({ ok: true, firestore: true, projectId: c.env.FIREBASE_PROJECT_ID })
+})
 
 // Auth middleware — applied to all /api/* except /api/health
 app.use('/api/*', async (c, next) => {
