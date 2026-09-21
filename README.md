@@ -1,128 +1,136 @@
-# 🏠 SubLyon — Projet G3 LOG
+# SubLyon — M2 Gestion de Projet
 
-Application web mobile-first de sous-location temporaire entre étudiants à Lyon.
+Application web mobile-first de mise en relation pour la sous-location temporaire de logements étudiants à Lyon.
 
-## 👥 Équipe
+## Stack
 
-- 1 PO
-- 1 UX
-- 2 DEV
+### Frontend
+- Angular
+- TypeScript
+- Spartan UI
+- Tailwind CSS
+- PWA
+- Leaflet
+- Google Places API
 
----
+### Backend
+- Cloudflare Workers
+- TypeScript
 
-## ✅ Avancement DEV
+### Services
+- Firebase Authentication
+- Cloud Firestore
+- Firebase Realtime Database
+- Cloudflare D1
+- Cloudflare R2
+- Firebase Hosting
+- Playwright
 
-L'environnement technique du projet est prêt.
+## Structure
 
-- [x] Repository GitHub configuré
-- [x] Structure du projet créée
-- [x] VS Code + GitHub Copilot configurés
-- [x] `agents.md` configuré pour l'Agentic Coding
-- [x] Node.js / npm configurés
-- [x] Vite configuré
-- [x] Firebase SDK installé
-- [x] Projet Firebase créé
-- [x] Firebase Authentication configuré
-- [x] Connexion par lien magique e-mail testée avec succès
-- [x] Firestore créé et connecté
-- [x] Règles Firestore initiales configurées
-- [x] Frontend connecté à Firebase
-
-⚠️ L'interface actuelle est uniquement un POC technique.
-
-Le développement réel de l'application commencera après validation des maquettes UX et des User Stories du PO.
-
----
-
-## 🚀 Récupérer le projet
-
-Cloner le repository :
-
-```bash
+```text
+landing/       Site vitrine
+public/        Application Angular
+workers/       Backend Cloudflare Workers
+docs/          Documentation technique
+design/        Maquettes et artefacts UX
+specs/         User Stories / OpenAPI / Mermaid
+tests/         Tests Playwright
+agents.md      Instructions IA
+README.md      Documentation projet
+Installation
+1. Cloner le projet
 git clone https://github.com/sosoYim/m2gdp-g3-log.git
-```
-
-Entrer dans le projet :
-
-```bash
 cd m2gdp-g3-log
-```
-
-Ouvrir avec VS Code :
-
-```bash
-code .
-```
-
-Installer les dépendances :
-
-```bash
+2. Installer les dépendances principales
 npm install
-```
+3. Installer les dépendances Angular
+npm run setup
+4. Configuration Firebase
 
-Pour les DEV, récupérer également le fichier `.env` auprès de l'équipe DEV afin de connecter Firebase.
+Créer le fichier :
 
-Lancer le projet :
+public/src/environments/environment.ts
 
-```bash
-npm run dev
-```
+à partir de :
 
-Puis ouvrir :
+public/src/environments/environment.example.ts
 
-```text
-http://localhost:5173/
-```
+Sous PowerShell :
 
----
+Copy-Item public\src\environments\environment.example.ts public\src\environments\environment.ts
 
-## 📁 Architecture
+Puis renseigner les valeurs Firebase communiquées par l'équipe.
 
-```text
-m2gdp-g3-log/
-│
-├── landing/     # Site vitrine
-├── public/      # Application web / PWA
-├── workers/     # Backend Cloudflare Workers
-├── docs/        # Documentation
-├── design/      # Maquettes et travaux UX
-├── specs/       # User Stories et spécifications PO
-├── tests/       # Tests Playwright
-│
-├── agents.md
-├── README.md
-├── package.json
-└── vite.config.js
-```
+environment.ts est ignoré par Git et ne doit pas être envoyé sur GitHub.
 
-Cette structure suit l'organisation demandée dans le cours. :contentReference[oaicite:0]{index=0}
+Lancer le projet
+Frontend Angular
+npm run dev:front
 
----
+Application :
 
-## 🔄 Récupérer les dernières modifications
+http://localhost:4200
+Backend Cloudflare
 
-Avant de travailler :
+Dans un deuxième terminal :
 
-```bash
+npm run dev:back
+
+API locale :
+
+http://127.0.0.1:8787
+
+Health check :
+
+http://127.0.0.1:8787/api/health
+Tests
+npm test
+Build production
+npm run build
+
+Le build Angular est généré dans :
+
+public/dist/sublyon/browser
+Commandes utiles
+npm run dev:front
+npm run dev:back
+npm run build
+npm test
+npm run worker:types
+npm run deploy:preview
+Workflow Git
+
+Ne pas développer directement sur main.
+
+Créer une branche à partir de main :
+
+git switch main
 git pull origin main
-```
+git switch -c feat/nom-fonctionnalite
 
-Pour voir les fichiers modifiés :
+Exemples :
 
-```bash
-git status
-```
+feat/auth
+feat/create-listing
+feat/search-listings
+feat/messaging
 
----
+Puis :
 
-## ⏭️ Prochaine étape
+git add .
+git commit -m "feat: description"
+git push -u origin feat/nom-fonctionnalite
 
-Les DEV attendent maintenant :
+Après validation, la branche peut être fusionnée dans main.
 
-- les maquettes UX ;
-- la charte graphique ;
-- les User Stories du PO ;
-- les critères d'acceptation ;
-- le retour du professeur.
+Méthode de développement
 
-Une fois ces éléments validés, le développement de l'application SubLyon pourra commencer.
+Pour chaque fonctionnalité :
+
+User Story validée
+→ Maquette UX
+→ Spécification technique
+→ Développement
+→ Test Playwright
+→ Validation PO / UX

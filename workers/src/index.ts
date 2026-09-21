@@ -1,5 +1,5 @@
 export default {
-  async fetch(request) {
+  async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
     if (url.pathname === "/api/health") {
@@ -10,12 +10,8 @@ export default {
     }
 
     return Response.json(
-      {
-        error: "Route not found"
-      },
-      {
-        status: 404
-      }
+      { error: "Route not found" },
+      { status: 404 }
     );
   }
-};
+} satisfies ExportedHandler<Env>;

@@ -1,13 +1,8 @@
 const { test, expect } = require("@playwright/test");
 
-test("la page SubLyon se charge", async ({ page }) => {
+test("l'application Angular SubLyon se charge", async ({ page }) => {
   await page.goto("/");
 
-  await expect(
-    page.getByRole("heading", { name: "SubLyon" })
-  ).toBeVisible();
-
-  await expect(
-    page.getByRole("heading", { name: "Se connecter avec votre e-mail" })
-  ).toBeVisible();
+  await expect(page).toHaveTitle(/sublyon/i);
+  await expect(page.getByText("Hello, sublyon")).toBeVisible();
 });
