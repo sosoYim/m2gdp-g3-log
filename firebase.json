@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "public/dist",
+    "public": "public/dist/sublyon/browser",
     "ignore": [
       "firebase.json",
       "**/.*",
