@@ -13,3 +13,13 @@ firebase-debug.log*
 # Private Firebase / Google credentials
 serviceAccount*.json
 *-firebase-adminsdk-*.json
+
+# Build
+public/dist/
+
+# Playwright
+test-results/
+playwright-report/
+
+# Cloudflare local
+**/.wrangler/

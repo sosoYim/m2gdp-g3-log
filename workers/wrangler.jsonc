@@ -1,0 +1,20 @@
+{
+  "name": "m2gdp-g3-log-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-21",
+
+  "d1_databases": [
+    {
+      "binding": "sublyon_sessions",
+      "database_name": "sublyon-sessions",
+      "database_id": "7c445009-ec95-4999-bfc0-38cf2cfb901d"
+    }
+  ],
+
+  "r2_buckets": [
+    {
+      "binding": "sublyon_media",
+      "bucket_name": "sublyon-media"
+    }
+  ]
+}
