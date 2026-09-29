@@ -1,0 +1,72 @@
+<section class="faq-section" id="faq">
+
+  <div class="faq-container">
+
+    <!-- Partie gauche -->
+    <div class="faq-intro">
+
+      <h2>FAQ</h2>
+
+      <p>
+        Tout ce que vous devez savoir sur les réservations,
+        les annulations et l’arrivée dans le logement.
+      </p>
+
+      <img
+        src="/images/landing/FAQ.png"
+        alt="Questions fréquentes BailLyon"
+        class="faq-image"
+      />
+
+    </div>
+
+
+    <!-- Questions -->
+    <div class="faq-list">
+
+      @for (faq of faqs; track $index) {
+
+        <div
+          class="faq-item"
+          [class.active]="activeIndex === $index"
+        >
+
+          <button
+            type="button"
+            class="faq-question"
+            (click)="toggleFaq($index)"
+          >
+
+            <span>
+              {{ faq.question }}
+            </span>
+
+            <span
+              class="faq-icon"
+              [class.open]="activeIndex === $index"
+            >
+              +
+            </span>
+
+          </button>
+
+
+          @if (activeIndex === $index) {
+
+            <div class="faq-answer">
+              <p>
+                {{ faq.answer }}
+              </p>
+            </div>
+
+          }
+
+        </div>
+
+      }
+
+    </div>
+
+  </div>
+
+</section>

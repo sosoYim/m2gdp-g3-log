@@ -1,0 +1,61 @@
+<section class="listings-section">
+  <div class="listings-container">
+
+    <h2>Appartements disponibles à la location</h2>
+
+    <div class="listings-grid">
+
+      @for (listing of listings; track $index) {
+        <article class="listing-card">
+
+          <div class="listing-image">
+            <img
+              [src]="listing.image"
+              [alt]="listing.title"
+            />
+
+            <button
+              type="button"
+              class="favorite-button"
+              aria-label="Ajouter aux favoris"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+                <path
+                  d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <div class="listing-content">
+            <p class="listing-city">
+              {{ listing.city }}
+            </p>
+
+            <h3>
+              {{ listing.title }}
+            </h3>
+
+            <p class="listing-owner">
+              {{ listing.owner }}
+            </p>
+          </div>
+
+        </article>
+      }
+
+    </div>
+
+    <div class="view-all">
+      <button type="button">
+        Voir tout (34)
+      </button>
+    </div>
+
+  </div>
+</section>

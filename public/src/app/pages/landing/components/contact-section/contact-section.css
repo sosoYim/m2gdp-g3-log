@@ -1,0 +1,161 @@
+/* =========================================================
+   SECTION CONTACT
+   ========================================================= */
+
+.contact-section {
+  width: 100%;
+
+  background-color: #eeeeff;
+
+  padding: 42px 24px;
+}
+
+.contact-container {
+  position: relative;
+
+  width: 100%;
+  max-width: 1200px;
+  min-height: 170px;
+
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* =========================================================
+   CONTENU CENTRAL
+   ========================================================= */
+
+.contact-content {
+  position: relative;
+  z-index: 2;
+
+  max-width: 760px;
+
+  text-align: center;
+}
+
+.contact-content h2 {
+  margin: 0 0 12px;
+
+  font-size: 34px;
+  line-height: 1.2;
+  font-weight: 800;
+
+  color: #171b2f;
+}
+
+.contact-content p {
+  margin: 0 auto 18px;
+
+  font-size: 15px;
+  line-height: 1.5;
+
+  color: #65708a;
+}
+
+.contact-content button {
+  padding: 11px 24px;
+
+  border: none;
+  border-radius: 8px;
+
+  background-color: #7134f5;
+
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.contact-content button:hover {
+  background-color: #5f24df;
+
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   ILLUSTRATION ENVELOPPE
+   ========================================================= */
+
+.contact-image {
+  position: absolute;
+
+  right: 10px;
+  bottom: 0;
+
+  width: 245px;
+  height: auto;
+
+  display: block;
+
+  object-fit: contain;
+}
+
+
+/* =========================================================
+   TABLETTE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  .contact-image {
+    right: -20px;
+
+    width: 190px;
+
+    opacity: 0.85;
+  }
+
+  .contact-content {
+    max-width: 620px;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+  .contact-section {
+    padding: 38px 20px;
+  }
+
+  .contact-container {
+    min-height: auto;
+
+    flex-direction: column;
+
+    gap: 22px;
+  }
+
+  .contact-content h2 {
+    font-size: 28px;
+  }
+
+  .contact-content p {
+    font-size: 14px;
+  }
+
+  .contact-image {
+    position: static;
+
+    width: 150px;
+
+    margin: 0 auto;
+
+    opacity: 1;
+  }
+}
