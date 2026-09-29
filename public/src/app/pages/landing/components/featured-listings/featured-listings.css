@@ -1,0 +1,163 @@
+.listings-section {
+  width: 100%;
+  background-color: #eeeeff;
+  padding: 56px 24px;
+}
+
+.listings-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.listings-container h2 {
+  margin-bottom: 28px;
+
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.2;
+
+  color: #171b2f;
+}
+
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+}
+
+.listing-card {
+  overflow: hidden;
+
+  background: #ffffff;
+  border-radius: 0 0 18px 18px;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.listing-card:hover {
+  transform: translateY(-3px);
+
+  box-shadow: 0 10px 30px rgba(48, 40, 120, 0.12);
+}
+
+.listing-image {
+  position: relative;
+
+  width: 100%;
+  aspect-ratio: 304 / 191;
+
+  overflow: hidden;
+}
+
+.listing-image img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+.favorite-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 7px;
+
+  background: white;
+  color: #7134f5;
+
+  border: none;
+  border-radius: 8px;
+
+  cursor: pointer;
+}
+
+.favorite-button svg {
+  width: 100%;
+  height: 100%;
+}
+
+.listing-content {
+  padding: 14px 14px 18px;
+}
+
+.listing-city {
+  margin-bottom: 5px;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  color: #727c98;
+}
+
+.listing-content h3 {
+  margin-bottom: 5px;
+
+  font-size: 16px;
+  font-weight: 700;
+
+  color: #171b2f;
+}
+
+.listing-owner {
+  font-size: 13px;
+
+  color: #626b80;
+}
+
+.view-all {
+  margin-top: 32px;
+
+  display: flex;
+  justify-content: flex-end;
+}
+
+.view-all button {
+  border: none;
+  background: transparent;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  color: #50576b;
+
+  cursor: pointer;
+}
+
+/* Tablette */
+@media (max-width: 1000px) {
+  .listings-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .listings-section {
+    padding: 40px 20px;
+  }
+
+  .listings-container h2 {
+    font-size: 27px;
+  }
+
+  .listings-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .view-all {
+    justify-content: center;
+  }
+}
