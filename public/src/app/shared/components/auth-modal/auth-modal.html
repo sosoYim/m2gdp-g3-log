@@ -1,0 +1,214 @@
+@if (isOpen) {
+
+  <div class="auth-overlay">
+
+    <div class="auth-modal">
+
+      <!-- Partie gauche -->
+      <section class="auth-left">
+
+        <div class="auth-brand">
+
+          <img
+            src="/images/landing/features/App.svg"
+            alt="Logo BailLyon"
+            class="auth-logo"
+          />
+
+          <span>BailLyon</span>
+
+        </div>
+
+
+        <div class="auth-left-content">
+
+          <img
+            src="/images/auth/bin2.png"
+            alt="Illustration BailLyon"
+            class="auth-illustration"
+          />
+
+          <p>
+            Pars serein,<br />
+            loue malin.
+          </p>
+
+        </div>
+
+      </section>
+
+
+      <!-- Partie droite -->
+      <section class="auth-right">
+
+        <button
+          type="button"
+          class="close-button"
+          aria-label="Fermer"
+          (click)="closeModal()"
+        >
+          ×
+        </button>
+
+
+        @if (!emailSent()) {
+
+          <div class="auth-content">
+
+            <h1>
+              Se connecter ou s'inscrire
+            </h1>
+
+            <p class="auth-subtitle">
+              Entrez votre adresse e-mail pour continuer.
+            </p>
+
+
+            <form (ngSubmit)="sendLink()">
+
+              <div class="form-field">
+
+                <label for="auth-email">
+                  Adresse e-mail
+                </label>
+
+                <div class="input-wrapper">
+
+                  <img
+                    src="/images/auth/email.svg"
+                    alt=""
+                  />
+
+                  <input
+                    id="auth-email"
+                    name="email"
+                    type="email"
+                    placeholder="prenom.nom@mail.fr"
+                    autocomplete="email"
+                    [(ngModel)]="email"
+                    [disabled]="loading()"
+                  />
+
+                </div>
+
+              </div>
+
+
+              @if (errorMessage()) {
+
+                <p class="error-message">
+                  {{ errorMessage() }}
+                </p>
+
+              }
+
+
+              <button
+                type="submit"
+                class="primary-button"
+                [disabled]="loading()"
+              >
+
+                @if (loading()) {
+                  Envoi en cours...
+                } @else {
+                  Continuer
+                }
+
+              </button>
+
+            </form>
+
+
+            <div class="magic-info">
+
+              <span class="magic-icon">✦</span>
+
+              <p>
+                Pas besoin de mot de passe.
+                Nous vous envoyons un lien sécurisé
+                par e-mail.
+              </p>
+
+            </div>
+
+          </div>
+
+        } @else {
+
+          <!-- E-mail envoyé -->
+
+          <div class="auth-content sent-content">
+
+            <img
+              src="/images/auth/Illustration-enveloppe.svg"
+              alt="E-mail envoyé"
+              class="sent-illustration"
+            />
+
+
+            <h1>
+              Vérifiez votre boîte mail
+            </h1>
+
+
+            <p class="sent-description">
+              Nous avons envoyé un lien de connexion à
+            </p>
+
+
+            <strong class="sent-email">
+              {{ email }}
+            </strong>
+
+
+            <p class="sent-help">
+              Cliquez sur le lien reçu pour continuer
+              sur BailLyon.
+            </p>
+
+
+            @if (errorMessage()) {
+
+              <p class="error-message">
+                {{ errorMessage() }}
+              </p>
+
+            }
+
+
+            <button
+              type="button"
+              class="primary-button"
+              [disabled]="loading()"
+              (click)="sendLink()"
+            >
+
+              @if (loading()) {
+                Envoi en cours...
+              } @else {
+                Renvoyer le lien
+              }
+
+            </button>
+
+
+            <button
+              type="button"
+              class="secondary-action"
+              (click)="modifyEmail()"
+            >
+              Modifier l'adresse e-mail
+            </button>
+
+          </div>
+
+        }
+
+      </section>
+
+    </div>
+
+  </div>
+
+}

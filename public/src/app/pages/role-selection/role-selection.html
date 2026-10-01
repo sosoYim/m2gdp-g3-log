@@ -1,0 +1,110 @@
+<app-user-navbar />
+<div class="role-page">
+
+  <div class="role-container">
+
+    <p class="welcome">
+      @if (firstName()) {
+         BIENVENUE, {{ firstName().toUpperCase() }}
+      } @else {
+        BIENVENUE
+      }
+    </p>
+
+    <h1>Vous êtes...</h1>
+
+    <p class="subtitle">
+      Choisissez comment vous utilisez BailLyon aujourd'hui.
+    </p>
+
+
+    <div class="role-grid">
+
+      <!-- JE VIENS -->
+      <button
+        type="button"
+        class="role-card"
+        [class.selected]="selectedRole() === 'guest'"
+        (click)="selectRole('guest')"
+      >
+
+        @if (selectedRole() === 'guest') {
+          <span class="check">✓</span>
+        }
+
+        <div class="role-icon">
+         <img
+           src="/images/role/suitcase.svg"
+           alt=""
+         />
+        </div>
+
+        <h2>Je viens</h2>
+
+        <span class="role-badge">
+          Demandeur
+        </span>
+
+        <p>
+          Je cherche un logement à Lyon pour
+          un stage, un échange ou quelques mois.
+        </p>
+
+      </button>
+
+
+      <!-- J'ACCUEILLE -->
+      <button
+        type="button"
+        class="role-card"
+        [class.selected]="selectedRole() === 'host'"
+        (click)="selectRole('host')"
+      >
+
+        @if (selectedRole() === 'host') {
+          <span class="check">✓</span>
+        }
+
+        <div class="role-icon">
+         <img
+           src="/images/role/house.svg"
+           alt=""
+         />
+        </div>
+
+        <h2>J'accueille</h2>
+
+        <span class="role-badge">
+          Annonceur
+        </span>
+
+        <p>
+          Je propose mon logement pendant
+          mon absence.
+        </p>
+
+      </button>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="continue-button"
+      (click)="continue()"
+    >
+      Continuer
+    </button>
+
+
+    <p class="role-help">
+      Vous pourrez changer à tout moment grâce au sélecteur
+      « Je viens / J'accueille » en haut de page.
+      <br />
+      À votre prochaine connexion, nous vous ramènerons
+      directement dans votre dernier espace.
+    </p>
+
+  </div>
+
+</div>
