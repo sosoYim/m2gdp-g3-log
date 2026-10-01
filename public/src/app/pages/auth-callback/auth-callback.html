@@ -1,0 +1,14 @@
+<div class="callback-page">
+
+  @if (loading()) {
+    <p>Connexion en cours...</p>
+  }
+
+  @if (errorMessage()) {
+    <div>
+      <h1>Impossible de vous connecter</h1>
+      <p>{{ errorMessage() }}</p>
+    </div>
+  }
+
+</div>

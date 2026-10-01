@@ -1,0 +1,80 @@
+<div class="profile-page">
+
+  <div class="profile-card">
+
+    <p class="eyebrow">
+      PRESQUE TERMINÉ
+    </p>
+
+    <h1>Complétez votre profil</h1>
+
+    <p class="subtitle">
+      Ces informations nous permettent de personnaliser votre expérience BailLyon.
+    </p>
+
+
+    <form (ngSubmit)="saveProfile()">
+
+      <div class="form-field">
+
+        <label for="firstName">
+          Prénom
+        </label>
+
+        <input
+          id="firstName"
+          name="firstName"
+          type="text"
+          placeholder="Hamza"
+          autocomplete="given-name"
+          [(ngModel)]="firstName"
+          [disabled]="loading()"
+        />
+
+      </div>
+
+
+      <div class="form-field">
+
+        <label for="lastName">
+          Nom
+        </label>
+
+        <input
+          id="lastName"
+          name="lastName"
+          type="text"
+          placeholder="Meksem"
+          autocomplete="family-name"
+          [(ngModel)]="lastName"
+          [disabled]="loading()"
+        />
+
+      </div>
+
+
+      @if (errorMessage()) {
+        <p class="error-message">
+          {{ errorMessage() }}
+        </p>
+      }
+
+
+      <button
+        type="submit"
+        [disabled]="loading()"
+      >
+
+        @if (loading()) {
+          Enregistrement...
+        } @else {
+          Continuer
+        }
+
+      </button>
+
+    </form>
+
+  </div>
+
+</div>

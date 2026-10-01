@@ -41,26 +41,23 @@
     </div>
 
 
-    <!-- Actions -->
-    <div class="flex items-center gap-3">
+    <!-- Action -->
+    <div class="flex items-center">
 
-      <!-- Créer un compte -->
       <button
         type="button"
-        class="rounded-lg border border-[#7134f5] px-4 py-2 text-sm font-semibold text-[#7134f5] transition hover:bg-[#f3efff]"
-      >
-        Créer un compte
-      </button>
-
-      <!-- Se connecter -->
-      <button
-        type="button"
+        (click)="openAuth()"
         class="rounded-lg bg-[#7134f5] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#5f24df]"
       >
-        Se connecter
+        Se connecter ou s'inscrire
       </button>
 
     </div>
 
   </nav>
 </header>
+
+<app-auth-modal
+  [isOpen]="authModalOpen()"
+  (closed)="closeAuthModal()"
+/>

@@ -1,9 +1,23 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+
+import { AuthModal } from '../auth-modal/auth-modal';
 
 @Component({
-  imports: [],
   selector: 'app-navbar',
-  styleUrl: './navbar.css',
+  standalone: true,
+  imports: [AuthModal],
   templateUrl: './navbar.html',
+  styleUrl: './navbar.css'
 })
-export class Navbar {}
+export class Navbar {
+
+  authModalOpen = signal(false);
+
+  openAuth(): void {
+    this.authModalOpen.set(true);
+  }
+
+  closeAuthModal(): void {
+    this.authModalOpen.set(false);
+  }
+}
