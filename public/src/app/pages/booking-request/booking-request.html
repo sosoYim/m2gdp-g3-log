@@ -1,0 +1,293 @@
+<app-user-navbar />
+
+
+<main class="booking-page">
+
+  <div class="booking-container">
+
+
+    <!-- Retour à l'annonce -->
+
+    <a
+      class="back-link"
+      [routerLink]="[
+        '/property-details',
+        listingId
+      ]"
+    >
+
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path d="M19 12H5"></path>
+        <path d="M11 18L5 12L11 6"></path>
+      </svg>
+
+      <span>
+        Retour à l’annonce
+      </span>
+
+    </a>
+
+
+    <div class="booking-layout">
+
+
+      <!-- Colonne gauche -->
+
+      <section class="booking-form-section">
+
+        <h1>
+          Demander une confirmation
+        </h1>
+
+        <p class="booking-subtitle">
+          Confirmez vos dates et envoyez votre demande à
+          {{ listing.owner }}.
+        </p>
+
+
+        <div class="booking-form">
+
+
+          <!-- Dates -->
+
+          <div class="form-block">
+
+            <h2>
+              Vos dates
+            </h2>
+
+
+            <div class="dates-grid">
+
+
+              <!-- Arrivée -->
+
+              <label class="date-field">
+
+                <span class="date-icon">
+
+                  <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <rect
+                      x="3"
+                      y="5"
+                      width="18"
+                      height="16"
+                      rx="2"
+                    ></rect>
+
+                    <path d="M16 3V7"></path>
+                    <path d="M8 3V7"></path>
+                    <path d="M3 10H21"></path>
+                  </svg>
+
+                </span>
+
+
+                <span class="date-content">
+
+                  <span class="date-label">
+                    ARRIVÉE
+                  </span>
+
+                  <span
+                    class="date-value"
+                    [class.date-placeholder]="!arrivalDate"
+                  >
+                    {{ formatDate(arrivalDate) }}
+                  </span>
+
+                </span>
+
+
+                <input
+                  class="date-native-input"
+                  type="date"
+                  [(ngModel)]="arrivalDate"
+                  name="arrivalDate"
+                  aria-label="Date d’arrivée"
+                />
+
+              </label>
+
+
+              <!-- Départ -->
+
+              <label class="date-field">
+
+                <span class="date-icon">
+
+                  <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <rect
+                      x="3"
+                      y="5"
+                      width="18"
+                      height="16"
+                      rx="2"
+                    ></rect>
+
+                    <path d="M16 3V7"></path>
+                    <path d="M8 3V7"></path>
+                    <path d="M3 10H21"></path>
+                  </svg>
+
+                </span>
+
+
+                <span class="date-content">
+
+                  <span class="date-label">
+                    DÉPART
+                  </span>
+
+                  <span
+                    class="date-value"
+                    [class.date-placeholder]="!departureDate"
+                  >
+                    {{ formatDate(departureDate) }}
+                  </span>
+
+                </span>
+
+
+                <input
+                  class="date-native-input"
+                  type="date"
+                  [(ngModel)]="departureDate"
+                  name="departureDate"
+                  aria-label="Date de départ"
+                />
+
+              </label>
+
+            </div>
+
+          </div>
+
+
+          <!-- Message -->
+
+          <div class="form-block message-block">
+
+            <h2>
+              Votre message à {{ listing.owner }}
+            </h2>
+
+            <textarea
+              [(ngModel)]="message"
+              name="message"
+              rows="6"
+            ></textarea>
+
+          </div>
+
+
+          <!-- Information -->
+
+          <div class="request-info">
+
+            <span class="info-icon">
+              i
+            </span>
+
+            <div class="request-info-content">
+
+              <strong>
+                Cette demande ne confirme pas votre séjour.
+              </strong>
+
+              <p>
+                {{ listing.owner }} vous répondra pour convenir
+                des détails.
+              </p>
+
+              <p>
+                Le loyer est réglé directement entre vous.
+              </p>
+
+              <strong>
+                Aucun paiement sur BailLyon.
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <!-- Erreur -->
+
+          @if (errorMessage()) {
+
+            <p class="error-message">
+              {{ errorMessage() }}
+            </p>
+
+          }
+
+
+          <!-- Succès -->
+
+          @if (successMessage()) {
+
+            <p class="success-message">
+              {{ successMessage() }}
+            </p>
+
+          }
+
+
+          <!-- Bouton -->
+
+          <button
+            type="button"
+            class="send-button"
+            [disabled]="loading()"
+            (click)="sendRequest()"
+          >
+
+            @if (loading()) {
+
+              Envoi...
+
+            } @else {
+
+              Envoyer ma demande
+
+            }
+
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <!-- Photo -->
+
+      <aside class="property-preview">
+
+        <img
+          [src]="listing.image"
+          [alt]="listing.title"
+        />
+
+      </aside>
+
+    </div>
+
+  </div>
+
+</main>
+
+
+<app-contact-section />
+
+<app-footer />

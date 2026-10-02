@@ -1,0 +1,374 @@
+<app-user-navbar />
+
+
+<main class="messages-page">
+
+  <div class="account-layout">
+
+
+    <!-- =========================
+         MENU DU COMPTE PARTAGÉ
+    ========================== -->
+
+    <app-account-sidebar active="messages" />
+
+
+    <!-- =========================
+         CONTENU
+    ========================== -->
+
+    <section class="messages-content">
+
+      <h1>
+        Messages
+      </h1>
+
+
+      <!-- =========================
+           MESSAGERIE
+      ========================== -->
+
+      <div class="messenger">
+
+
+        <!-- =========================
+             CONVERSATIONS
+        ========================== -->
+
+        <aside class="conversation-panel">
+
+
+          <!-- Recherche -->
+
+          <div class="conversation-search">
+
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+
+              <circle
+                cx="11"
+                cy="11"
+                r="7"
+              ></circle>
+
+              <path
+                d="M20 20l-4-4"
+              ></path>
+
+            </svg>
+
+
+            <input
+              type="text"
+              placeholder="Rechercher une conversation"
+              [(ngModel)]="searchTerm"
+            />
+
+          </div>
+
+
+          <!-- Conversations -->
+
+          <div class="conversation-list">
+
+            @for (
+              conversation of filteredConversations;
+              track conversation.id
+            ) {
+
+              <button
+                type="button"
+                class="conversation-item"
+                [class.conversation-active]="
+                  conversation.id ===
+                  selectedConversationId
+                "
+                (click)="selectConversation(
+                  conversation
+                )"
+              >
+
+                <span class="conversation-avatar">
+                  {{ conversation.initial }}
+                </span>
+
+
+                <span class="conversation-info">
+
+                  <span class="conversation-top">
+
+                    <strong>
+                      {{ conversation.name }}
+                    </strong>
+
+                    <span>
+                      {{ conversation.time }}
+                    </span>
+
+                  </span>
+
+
+                  <span class="conversation-property">
+                    {{ conversation.listingTitle }}
+                  </span>
+
+
+                  <span class="conversation-preview">
+                    {{ conversation.preview }}
+                  </span>
+
+                </span>
+
+
+                @if (conversation.unread) {
+
+                  <span
+                    class="conversation-unread"
+                  ></span>
+
+                }
+
+              </button>
+
+            }
+
+          </div>
+
+        </aside>
+
+
+        <!-- =========================
+             CHAT
+        ========================== -->
+
+        <section class="chat-panel">
+
+
+          <!-- Header -->
+
+          <header class="chat-header">
+
+            <div class="chat-user">
+
+              <span class="chat-avatar">
+                {{ selectedConversation.initial }}
+              </span>
+
+
+              <div>
+
+                <h2>
+                  {{ selectedConversation.name }}
+                </h2>
+
+                <p>
+                  Propriétaire · ✓ Profil vérifié
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <button
+              type="button"
+              class="listing-link"
+              (click)="openListing()"
+            >
+              Voir l’annonce →
+            </button>
+
+          </header>
+
+
+          <!-- =========================
+               RÉSUMÉ DU LOGEMENT
+          ========================== -->
+
+          <div class="request-card">
+
+            <img
+              src="/images/rental/property-1/Umeus.png"
+              alt="Charmant studio-loft"
+            />
+
+
+            <div class="request-card-content">
+
+              <strong>
+                Charmant studio-loft ·
+                1er mai – 1er nov. 2026
+              </strong>
+
+              <span>
+                Demande envoyée ·
+                650 € / mois (exemple)
+              </span>
+
+            </div>
+
+
+            <span class="request-status">
+              EN ATTENTE
+            </span>
+
+          </div>
+
+
+          <!-- =========================
+               MESSAGES
+          ========================== -->
+
+          <div class="chat-body">
+
+            <p class="today-label">
+              Aujourd’hui
+            </p>
+
+
+            @for (
+              message of messages;
+              track message.id
+            ) {
+
+              <div
+                class="message-row"
+                [class.message-row-me]="
+                  message.sender === 'me'
+                "
+              >
+
+                <div
+                  class="message-bubble"
+                  [class.message-me]="
+                    message.sender === 'me'
+                  "
+                  [class.message-other]="
+                    message.sender === 'other'
+                  "
+                >
+
+                  {{ message.text }}
+
+                </div>
+
+
+                <span class="message-time">
+
+                  @if (
+                    message.sender === 'other'
+                  ) {
+
+                    Lucas ·
+
+                  }
+
+                  {{ message.time }}
+
+                  @if (
+                    message.sender === 'me'
+                  ) {
+
+                    · Lu
+
+                  }
+
+                </span>
+
+              </div>
+
+            }
+
+          </div>
+
+
+          <!-- =========================
+               INFORMATION PAIEMENT
+          ========================== -->
+
+          <div class="payment-note">
+
+            <span>
+              i
+            </span>
+
+
+            <p>
+
+              Le loyer est réglé directement entre vous.
+
+              <strong>
+                Aucun paiement sur BailLyon.
+              </strong>
+
+            </p>
+
+          </div>
+
+
+          <!-- =========================
+               NOUVEAU MESSAGE
+          ========================== -->
+
+          <form
+            class="message-form"
+            (ngSubmit)="sendMessage()"
+          >
+
+            <input
+              type="text"
+              name="message"
+              placeholder="Écrivez votre message..."
+              [(ngModel)]="messageText"
+              autocomplete="off"
+            />
+
+
+            <button
+              type="submit"
+              class="send-button"
+              aria-label="Envoyer le message"
+            >
+
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+
+                <path
+                  d="M22 2 11 13"
+                ></path>
+
+                <path
+                  d="
+                    M22 2
+                    15 22
+                    11 13
+                    2 9
+                    Z
+                  "
+                ></path>
+
+              </svg>
+
+            </button>
+
+          </form>
+
+        </section>
+
+      </div>
+
+    </section>
+
+  </div>
+
+
+  <app-contact-section />
+
+</main>
+
+
+<app-footer />

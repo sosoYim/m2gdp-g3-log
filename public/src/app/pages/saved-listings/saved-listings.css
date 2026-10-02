@@ -1,0 +1,560 @@
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.saved-page {
+  width: 100%;
+
+  background: #ffffff;
+}
+
+
+/* =========================================================
+   STRUCTURE
+   ========================================================= */
+
+.account-layout {
+  display: grid;
+
+  grid-template-columns:
+    270px
+    minmax(0, 1fr);
+
+  min-height: 720px;
+}
+
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+.account-sidebar {
+  padding: 34px 28px;
+
+  border-right: 1px solid #e4e6ef;
+
+  background: #ffffff;
+}
+
+
+.sidebar-title {
+  margin: 0 0 24px;
+
+  color: #50546b;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+
+.account-menu {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+
+.menu-item {
+  width: 100%;
+
+  min-height: 48px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 0 14px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #404351;
+
+  font-family: inherit;
+
+  font-size: 14px;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+
+.menu-item svg {
+  width: 21px;
+  height: 21px;
+
+  flex-shrink: 0;
+
+  fill: none;
+
+  stroke: currentColor;
+
+  stroke-width: 1.7;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+.menu-item:hover {
+  color: #7134f5;
+
+  background: #f6f3ff;
+}
+
+
+.menu-item-active {
+  color: #7134f5;
+
+  background: #eee9ff;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   CONTENU
+   ========================================================= */
+
+.saved-content {
+  min-width: 0;
+
+  padding: 42px 52px 60px;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.saved-header {
+  display: flex;
+
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 25px;
+
+  margin-bottom: 28px;
+}
+
+
+.saved-header h1 {
+  margin: 0 0 5px;
+
+  color: #171925;
+
+  font-size: 27px;
+  font-weight: 800;
+}
+
+
+.saved-header p {
+  margin: 0;
+
+  color: #85899c;
+
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   TRI
+   ========================================================= */
+
+.sort-box {
+  min-width: 180px;
+  height: 42px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 4px;
+
+  padding: 0 11px;
+
+  border: 1px solid #dfe1ea;
+
+  border-radius: 6px;
+
+  background: #ffffff;
+
+  color: #8a8ea1;
+
+  font-size: 10px;
+}
+
+
+.sort-box select {
+  flex: 1;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #232531;
+
+  font-family: inherit;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   GRILLE
+   ========================================================= */
+
+.saved-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 36px 42px;
+}
+
+
+/* =========================================================
+   CARTE
+   ========================================================= */
+
+.saved-card {
+  overflow: hidden;
+
+  border: 1px solid #dedfe7;
+
+  border-radius: 17px;
+
+  background: #ffffff;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.saved-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 25px rgba(30, 31, 45, 0.08);
+}
+
+
+/* =========================================================
+   IMAGE
+   ========================================================= */
+
+.saved-image-wrapper {
+  position: relative;
+
+  height: 190px;
+
+  overflow: hidden;
+}
+
+
+.saved-image {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+
+/* =========================================================
+   FAVORIS
+   ========================================================= */
+
+.favorite-button {
+  position: absolute;
+
+  top: 13px;
+  right: 13px;
+
+  width: 31px;
+  height: 31px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+
+  border-radius: 6px;
+
+  background: #ffffff;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 2px 7px rgba(25, 27, 40, 0.1);
+}
+
+
+.favorite-button svg {
+  width: 19px;
+  height: 19px;
+
+  fill: #7134f5;
+
+  stroke: #7134f5;
+
+  stroke-width: 1.4;
+}
+
+
+/* =========================================================
+   INFOS CARTE
+   ========================================================= */
+
+.saved-card-content {
+  padding: 12px 13px 15px;
+}
+
+
+.saved-card-top {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+
+  margin-bottom: 6px;
+}
+
+
+.location {
+  color: #85899d;
+
+  font-size: 8px;
+}
+
+
+.rating {
+  color: #171925;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+.rating::first-letter {
+  color: #7134f5;
+}
+
+
+.saved-card-content h2 {
+  margin: 0 0 5px;
+
+  color: #181a24;
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+
+.saved-card-content p {
+  margin: 0 0 6px;
+
+  color: #7d8297;
+
+  font-size: 10px;
+}
+
+
+.saved-card-content strong {
+  color: #171925;
+
+  font-size: 15px;
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   AFFICHER PLUS
+   ========================================================= */
+
+.show-more-wrapper {
+  display: flex;
+
+  justify-content: center;
+
+  margin-top: 34px;
+}
+
+
+.show-more-button {
+  min-width: 215px;
+
+  height: 42px;
+
+  padding: 0 20px;
+
+  border: 1px solid #7134f5;
+
+  border-radius: 6px;
+
+  background: #ffffff;
+
+  color: #7134f5;
+
+  font-family: inherit;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
+
+.show-more-button:hover {
+  background: #7134f5;
+
+  color: #ffffff;
+}
+
+
+/* =========================================================
+   TABLETTE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+  .account-layout {
+    grid-template-columns:
+      220px
+      minmax(0, 1fr);
+  }
+
+
+  .account-sidebar {
+    padding: 30px 18px;
+  }
+
+
+  .saved-content {
+    padding: 36px 30px 55px;
+  }
+
+
+  .saved-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 28px;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+  .account-layout {
+    display: block;
+  }
+
+
+  .account-sidebar {
+    padding: 16px;
+
+    border-right: none;
+
+    border-bottom: 1px solid #e4e6ef;
+  }
+
+
+  .sidebar-title {
+    display: none;
+  }
+
+
+  .account-menu {
+    flex-direction: row;
+
+    gap: 7px;
+
+    overflow-x: auto;
+  }
+
+
+  .menu-item {
+    width: auto;
+
+    flex-shrink: 0;
+
+    min-height: 43px;
+
+    padding: 0 12px;
+
+    font-size: 11px;
+  }
+
+
+  .menu-item svg {
+    width: 18px;
+    height: 18px;
+  }
+
+
+  .saved-content {
+    padding: 28px 16px 45px;
+  }
+
+
+  .saved-header {
+    flex-direction: column;
+  }
+
+
+  .sort-box {
+    width: 100%;
+
+    box-sizing: border-box;
+  }
+
+
+  .saved-grid {
+    grid-template-columns: 1fr;
+
+    gap: 24px;
+  }
+
+
+  .saved-image-wrapper {
+    height: 230px;
+  }
+
+}

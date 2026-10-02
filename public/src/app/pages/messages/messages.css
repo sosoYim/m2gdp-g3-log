@@ -1,0 +1,1086 @@
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.messages-page {
+  width: 100%;
+
+  background: #ffffff;
+}
+
+
+/* =========================================================
+   STRUCTURE
+   ========================================================= */
+
+.account-layout {
+  display: grid;
+
+  grid-template-columns:
+    270px
+    minmax(0, 1fr);
+
+  min-height: 720px;
+}
+
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+.account-sidebar {
+  padding: 34px 28px;
+
+  border-right: 1px solid #e4e6ef;
+
+  background: #ffffff;
+}
+
+
+.sidebar-title {
+  margin: 0 0 24px;
+
+  color: #50546b;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+
+.account-menu {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+
+.menu-item {
+  width: 100%;
+
+  min-height: 48px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 0 14px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #404351;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+
+.menu-item svg {
+  width: 21px;
+  height: 21px;
+
+  flex-shrink: 0;
+
+  fill: none;
+
+  stroke: currentColor;
+
+  stroke-width: 1.7;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+.menu-item:hover {
+  color: #7134f5;
+
+  background: #f6f3ff;
+}
+
+
+.menu-item-active {
+  color: #7134f5;
+
+  background: #eee9ff;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   CONTENU
+   ========================================================= */
+
+.messages-content {
+  min-width: 0;
+
+  padding: 42px 45px 55px;
+}
+
+
+.messages-content > h1 {
+  margin: 0 0 20px;
+
+  color: #171925;
+
+  font-size: 27px;
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   MESSENGER
+   ========================================================= */
+
+.messenger {
+  width: 100%;
+  height: 620px;
+
+  display: grid;
+
+  grid-template-columns:
+    330px
+    minmax(0, 1fr);
+
+  overflow: hidden;
+
+  border: 1px solid #dfe2ec;
+
+  border-radius: 8px;
+
+  background: #ffffff;
+}
+
+
+/* =========================================================
+   COLONNE CONVERSATIONS
+   ========================================================= */
+
+.conversation-panel {
+  border-right: 1px solid #dfe2ec;
+
+  background: #ffffff;
+
+  overflow: hidden;
+}
+
+
+.conversation-search {
+  height: 78px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 0 16px;
+
+  border-bottom: 1px solid #e4e5ec;
+}
+
+
+.conversation-search svg {
+  width: 20px;
+  height: 20px;
+
+  flex-shrink: 0;
+
+  fill: none;
+
+  stroke: #54586e;
+
+  stroke-width: 1.8;
+
+  stroke-linecap: round;
+}
+
+
+.conversation-search input {
+  width: 100%;
+  height: 42px;
+
+  padding: 0 10px;
+
+  border: 1px solid #dfe2ec;
+  border-radius: 6px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #303342;
+
+  font-family: inherit;
+  font-size: 12px;
+
+  box-sizing: border-box;
+}
+
+
+.conversation-search input:focus {
+  border-color: #7134f5;
+}
+
+
+/* =========================================================
+   CONVERSATIONS
+   ========================================================= */
+
+.conversation-list {
+  display: flex;
+
+  flex-direction: column;
+}
+
+
+.conversation-item {
+  position: relative;
+
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  min-height: 84px;
+
+  padding: 13px 16px;
+
+  border: none;
+  border-bottom: 1px solid #ececf2;
+
+  background: #ffffff;
+
+  font-family: inherit;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+}
+
+
+.conversation-active {
+  background: #eee9ff;
+
+  box-shadow:
+    inset 3px 0 0 #7134f5;
+}
+
+
+.conversation-avatar {
+  width: 44px;
+  height: 44px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #bfc5f4;
+
+  color: #222b9b;
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+
+.conversation-info {
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+
+.conversation-top {
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 10px;
+}
+
+
+.conversation-top strong {
+  color: #171925;
+
+  font-size: 13px;
+}
+
+
+.conversation-top span {
+  color: #979aab;
+
+  font-size: 9px;
+}
+
+
+.conversation-property {
+  color: #7134f5;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+.conversation-preview {
+  overflow: hidden;
+
+  color: #666b80;
+
+  font-size: 10px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.conversation-unread {
+  position: absolute;
+
+  right: 15px;
+  bottom: 15px;
+
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: #7134f5;
+}
+
+
+/* =========================================================
+   CHAT
+   ========================================================= */
+
+.chat-panel {
+  min-width: 0;
+  min-height: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  background: #ffffff;
+}
+
+
+/* =========================================================
+   HEADER CHAT
+   ========================================================= */
+
+.chat-header {
+  min-height: 78px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 0 20px;
+
+  border-bottom: 1px solid #e4e5ec;
+
+  background: #ffffff;
+}
+
+
+.chat-user {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+}
+
+
+.chat-avatar {
+  width: 44px;
+  height: 44px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #bfc5f4;
+
+  color: #242d9a;
+
+  font-size: 15px;
+  font-weight: 800;
+}
+
+
+.chat-user h2 {
+  margin: 0 0 3px;
+
+  color: #171925;
+
+  font-size: 16px;
+  font-weight: 800;
+}
+
+
+.chat-user p {
+  margin: 0;
+
+  color: #797e92;
+
+  font-size: 10px;
+}
+
+
+.listing-link {
+  flex-shrink: 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #7134f5;
+
+  font-family: inherit;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   CARTE DEMANDE
+   ========================================================= */
+
+.request-card {
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin: 12px;
+
+  padding: 8px 10px;
+
+  border: 1px solid #e2e3eb;
+
+  border-radius: 7px;
+
+  background: #ffffff;
+}
+
+
+.request-card img {
+  width: 58px;
+  height: 48px;
+
+  flex-shrink: 0;
+
+  object-fit: cover;
+
+  border-radius: 4px;
+}
+
+
+.request-card-content {
+  flex: 1;
+
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+
+.request-card-content strong {
+  color: #171925;
+
+  font-size: 11px;
+}
+
+
+.request-card-content span {
+  color: #858a9d;
+
+  font-size: 9px;
+}
+
+
+.request-status {
+  flex-shrink: 0;
+
+  padding: 5px 13px;
+
+  border-radius: 999px;
+
+  background: #fff0e7;
+
+  color: #2731a1;
+
+  font-size: 8px;
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   ZONE DES MESSAGES
+   ========================================================= */
+
+.chat-body {
+  flex: 1;
+
+  min-height: 0;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding: 8px 20px 16px;
+
+  box-sizing: border-box;
+}
+
+
+.today-label {
+  margin: 2px 0 18px;
+
+  color: #9da0af;
+
+  font-size: 9px;
+
+  text-align: center;
+}
+
+
+.message-row {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-start;
+
+  margin-bottom: 18px;
+}
+
+
+.message-row-me {
+  align-items: flex-end;
+}
+
+
+.message-bubble {
+  max-width: 67%;
+
+  padding: 12px 15px;
+
+  border-radius: 15px;
+
+  font-size: 12px;
+
+  line-height: 1.45;
+
+  box-sizing: border-box;
+}
+
+
+.message-me {
+  background: #7134f5;
+
+  color: #ffffff;
+
+  border-bottom-right-radius: 4px;
+}
+
+
+.message-other {
+  background: #eee9ff;
+
+  color: #26293a;
+
+  border-bottom-left-radius: 4px;
+}
+
+
+.message-time {
+  margin-top: 4px;
+
+  color: #979aac;
+
+  font-size: 8px;
+}
+
+
+/* =========================================================
+   INFO PAIEMENT
+   ========================================================= */
+
+.payment-note {
+  flex-shrink: 0;
+
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  gap: 7px;
+
+  padding: 6px 20px;
+
+  background: #ffffff;
+
+  color: #494ab0;
+}
+
+
+.payment-note > span {
+  width: 15px;
+  height: 15px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #7134f5;
+
+  color: #ffffff;
+
+  font-size: 8px;
+  font-weight: 700;
+}
+
+
+.payment-note p {
+  margin: 0;
+
+  font-size: 9px;
+
+  text-align: center;
+}
+
+
+.payment-note strong {
+  color: #1e277f;
+}
+
+
+/* =========================================================
+   FORMULAIRE MESSAGE
+   ========================================================= */
+
+.message-form {
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 8px 14px 14px;
+
+  background: #ffffff;
+
+  box-sizing: border-box;
+}
+
+
+.message-form input {
+  flex: 1;
+
+  min-width: 0;
+
+  height: 48px;
+
+  padding: 0 18px;
+
+  border: 1px solid #dfe1ea;
+
+  border-radius: 999px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #303342;
+
+  font-family: inherit;
+
+  font-size: 12px;
+
+  box-sizing: border-box;
+}
+
+
+.message-form input:focus {
+  border-color: #7134f5;
+}
+
+
+.message-form input::placeholder {
+  color: #a0a4b5;
+}
+
+
+/* =========================================================
+   BOUTON ENVOYER
+   ========================================================= */
+
+.send-button {
+  width: 48px;
+  height: 48px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #7134f5;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+
+.send-button:hover {
+  background: #6026dc;
+}
+
+
+.send-button:active {
+  transform: scale(0.96);
+}
+
+
+.send-button svg {
+  width: 22px;
+  height: 22px;
+
+  fill: none;
+
+  stroke: #ffffff;
+
+  stroke-width: 1.7;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+/* =========================================================
+   SCROLLBAR CHAT
+   ========================================================= */
+
+.chat-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+
+.chat-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
+.chat-body::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+
+  background: #ded9f6;
+}
+
+
+.chat-body::-webkit-scrollbar-thumb:hover {
+  background: #c8bef2;
+}
+
+
+/* =========================================================
+   TABLETTE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+  .account-layout {
+    grid-template-columns:
+      220px
+      minmax(0, 1fr);
+  }
+
+
+  .account-sidebar {
+    padding: 30px 18px;
+  }
+
+
+  .messages-content {
+    padding: 35px 25px 50px;
+  }
+
+
+  .messenger {
+    grid-template-columns:
+      280px
+      minmax(0, 1fr);
+  }
+
+
+  .message-bubble {
+    max-width: 75%;
+  }
+
+}
+
+
+/* =========================================================
+   PETITE TABLETTE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  .messenger {
+    grid-template-columns:
+      250px
+      minmax(0, 1fr);
+  }
+
+
+  .chat-header {
+    padding: 0 14px;
+  }
+
+
+  .request-card {
+    margin: 10px;
+  }
+
+
+  .message-bubble {
+    max-width: 80%;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+  .account-layout {
+    display: block;
+  }
+
+
+  .account-sidebar {
+    padding: 16px;
+
+    border-right: none;
+    border-bottom: 1px solid #e4e6ef;
+  }
+
+
+  .sidebar-title {
+    display: none;
+  }
+
+
+  .account-menu {
+    flex-direction: row;
+
+    overflow-x: auto;
+
+    gap: 7px;
+  }
+
+
+  .menu-item {
+    width: auto;
+
+    flex-shrink: 0;
+
+    min-height: 43px;
+
+    padding: 0 12px;
+
+    font-size: 11px;
+  }
+
+
+  .menu-item svg {
+    width: 18px;
+    height: 18px;
+  }
+
+
+  .messages-content {
+    padding: 26px 16px 42px;
+  }
+
+
+  .messages-content > h1 {
+    font-size: 24px;
+  }
+
+
+  .messenger {
+    height: auto;
+
+    display: block;
+  }
+
+
+  .conversation-panel {
+    border-right: none;
+
+    border-bottom: 1px solid #dfe2ec;
+  }
+
+
+  .conversation-list {
+    max-height: 245px;
+
+    overflow-y: auto;
+  }
+
+
+  .chat-panel {
+    min-height: 620px;
+  }
+
+
+  .chat-header {
+    min-height: 72px;
+  }
+
+
+  .request-card {
+    align-items: flex-start;
+  }
+
+
+  .request-status {
+    padding: 4px 9px;
+  }
+
+
+  .message-bubble {
+    max-width: 85%;
+  }
+
+
+  .payment-note {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+
+  .message-form {
+    padding:
+      8px
+      10px
+      12px;
+  }
+
+}
+
+
+/* =========================================================
+   TRÈS PETIT MOBILE
+   ========================================================= */
+
+@media (max-width: 520px) {
+
+  .listing-link {
+    font-size: 9px;
+  }
+
+
+  .chat-avatar {
+    width: 38px;
+    height: 38px;
+  }
+
+
+  .chat-user h2 {
+    font-size: 14px;
+  }
+
+
+  .request-card img {
+    width: 50px;
+    height: 44px;
+  }
+
+
+  .request-card-content strong {
+    font-size: 10px;
+  }
+
+
+  .message-form input {
+    height: 44px;
+  }
+
+
+  .send-button {
+    width: 44px;
+    height: 44px;
+  }
+
+}

@@ -1,0 +1,235 @@
+<app-user-navbar />
+
+
+<main class="account-page">
+
+  <div class="account-layout">
+
+
+    <!-- =========================
+         MENU DU COMPTE PARTAGÉ
+    ========================== -->
+
+    <app-account-sidebar active="reservations" />
+
+
+    <!-- =========================
+         CONTENU PRINCIPAL
+    ========================== -->
+
+    <section class="account-content">
+
+
+      <h1>
+        À venir
+      </h1>
+
+
+      <!-- =========================
+           RÉSERVATION À VENIR
+      ========================== -->
+
+      <article class="upcoming-card">
+
+        <img
+          src="/images/rental/property-1/Umeus.png"
+          alt="Charmant studio-loft"
+          class="upcoming-image"
+        />
+
+
+        <div class="upcoming-info">
+
+          <span class="confirmed-badge">
+            CONFIRMÉ
+          </span>
+
+
+          <h2>
+            Charmant studio-loft
+          </h2>
+
+
+          <p>
+            Période de location :
+            1er mai 2026 – 1er novembre 2026
+            · Proposé par Lucas
+          </p>
+
+        </div>
+
+
+        <div class="upcoming-actions">
+
+          <span class="booking-id">
+            ID : FLT-881903
+          </span>
+
+
+          <button
+            type="button"
+            class="manage-button"
+          >
+            Gérer le bail
+          </button>
+
+        </div>
+
+      </article>
+
+
+      <!-- =========================
+           INFORMATION PAIEMENT
+      ========================== -->
+
+      <div class="payment-info">
+
+        <span class="payment-icon">
+          i
+        </span>
+
+
+        <p>
+
+          Le loyer est réglé directement entre les utilisateurs.
+
+          <strong>
+            Aucun paiement sur BailLyon.
+          </strong>
+
+        </p>
+
+      </div>
+
+
+      <!-- =========================
+           FAVORIS
+      ========================== -->
+
+      <div class="favorites-header">
+
+        <h2>
+          Récemment ajouté aux favoris
+        </h2>
+
+
+        <button
+          type="button"
+          class="all-favorites-button"
+          routerLink="/saved-listings"
+        >
+          Voir tous les favoris (12)
+        </button>
+
+      </div>
+
+
+      <!-- =========================
+           LISTE FAVORIS
+      ========================== -->
+
+      <div class="favorites-grid">
+
+        @for (
+          listing of favorites;
+          track listing.id
+        ) {
+
+          <article class="favorite-card">
+
+
+            <!-- IMAGE -->
+
+            <div class="favorite-image-wrapper">
+
+              <img
+                [src]="listing.image"
+                [alt]="listing.title"
+                class="favorite-image"
+              />
+
+
+              <button
+                type="button"
+                class="favorite-heart"
+                aria-label="Retirer des favoris"
+              >
+
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+
+                  <path
+                    d="
+                      M20.8 4.6
+                      a5.5 5.5 0 0 0-7.8 0
+                      L12 5.6
+                      l-1-1
+                      a5.5 5.5 0 0 0-7.8 7.8
+                      l1 1
+                      L12 21
+                      l7.8-7.6
+                      1-1
+                      a5.5 5.5 0 0 0 0-7.8Z
+                    "
+                  ></path>
+
+                </svg>
+
+              </button>
+
+            </div>
+
+
+            <!-- INFORMATIONS -->
+
+            <div class="favorite-content">
+
+              <div class="favorite-top">
+
+                <span class="favorite-location">
+                  {{ listing.location }}
+                </span>
+
+
+                <span class="favorite-rating">
+                  ★ {{ listing.rating }}
+                </span>
+
+              </div>
+
+
+              <h3>
+                {{ listing.title }}
+              </h3>
+
+
+              <p>
+                {{ listing.details }}
+              </p>
+
+
+              <strong>
+                {{ listing.price }} € / mois
+              </strong>
+
+            </div>
+
+          </article>
+
+        }
+
+      </div>
+
+    </section>
+
+  </div>
+
+
+  <app-contact-section />
+
+</main>
+
+
+<app-footer />

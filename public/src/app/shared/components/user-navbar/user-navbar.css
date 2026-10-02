@@ -1,3 +1,7 @@
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+
 .user-navbar {
   width: 100%;
   height: 78px;
@@ -7,23 +11,27 @@
   border-bottom: 1px solid #eeeef4;
 }
 
+
 .navbar-container {
   width: 100%;
   max-width: 1440px;
   height: 100%;
 
   margin: 0 auto;
+
   padding: 0 64px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  box-sizing: border-box;
 }
 
 
-/* =========================
-   LOGO
-========================= */
+/* =========================================================
+   LOGO BAILLYON
+   ========================================================= */
 
 .brand {
   display: flex;
@@ -31,13 +39,11 @@
 
   gap: 7px;
 
-  color: #27219b;
-
-  font-size: 20px;
-  font-weight: 800;
-
   text-decoration: none;
+
+  flex-shrink: 0;
 }
+
 
 .brand-logo {
   width: 34px;
@@ -49,9 +55,30 @@
 }
 
 
-/* =========================
-   LIENS
-========================= */
+.brand-name {
+  display: inline-flex;
+  align-items: center;
+
+  font-size: 20px;
+  font-weight: 800;
+
+  line-height: 1;
+}
+
+
+.brand-bail {
+  color: #16229c;
+}
+
+
+.brand-lyon {
+  color: #7034f4;
+}
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
 
 .navbar-links {
   display: flex;
@@ -59,6 +86,7 @@
 
   gap: 42px;
 }
+
 
 .navbar-links a {
   color: #424556;
@@ -70,24 +98,97 @@
   transition: color 0.2s ease;
 }
 
+
 .navbar-links a:hover {
   color: #7134f5;
 }
 
 
-/* =========================
-   UTILISATEUR
-========================= */
+/* =========================================================
+   PARTIE UTILISATEUR
+   ========================================================= */
 
 .navbar-user {
   display: flex;
   align-items: center;
 
-  gap: 14px;
+  gap: 13px;
+
+  flex-shrink: 0;
 }
 
 
-/* Messages */
+/* =========================================================
+   JE VIENS / J'ACCUEILLE
+   ========================================================= */
+
+.role-switch {
+  display: flex;
+  align-items: center;
+
+  gap: 3px;
+
+  padding: 3px;
+
+  border-radius: 999px;
+
+  background: #f1efff;
+}
+
+
+.role-button {
+  height: 34px;
+
+  padding: 0 15px;
+
+  border: none;
+  border-radius: 999px;
+
+  background: transparent;
+
+  color: #6f7184;
+
+  font-family: inherit;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.role-button:hover:not(.role-active) {
+  background: #e6e1ff;
+
+  color: #7134f5;
+}
+
+
+.role-button.role-active {
+  background: #7134f5;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 3px 8px rgba(113, 52, 245, 0.18);
+}
+
+
+.role-button:disabled {
+  cursor: default;
+}
+
+
+/* =========================================================
+   MESSAGES
+   ========================================================= */
 
 .message-button {
   position: relative;
@@ -107,7 +208,19 @@
   background: #f6f6fa;
 
   cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
+
+
+.message-button:hover {
+  background: #eeeef7;
+
+  transform: translateY(-1px);
+}
+
 
 .message-button svg {
   width: 21px;
@@ -116,10 +229,13 @@
   fill: none;
 
   stroke: #171925;
+
   stroke-width: 1.7;
+
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+
 
 .notification-dot {
   position: absolute;
@@ -138,16 +254,14 @@
 }
 
 
-/* =========================
+/* =========================================================
    PROFIL
-========================= */
+   ========================================================= */
 
 .profile-menu-wrapper {
   position: relative;
 }
 
-
-/* Avatar */
 
 .avatar {
   width: 38px;
@@ -166,6 +280,8 @@
 
   color: #3d43a4;
 
+  font-family: inherit;
+
   font-size: 14px;
   font-weight: 700;
 
@@ -176,6 +292,7 @@
     box-shadow 0.2s ease;
 }
 
+
 .avatar:hover {
   transform: scale(1.04);
 
@@ -184,9 +301,9 @@
 }
 
 
-/* =========================
+/* =========================================================
    MENU PROFIL
-========================= */
+   ========================================================= */
 
 .profile-menu {
   position: absolute;
@@ -198,7 +315,7 @@
 
   width: 290px;
 
-  overflow: hidden;
+  overflow: visible;
 
   background: #ffffff;
 
@@ -210,8 +327,6 @@
 }
 
 
-/* Header du menu */
-
 .profile-menu-header {
   display: flex;
   align-items: center;
@@ -220,6 +335,7 @@
 
   padding: 18px;
 }
+
 
 .profile-menu-avatar {
   flex-shrink: 0;
@@ -241,6 +357,7 @@
   font-weight: 700;
 }
 
+
 .profile-menu-info {
   min-width: 0;
 
@@ -250,12 +367,14 @@
   gap: 3px;
 }
 
+
 .profile-menu-title {
   color: #171925;
 
   font-size: 14px;
   font-weight: 700;
 }
+
 
 .profile-menu-email {
   max-width: 190px;
@@ -271,20 +390,18 @@
 }
 
 
-/* Séparateur */
-
 .profile-menu-divider {
   height: 1px;
 
   margin: 0 14px;
 
-  background: #eeeeF4;
+  background: #eeeef4;
 }
 
 
-/* =========================
+/* =========================================================
    DÉCONNEXION
-========================= */
+   ========================================================= */
 
 .logout-button {
   width: 100%;
@@ -303,6 +420,7 @@
   color: #c0392b;
 
   font-family: inherit;
+
   font-size: 14px;
   font-weight: 600;
 
@@ -313,9 +431,11 @@
   transition: background 0.2s ease;
 }
 
+
 .logout-button:hover {
   background: #fff5f4;
 }
+
 
 .logout-button svg {
   width: 19px;
@@ -324,13 +444,17 @@
   fill: none;
 
   stroke: currentColor;
+
   stroke-width: 1.8;
+
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 
-/* Petite flèche visuelle du menu */
+/* =========================================================
+   PETITE FLÈCHE MENU
+   ========================================================= */
 
 .profile-menu::before {
   content: '';
@@ -352,9 +476,34 @@
 }
 
 
-/* =========================
+/* =========================================================
+   TABLETTE
+   ========================================================= */
+
+@media (max-width: 1050px) {
+
+  .navbar-container {
+    padding: 0 32px;
+  }
+
+
+  .navbar-links {
+    gap: 24px;
+  }
+
+
+  .role-button {
+    padding: 0 11px;
+
+    font-size: 10px;
+  }
+
+}
+
+
+/* =========================================================
    MOBILE
-========================= */
+   ========================================================= */
 
 @media (max-width: 700px) {
 
@@ -362,22 +511,46 @@
     height: 68px;
   }
 
+
   .navbar-container {
     padding: 0 18px;
   }
+
 
   .navbar-links {
     display: none;
   }
 
-  .brand {
-    font-size: 18px;
-  }
 
   .brand-logo {
     width: 31px;
     height: 31px;
   }
+
+
+  .brand-name {
+    font-size: 18px;
+  }
+
+
+  .navbar-user {
+    gap: 7px;
+  }
+
+
+  .role-switch {
+    padding: 2px;
+  }
+
+
+  .role-button {
+    height: 31px;
+
+    padding: 0 9px;
+
+    font-size: 9px;
+  }
+
 
   .message-button,
   .avatar {
@@ -385,13 +558,48 @@
     height: 36px;
   }
 
+
   .profile-menu {
     width: 260px;
 
     right: -4px;
   }
 
+
   .profile-menu-email {
     max-width: 160px;
   }
+
+}
+
+
+/* =========================================================
+   TRÈS PETIT MOBILE
+   ========================================================= */
+
+@media (max-width: 520px) {
+
+  .brand-name {
+    display: none;
+  }
+
+
+  .role-button {
+    padding: 0 7px;
+
+    font-size: 8px;
+  }
+
+
+  .message-button {
+    width: 34px;
+    height: 34px;
+  }
+
+
+  .avatar {
+    width: 34px;
+    height: 34px;
+  }
+
 }

@@ -1,0 +1,777 @@
+.search-results-page {
+  min-height: calc(100vh - 70px);
+  background: #ffffff;
+}
+
+
+/* =========================
+   ZONE RECHERCHE
+========================= */
+
+.search-zone {
+  width: 100%;
+
+  padding: 10px 0;
+
+  background: #eeeeff;
+}
+
+
+.search-bar {
+  width: calc(100% - 180px);
+  max-width: 1280px;
+
+  height: 54px;
+
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns:
+    minmax(260px, 1fr)
+    1px
+    minmax(260px, 1fr)
+    auto;
+
+  align-items: center;
+
+  padding: 0 10px 0 16px;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border: 1px solid #c3c7df;
+  border-radius: 9px;
+}
+
+
+/* =========================
+   DATE
+========================= */
+
+.date-field {
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  padding: 0 20px;
+}
+
+
+.date-icon {
+  flex-shrink: 0;
+
+  width: 20px;
+  height: 20px;
+}
+
+
+.date-icon svg {
+  width: 100%;
+  height: 100%;
+
+  fill: none;
+
+  stroke: #1d235d;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+.date-content {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+
+.date-content label {
+  margin: 0;
+
+  color: #73788d;
+
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+
+.date-content input {
+  width: 100%;
+
+  margin: 0;
+  padding: 0;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #242846;
+
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.2;
+
+  cursor: pointer;
+}
+
+
+/* =========================
+   SÉPARATEUR
+========================= */
+
+.separator {
+  width: 1px;
+  height: 32px;
+
+  background: #e2e3ec;
+}
+
+
+/* =========================
+   RECHERCHER
+========================= */
+
+.search-button {
+  min-width: 118px;
+  height: 36px;
+
+  margin-left: 13px;
+
+  padding: 0 19px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #7134f5;
+
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+
+.search-button:hover {
+  background: #6026dc;
+  transform: translateY(-1px);
+}
+
+
+/* =========================
+   SECTION PRINCIPALE
+========================= */
+
+.results-section {
+  width: calc(100% - 140px);
+  max-width: 1480px;
+
+  margin: 0 auto;
+
+  padding: 42px 0 52px;
+}
+
+
+/* =========================
+   LAYOUT
+========================= */
+
+.results-layout {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.28fr)
+    minmax(430px, 0.92fr);
+
+  gap: 34px;
+
+  align-items: stretch;
+}
+
+
+/* =========================
+   COLONNE GAUCHE
+========================= */
+
+.results-left {
+  min-width: 0;
+}
+
+
+.results-left h1 {
+  margin: 0 0 20px;
+
+  color: #171925;
+
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+
+/* =========================
+   FILTRES
+========================= */
+
+.filters {
+  display: flex;
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  margin-bottom: 14px;
+}
+
+
+.filter-button {
+  min-height: 44px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 0 15px;
+
+  border: 1px solid #cfd1df;
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  color: #4a4e68;
+
+  font-family: inherit;
+  font-size: 13px;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+
+.filter-button:hover {
+  border-color: #7134f5;
+
+  background: #faf8ff;
+}
+
+
+.filter-button svg {
+  width: 19px;
+  height: 19px;
+
+  fill: none;
+
+  stroke: #303866;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+.chevron {
+  margin-left: 2px;
+
+  color: #73788d;
+
+  font-size: 12px;
+}
+
+
+/* =========================
+   BANDEAU INFO
+========================= */
+
+.info-banner {
+  width: 100%;
+
+  min-height: 42px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 8px 12px;
+
+  border-radius: 8px;
+
+  background: #eee9ff;
+}
+
+
+.info-icon {
+  flex-shrink: 0;
+
+  width: 22px;
+  height: 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #8b5cf6;
+
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+.info-banner p {
+  margin: 0;
+
+  color: #7459c7;
+
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+
+/* =========================
+   LISTE LOGEMENTS
+========================= */
+
+.listings-container {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+
+  margin-top: 12px;
+}
+
+
+/* =========================
+   CARTE LOGEMENT
+========================= */
+
+.listing-card {
+  width: 100%;
+  min-height: 170px;
+
+  display: grid;
+  grid-template-columns: 245px 1fr;
+
+  gap: 18px;
+
+  padding: 11px;
+
+  border: 1px solid #dfe1eb;
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.listing-card:hover {
+  border-color: #a987ff;
+
+  box-shadow:
+    0 5px 20px rgba(74, 45, 160, 0.07);
+}
+
+
+.listing-card-highlighted {
+  border: 2px solid #7134f5;
+}
+
+
+/* =========================
+   IMAGE LOGEMENT
+========================= */
+
+.listing-image-wrapper {
+  width: 100%;
+  height: 148px;
+
+  overflow: hidden;
+
+  border-radius: 10px;
+}
+
+
+.listing-image {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: center;
+
+  transition: transform 0.25s ease;
+}
+
+
+.listing-card:hover .listing-image {
+  transform: scale(1.02);
+}
+
+
+/* =========================
+   CONTENU LOGEMENT
+========================= */
+
+.listing-content {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+
+.listing-top {
+  min-height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+/* Profil vérifié */
+
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 25px;
+
+  padding: 0 11px;
+
+  border-radius: 999px;
+
+  background: #eee8ff;
+
+  color: #7134f5;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+
+/* Favori */
+
+.favorite-button {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+
+.favorite-button svg {
+  width: 25px;
+  height: 25px;
+
+  fill: transparent;
+
+  stroke: #7134f5;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  transition:
+    fill 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+.favorite-button:hover svg {
+  transform: scale(1.08);
+}
+
+
+.favorite-button.favorite-active svg {
+  fill: #7134f5;
+}
+
+
+/* =========================
+   TEXTES LOGEMENT
+========================= */
+
+.listing-content h2 {
+  margin: 3px 0 4px;
+
+  color: #17194f;
+
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+
+.listing-location {
+  margin: 0 0 8px;
+
+  color: #8b90aa;
+
+  font-size: 10px;
+  font-weight: 500;
+
+  text-transform: uppercase;
+}
+
+
+.listing-details {
+  margin: 0;
+
+  color: #858aa5;
+
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+
+/* =========================
+   PRIX + LIEN
+========================= */
+
+.listing-footer {
+  margin-top: auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+}
+
+
+.listing-price {
+  color: #17194f;
+
+  font-size: 20px;
+  font-weight: 800;
+}
+
+
+.listing-link {
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #7134f5;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+}
+
+
+.listing-link:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================
+   CARTE DROITE
+========================= */
+
+.results-right {
+  position: relative;
+
+  width: 100%;
+  height: auto;
+
+  min-height: 0;
+
+  overflow: hidden;
+
+  background: #edf0ff;
+}
+
+
+.results-map {
+  position: absolute;
+
+  inset: 0;
+
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: center center;
+}
+
+
+/* =========================
+   TABLETTE
+========================= */
+
+@media (max-width: 1200px) {
+
+  .search-bar,
+  .results-section {
+    width: calc(100% - 80px);
+  }
+
+  .results-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .results-right {
+    height: 500px;
+  }
+
+}
+
+
+/* =========================
+   PETIT ÉCRAN
+========================= */
+
+@media (max-width: 800px) {
+
+  .listing-card {
+    grid-template-columns: 190px 1fr;
+  }
+
+  .listing-image-wrapper {
+    height: 145px;
+  }
+
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+  .search-zone {
+    padding: 12px 0;
+  }
+
+
+  .search-bar {
+    width: calc(100% - 32px);
+
+    height: auto;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 14px;
+
+    padding: 16px;
+  }
+
+
+  .date-field {
+    height: auto;
+
+    padding: 0;
+  }
+
+
+  .separator {
+    width: 100%;
+    height: 1px;
+  }
+
+
+  .search-button {
+    width: 100%;
+    height: 42px;
+
+    margin: 0;
+  }
+
+
+  .results-section {
+    width: calc(100% - 36px);
+
+    padding: 28px 0 38px;
+  }
+
+
+  .results-left h1 {
+    font-size: 21px;
+  }
+
+
+  .filter-button {
+    flex: 1;
+
+    min-width: 145px;
+
+    justify-content: center;
+  }
+
+
+  .listing-card {
+    display: block;
+
+    padding: 10px;
+  }
+
+
+  .listing-image-wrapper {
+    height: 210px;
+
+    margin-bottom: 12px;
+  }
+
+
+  .listing-footer {
+    margin-top: 18px;
+  }
+
+
+  .results-right {
+    height: 420px;
+  }
+
+}

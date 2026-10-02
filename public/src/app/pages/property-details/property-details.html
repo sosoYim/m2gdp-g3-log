@@ -1,0 +1,322 @@
+<app-navbar />
+<app-auth-modal
+  [isOpen]="authModalOpen()"
+  (closed)="closeAuthModal()"
+/>
+
+<main class="property-page">
+
+  <section class="property-container">
+
+
+    <!-- =========================
+         TITRE + NOTE
+    ========================== -->
+
+    <div class="property-heading">
+
+      <h1>
+        {{ listing.title }}
+      </h1>
+
+
+      <div class="property-meta">
+
+        <div class="rating">
+
+          <span class="rating-star">
+            ☆
+          </span>
+
+          <strong>
+            {{ listing.rating }} ({{ listing.reviews }} avis)
+          </strong>
+
+        </div>
+
+
+        <span class="meta-divider"></span>
+
+
+        <span class="location">
+          {{ listing.location }}
+        </span>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- =========================
+         GALERIE
+    ========================== -->
+
+    <section class="gallery">
+
+
+      <!-- Grande photo -->
+      <div class="gallery-main">
+
+        <img
+          [src]="listing.images.main"
+          [alt]="listing.title"
+        />
+
+      </div>
+
+
+      <!-- 4 petites photos -->
+      <div class="gallery-small">
+
+        <img
+          [src]="listing.images.kitchen"
+          alt="Cuisine du logement"
+        />
+
+        <img
+          [src]="listing.images.window"
+          alt="Coin fenêtre du logement"
+        />
+
+        <img
+          [src]="listing.images.desk"
+          alt="Bureau du logement"
+        />
+
+        <img
+          [src]="listing.images.bathroom"
+          alt="Salle de bains du logement"
+        />
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         CONTENU
+    ========================== -->
+
+    <div class="property-layout">
+
+
+      <!-- =========================
+           GAUCHE
+      ========================== -->
+
+      <div class="property-main">
+
+
+        <!-- Propriétaire -->
+        <section class="owner-section">
+
+          <div class="owner-info">
+
+            <h2>
+              Proposé par {{ listing.owner }}
+            </h2>
+
+            <p>
+              {{ listing.bedroom }}
+              ·
+              {{ listing.bed }}
+              ·
+              {{ listing.bathroom }}
+            </p>
+
+          </div>
+
+
+          @if (listing.verified) {
+
+            <span class="verified-badge">
+              ✓ Profil vérifié
+            </span>
+
+          }
+
+        </section>
+
+
+        <div class="section-divider"></div>
+
+
+
+        <!-- Présentation -->
+        <section class="description-section">
+
+          <h3>
+            Présentation
+          </h3>
+
+          <p>
+            {{ listing.description }}
+          </p>
+
+        </section>
+
+
+        <div class="section-divider"></div>
+
+
+
+        <!-- =========================
+             ÉQUIPEMENTS
+        ========================== -->
+
+        <section class="equipment-section">
+
+          <h3>
+            Ce que le logement propose
+          </h3>
+
+
+          <div class="equipment-grid">
+
+            @for (
+              equipment of listing.equipments;
+              track equipment.alt
+            ) {
+
+              <div class="equipment-item">
+
+                <img
+                  [src]="equipment.icon"
+                  [alt]="equipment.alt"
+                  class="equipment-svg"
+                />
+
+              </div>
+
+            }
+
+          </div>
+
+        </section>
+
+      </div>
+
+
+
+      <!-- =========================
+           CARTE PRIX
+      ========================== -->
+
+      <aside class="booking-card">
+
+
+        <div class="price">
+
+          <strong>
+            {{ listing.price }} €
+          </strong>
+
+          <span>
+            / mois
+          </span>
+
+        </div>
+
+
+        <p class="minimum-stay">
+          Séjour minimum : {{ listing.minimumStay }}
+        </p>
+
+
+
+        <!-- Dates -->
+        <div class="booking-dates">
+
+
+          <div class="booking-date">
+
+            <label>
+              ARRIVÉE
+            </label>
+
+            <span>
+              {{ listing.arrivalDate }}
+            </span>
+
+          </div>
+
+
+          <div class="booking-date">
+
+            <label>
+              DÉPART
+            </label>
+
+            <span>
+              {{ listing.departureDate }}
+            </span>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- Bouton -->
+        <button
+          type="button"
+          class="contact-button"
+          (click)="contactOwner()"
+        >
+          Écrire à {{ listing.owner }}
+        </button>
+
+
+
+        <!-- Information paiement -->
+        <div class="payment-info">
+
+          <span class="payment-icon">
+            i
+          </span>
+
+
+          <p>
+
+            Le loyer est réglé directement entre vous et
+            {{ listing.owner }}, selon les modalités convenues
+            ensemble.
+
+            <strong>
+              Aucun paiement sur BailLyon.
+            </strong>
+
+          </p>
+
+        </div>
+
+
+        <p class="price-info">
+          Loyer affiché à titre d’exemple.
+        </p>
+
+      </aside>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =========================
+       CONTACT
+  ========================== -->
+
+  <app-contact-section />
+
+</main>
+
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<app-footer />

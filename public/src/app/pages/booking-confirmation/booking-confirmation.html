@@ -1,0 +1,312 @@
+<app-user-navbar />
+
+
+<main class="confirmation-page">
+
+  <section class="confirmation-container">
+
+
+    <!-- =========================
+         ILLUSTRATION
+    ========================== -->
+
+    <div class="plane-illustration">
+
+      <svg
+        viewBox="0 0 180 100"
+        aria-hidden="true"
+      >
+
+        <path
+          class="plane-path"
+          d="M15 70
+             C45 90 75 82 75 60
+             C75 42 55 43 58 59
+             C62 83 112 70 145 27"
+        />
+
+        <path
+          class="plane"
+          d="M111 35
+             L155 18
+             L137 55
+             L128 40
+             Z"
+        />
+
+        <path
+          class="plane"
+          d="M128 40
+             L155 18"
+        />
+
+        <path
+          class="spark"
+          d="M160 18 L170 8"
+        />
+
+        <path
+          class="spark"
+          d="M164 28 L177 28"
+        />
+
+      </svg>
+
+    </div>
+
+
+    <!-- =========================
+         TITRE
+    ========================== -->
+
+    <h1>
+      Demande envoyée !
+    </h1>
+
+    <p class="confirmation-subtitle">
+
+      Votre demande a bien été transmise à
+      {{ listing.owner }}.
+
+      <br />
+
+      Il vous répondra directement dans votre
+      messagerie BailLyon.
+
+    </p>
+
+
+    <!-- =========================
+         CARTE LOGEMENT
+    ========================== -->
+
+    <div class="booking-card">
+
+      <img
+        [src]="listing.image"
+        [alt]="listing.title"
+        class="booking-image"
+      />
+
+
+      <div class="booking-content">
+
+
+        <span class="status-badge">
+          EN ATTENTE DE RÉPONSE
+        </span>
+
+
+        <h2>
+          {{ listing.title }}
+        </h2>
+
+
+        <p class="property-meta">
+
+          {{ listing.location }}
+          ·
+          {{ listing.details }}
+          ·
+          Proposé par {{ listing.owner }}
+
+        </p>
+
+
+        <div class="booking-details">
+
+
+          <div class="booking-detail">
+
+            <span class="detail-label">
+              ARRIVÉE
+            </span>
+
+            <strong>
+              {{ formatDate(arrivalDate) }}
+            </strong>
+
+          </div>
+
+
+          <div class="booking-detail">
+
+            <span class="detail-label">
+              DÉPART
+            </span>
+
+            <strong>
+              {{ formatDate(departureDate) }}
+            </strong>
+
+          </div>
+
+
+          <div class="booking-detail">
+
+            <span class="detail-label">
+              LOYER MENSUEL
+            </span>
+
+            <strong>
+              {{ listing.price }} € / mois
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <p class="example-note">
+      Dates et loyer affichés à titre d’exemple.
+    </p>
+
+
+    <!-- =========================
+         INFORMATION
+    ========================== -->
+
+    <div class="info-box">
+
+      <span class="info-icon">
+        i
+      </span>
+
+
+      <div class="info-content">
+
+        <strong>
+          Cette demande ne confirme pas votre séjour.
+        </strong>
+
+        <p>
+          {{ listing.owner }} vous répondra pour convenir
+          des détails. Le loyer est réglé directement
+          entre vous.
+        </p>
+
+        <strong>
+          Aucun paiement sur BailLyon.
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         ET ENSUITE
+    ========================== -->
+
+    <section class="next-section">
+
+      <h2>
+        Et ensuite ?
+      </h2>
+
+
+      <div class="steps-grid">
+
+
+        <!-- Étape 1 -->
+
+        <article class="step-card">
+
+          <span class="step-number">
+            1
+          </span>
+
+          <h3>
+            Lucas lit votre demande
+          </h3>
+
+          <p>
+            Vous serez notifié(e) dès
+            qu’il vous répond.
+          </p>
+
+        </article>
+
+
+        <!-- Étape 2 -->
+
+        <article class="step-card">
+
+          <span class="step-number">
+            2
+          </span>
+
+          <h3>
+            Vous échangez
+          </h3>
+
+          <p>
+            Posez vos questions dans la
+            messagerie BailLyon.
+          </p>
+
+        </article>
+
+
+        <!-- Étape 3 -->
+
+        <article class="step-card">
+
+          <span class="step-number">
+            3
+          </span>
+
+          <h3>
+            Vous vous mettez d’accord
+          </h3>
+
+          <p>
+            Dates, visite et loyer se règlent
+            directement entre vous.
+          </p>
+
+        </article>
+
+      </div>
+
+
+      <!-- =========================
+           BOUTONS
+      ========================== -->
+
+      <div class="confirmation-actions">
+
+        <button
+          type="button"
+          class="primary-button"
+          (click)="openConversation()"
+        >
+          Voir la conversation
+        </button>
+
+
+        <button
+          type="button"
+          class="secondary-button"
+          (click)="backToListings()"
+        >
+          Retour aux logements
+        </button>
+
+      </div>
+
+    </section>
+
+  </section>
+
+
+  <app-contact-section />
+
+</main>
+
+
+<app-footer />

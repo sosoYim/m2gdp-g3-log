@@ -1,0 +1,208 @@
+<app-user-navbar />
+
+
+<main class="saved-page">
+
+  <div class="account-layout">
+
+
+    <!-- =========================
+         MENU DU COMPTE PARTAGÉ
+    ========================== -->
+
+    <app-account-sidebar active="saved" />
+
+
+    <!-- =========================
+         CONTENU
+    ========================== -->
+
+    <section class="saved-content">
+
+
+      <!-- TITRE -->
+
+      <div class="saved-header">
+
+        <div>
+
+          <h1>
+            Logements enregistrés
+          </h1>
+
+          <p>
+            {{ savedListings.length }}
+            logements enregistrés
+          </p>
+
+        </div>
+
+
+        <!-- TRI -->
+
+        <label class="sort-box">
+
+          <span>
+            Trier par :
+          </span>
+
+          <select
+            [(ngModel)]="sortOption"
+            name="sortOption"
+          >
+
+            <option value="recent">
+              Ajout récent
+            </option>
+
+            <option value="price-low">
+              Prix croissant
+            </option>
+
+            <option value="price-high">
+              Prix décroissant
+            </option>
+
+          </select>
+
+        </label>
+
+      </div>
+
+
+      <!-- =========================
+           GRILLE
+      ========================== -->
+
+      <div class="saved-grid">
+
+        @for (
+          listing of visibleListings;
+          track listing.id
+        ) {
+
+          <article
+            class="saved-card"
+            (click)="openListing(listing)"
+          >
+
+
+            <!-- IMAGE -->
+
+            <div class="saved-image-wrapper">
+
+              <img
+                [src]="listing.image"
+                [alt]="listing.title"
+                class="saved-image"
+              />
+
+
+              <button
+                type="button"
+                class="favorite-button"
+                aria-label="Retirer des favoris"
+                (click)="removeFavorite(
+                  $event,
+                  listing.id
+                )"
+              >
+
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+
+                  <path
+                    d="
+                      M20.8 4.6
+                      a5.5 5.5 0 0 0-7.8 0
+                      L12 5.6
+                      l-1-1
+                      a5.5 5.5 0 0 0-7.8 7.8
+                      l1 1
+                      L12 21
+                      l7.8-7.6
+                      1-1
+                      a5.5 5.5 0 0 0 0-7.8Z
+                    "
+                  ></path>
+
+                </svg>
+
+              </button>
+
+            </div>
+
+
+            <!-- CONTENU -->
+
+            <div class="saved-card-content">
+
+              <div class="saved-card-top">
+
+                <span class="location">
+                  {{ listing.location }}
+                </span>
+
+                <span class="rating">
+                  ★ {{ listing.rating }}
+                </span>
+
+              </div>
+
+
+              <h2>
+                {{ listing.title }}
+              </h2>
+
+
+              <p>
+                {{ listing.details }}
+              </p>
+
+
+              <strong>
+                {{ listing.price }} € / mois
+              </strong>
+
+            </div>
+
+          </article>
+
+        }
+
+      </div>
+
+
+      <!-- =========================
+           PLUS DE LOGEMENTS
+      ========================== -->
+
+      @if (hasMoreListings) {
+
+        <div class="show-more-wrapper">
+
+          <button
+            type="button"
+            class="show-more-button"
+            (click)="showMore()"
+          >
+            Afficher plus de logements
+          </button>
+
+        </div>
+
+      }
+
+    </section>
+
+  </div>
+
+
+  <app-contact-section />
+
+</main>
+
+
+<app-footer />

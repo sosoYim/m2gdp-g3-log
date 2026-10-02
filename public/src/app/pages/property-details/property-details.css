@@ -1,0 +1,666 @@
+.property-page {
+  background: #ffffff;
+}
+
+
+/* =========================
+   CONTAINER
+========================= */
+
+.property-container {
+  width: calc(100% - 48px);
+  max-width: 1200px;
+
+  margin: 0 auto;
+
+  padding: 34px 0 54px;
+}
+
+
+/* =========================
+   TITRE
+========================= */
+
+.property-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  margin-bottom: 18px;
+}
+
+.property-heading h1 {
+  margin: 0;
+
+  color: #171925;
+
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+
+/* =========================
+   NOTE + LOCALISATION
+========================= */
+
+.property-meta {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  color: #30354f;
+
+  font-size: 13px;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+}
+
+.rating-star {
+  width: 24px;
+  height: 24px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #acb3c6;
+
+  color: #48536d;
+
+  font-size: 18px;
+  line-height: 1;
+}
+
+.rating strong {
+  font-weight: 700;
+}
+
+.meta-divider {
+  width: 1px;
+  height: 18px;
+
+  background: #aeb2c1;
+}
+
+.location {
+  color: #566078;
+
+  text-decoration: underline;
+
+  cursor: pointer;
+}
+
+
+/* =========================
+   GALERIE
+========================= */
+
+.gallery {
+  width: 100%;
+  height: 360px;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+
+  gap: 10px;
+
+  margin-bottom: 28px;
+
+  overflow: hidden;
+}
+
+
+/* Grande image */
+
+.gallery-main {
+  min-width: 0;
+  height: 360px;
+
+  overflow: hidden;
+}
+
+.gallery-main img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: center;
+}
+
+
+/* 4 petites images */
+
+.gallery-small {
+  min-width: 0;
+  height: 360px;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    1fr;
+
+  grid-template-rows:
+    1fr
+    1fr;
+
+  gap: 10px;
+}
+
+.gallery-small img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  min-width: 0;
+  min-height: 0;
+
+  object-fit: cover;
+  object-position: center;
+
+  overflow: hidden;
+}
+
+
+/* =========================
+   CONTENU PRINCIPAL
+========================= */
+
+.property-layout {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    320px;
+
+  gap: 46px;
+
+  align-items: start;
+}
+
+.property-main {
+  min-width: 0;
+}
+
+
+/* =========================
+   PROPRIÉTAIRE
+========================= */
+
+.owner-section {
+  min-height: 62px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+}
+
+.owner-info h2 {
+  margin: 0 0 7px;
+
+  color: #17194f;
+
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.owner-info p {
+  margin: 0;
+
+  color: #7d849f;
+
+  font-size: 12px;
+}
+
+
+/* =========================
+   PROFIL VÉRIFIÉ
+========================= */
+
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 150px;
+  min-height: 28px;
+
+  padding: 0 14px;
+
+  border-radius: 999px;
+
+  background: #eee8ff;
+
+  color: #7134f5;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+
+/* =========================
+   SÉPARATEURS
+========================= */
+
+.section-divider {
+  width: 100%;
+  height: 1px;
+
+  margin: 18px 0 26px;
+
+  background: #e7e8ef;
+}
+
+
+/* =========================
+   TITRES SECTIONS
+========================= */
+
+.description-section h3,
+.equipment-section h3 {
+  margin: 0 0 13px;
+
+  color: #17194f;
+
+  font-size: 15px;
+  font-weight: 800;
+}
+
+
+/* =========================
+   PRÉSENTATION
+========================= */
+
+.description-section p {
+  margin: 0;
+
+  color: #77809e;
+
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+
+/* =========================
+   ÉQUIPEMENTS
+========================= */
+
+.equipment-section {
+  padding-bottom: 4px;
+}
+
+.equipment-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  column-gap: 52px;
+  row-gap: 18px;
+
+  align-items: center;
+}
+
+.equipment-item {
+  min-width: 0;
+  min-height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+
+/*
+ * Le SVG contient déjà :
+ * icône + texte.
+ *
+ * Donc on ne rajoute aucun texte en HTML.
+ */
+.equipment-svg {
+  display: block;
+
+  width: auto;
+  height: 24px;
+
+  max-width: 190px;
+
+  object-fit: contain;
+  object-position: left center;
+}
+
+
+/* =========================
+   CARTE PRIX
+========================= */
+
+.booking-card {
+  width: 100%;
+
+  padding: 18px;
+
+  border: 1px solid #d6d9e6;
+  border-radius: 12px;
+
+  background: #ffffff;
+}
+
+.price {
+  display: flex;
+  align-items: baseline;
+
+  gap: 8px;
+}
+
+.price strong {
+  color: #17194f;
+
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.price span {
+  color: #7f859e;
+
+  font-size: 13px;
+}
+
+.minimum-stay {
+  margin: 4px 0 17px;
+
+  color: #8790aa;
+
+  font-size: 10px;
+}
+
+
+/* =========================
+   DATES
+========================= */
+
+.booking-dates {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    1fr;
+
+  margin-bottom: 15px;
+
+  border: 1px solid #d4d8e6;
+  border-radius: 7px;
+
+  overflow: hidden;
+}
+
+.booking-date {
+  padding: 11px 10px;
+}
+
+.booking-date + .booking-date {
+  border-left: 1px solid #d4d8e6;
+}
+
+.booking-date label {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #7d849e;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.booking-date span {
+  color: #343952;
+
+  font-size: 11px;
+}
+
+
+/* =========================
+   BOUTON
+========================= */
+
+.contact-button {
+  width: 100%;
+  height: 42px;
+
+  border: 0;
+  border-radius: 7px;
+
+  background: #7134f5;
+
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.contact-button:hover {
+  background: #6026dc;
+}
+
+
+/* =========================
+   INFO PAIEMENT
+========================= */
+
+.payment-info {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 9px;
+
+  margin-top: 13px;
+
+  padding: 11px;
+
+  border-radius: 7px;
+
+  background: #eee9ff;
+}
+
+.payment-icon {
+  flex-shrink: 0;
+
+  width: 18px;
+  height: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #8b5cf6;
+
+  color: #ffffff;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.payment-info p {
+  margin: 0;
+
+  color: #6652b5;
+
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+.payment-info strong {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #5f43bd;
+}
+
+.price-info {
+  margin: 11px 0 0;
+
+  color: #969aad;
+
+  font-size: 9px;
+}
+
+
+/* =========================
+   TABLETTE
+========================= */
+
+@media (max-width: 1100px) {
+
+  .property-container {
+  width: calc(100% - 48px);
+ }
+  .gallery {
+    height: 320px;
+  }
+
+  .gallery-main,
+  .gallery-small {
+    height: 320px;
+  }
+
+  .property-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-card {
+    max-width: 420px;
+  }
+
+  .equipment-grid {
+    column-gap: 28px;
+  }
+
+  .equipment-svg {
+    height: 23px;
+    max-width: 180px;
+  }
+
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+  .property-container {
+    width: calc(100% - 32px);
+
+    padding: 24px 0 36px;
+  }
+
+
+  .property-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+
+  .property-heading h1 {
+    font-size: 23px;
+  }
+
+
+  .gallery {
+    height: auto;
+
+    grid-template-columns: 1fr;
+  }
+
+
+  .gallery-main {
+    height: 270px;
+  }
+
+
+  .gallery-small {
+    height: auto;
+
+    grid-template-columns:
+      1fr
+      1fr;
+  }
+
+
+  .gallery-small img {
+    height: 140px;
+  }
+
+
+  .owner-section {
+    flex-direction: column;
+  }
+
+
+  .equipment-grid {
+    grid-template-columns:
+      1fr
+      1fr;
+
+    column-gap: 20px;
+    row-gap: 18px;
+  }
+
+
+  .equipment-svg {
+    height: 22px;
+    max-width: 170px;
+  }
+
+
+  .booking-card {
+    max-width: none;
+  }
+
+}
+
+
+/* =========================
+   PETIT MOBILE
+========================= */
+
+@media (max-width: 480px) {
+
+  .equipment-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .equipment-svg {
+    height: 23px;
+    max-width: 190px;
+  }
+
+}

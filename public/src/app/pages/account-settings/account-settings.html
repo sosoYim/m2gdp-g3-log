@@ -1,0 +1,378 @@
+<app-user-navbar />
+
+
+<main class="settings-page">
+
+  <div class="account-layout">
+
+
+    <!-- =========================
+         MENU DU COMPTE PARTAGÉ
+    ========================== -->
+
+    <app-account-sidebar active="settings" />
+
+
+    <!-- =========================
+         CONTENU
+    ========================== -->
+
+    <section class="settings-content">
+
+      <h1>
+        Paramètres du compte
+      </h1>
+
+
+      <!-- =========================
+           INFORMATIONS PERSONNELLES
+      ========================== -->
+
+      <section class="settings-card">
+
+        <h2>
+          Informations personnelles
+        </h2>
+
+
+        <div class="name-grid">
+
+
+          <!-- Prénom -->
+
+          <label class="form-field">
+
+            <span>
+              Prénom
+            </span>
+
+            <input
+              type="text"
+              [(ngModel)]="firstName"
+              name="firstName"
+            />
+
+          </label>
+
+
+          <!-- Nom -->
+
+          <label class="form-field">
+
+            <span>
+              Nom
+            </span>
+
+            <input
+              type="text"
+              [(ngModel)]="lastName"
+              name="lastName"
+            />
+
+          </label>
+
+        </div>
+
+
+        <!-- Adresse e-mail -->
+
+        <label class="form-field email-field">
+
+          <span>
+            Adresse e-mail
+          </span>
+
+
+          <div class="email-input">
+
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+
+              <rect
+                x="3"
+                y="5"
+                width="18"
+                height="14"
+                rx="2"
+              ></rect>
+
+
+              <path
+                d="M3 7l9 6 9-6"
+              ></path>
+
+            </svg>
+
+
+            <input
+              type="email"
+              [(ngModel)]="email"
+              name="email"
+              readonly
+            />
+
+          </div>
+
+        </label>
+
+
+        <p class="email-help">
+          Vous vous connectez avec cette adresse, sans mot de passe.
+        </p>
+
+
+        <!-- Message succès -->
+
+        @if (successMessage()) {
+
+          <p class="success-message">
+            {{ successMessage() }}
+          </p>
+
+        }
+
+
+        <!-- Message erreur -->
+
+        @if (errorMessage()) {
+
+          <p class="error-message">
+            {{ errorMessage() }}
+          </p>
+
+        }
+
+
+        <button
+          type="button"
+          class="save-button"
+          [disabled]="saving()"
+          (click)="savePersonalInfo()"
+        >
+
+          @if (saving()) {
+
+            Enregistrement...
+
+          } @else {
+
+            Enregistrer les modifications
+
+          }
+
+        </button>
+
+      </section>
+
+
+      <!-- =========================
+           MON RÔLE
+      ========================== -->
+
+      <section class="settings-card role-card">
+
+        <h2>
+          Mon rôle
+        </h2>
+
+
+        <div class="role-content">
+
+
+          <div class="role-switch">
+
+
+            <!-- Je viens -->
+
+            <button
+              type="button"
+              class="role-button"
+              [class.role-active]="currentRole() === 'guest'"
+              (click)="selectRole('guest')"
+            >
+              Je viens
+            </button>
+
+
+            <!-- J'accueille -->
+
+            <button
+              type="button"
+              class="role-button"
+              [class.role-active]="currentRole() === 'host'"
+              (click)="selectRole('host')"
+            >
+              J’accueille
+            </button>
+
+          </div>
+
+
+          <div class="role-description">
+
+            @if (currentRole() === 'guest') {
+
+              <strong>
+                Rôle actuel : Je viens (demandeur)
+              </strong>
+
+              <p>
+                Passez à « J’accueille » pour proposer votre logement.
+              </p>
+
+            } @else {
+
+              <strong>
+                Rôle actuel : J’accueille (annonceur)
+              </strong>
+
+              <p>
+                Passez à « Je viens » pour rechercher un logement.
+              </p>
+
+            }
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =========================
+           NOTIFICATIONS
+      ========================== -->
+
+      <section class="settings-card notifications-card">
+
+        <h2>
+          Notifications
+        </h2>
+
+
+        <!-- Nouveaux messages -->
+
+        <div class="notification-row">
+
+          <span>
+            Nouveaux messages par e-mail
+          </span>
+
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="notificationMessages"
+              name="notificationMessages"
+            />
+
+            <span class="switch-slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <!-- Réponses à mes demandes -->
+
+        <div class="notification-row">
+
+          <span>
+            Réponses à mes demandes
+          </span>
+
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="notificationRequests"
+              name="notificationRequests"
+            />
+
+            <span class="switch-slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <!-- Actualités -->
+
+        <div class="notification-row">
+
+          <span>
+            Actualités BailLyon
+          </span>
+
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="notificationNews"
+              name="notificationNews"
+            />
+
+            <span class="switch-slider"></span>
+
+          </label>
+
+        </div>
+
+      </section>
+
+
+      <!-- =========================
+           COMPTE
+      ========================== -->
+
+      <section class="settings-card account-card">
+
+        <h2>
+          Compte
+        </h2>
+
+
+        <div class="account-actions">
+
+
+          <!-- Déconnexion -->
+
+          <button
+            type="button"
+            class="logout-outline"
+            (click)="logout()"
+          >
+            Se déconnecter
+          </button>
+
+
+          <!-- Suppression du compte -->
+
+          <button
+            type="button"
+            class="delete-account"
+            (click)="deleteAccount()"
+          >
+            Supprimer mon compte
+          </button>
+
+        </div>
+
+      </section>
+
+    </section>
+
+  </div>
+
+
+  <app-contact-section />
+
+</main>
+
+
+<app-footer />

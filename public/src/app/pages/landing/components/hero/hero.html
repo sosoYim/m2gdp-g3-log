@@ -2,74 +2,124 @@
   class="relative min-h-[603px] overflow-hidden bg-[#eeeeff] bg-cover bg-bottom bg-no-repeat"
   style="background-image: url('/images/landing/hero.png')"
 >
-  <!-- Contenu -->
-  <div class="relative z-10 mx-auto flex max-w-7xl flex-col items-center px-6 pt-8 text-center lg:pt-10">
 
-    <p class="mb-3 text-sm font-medium uppercase tracking-wide text-[#7547f5]">
+  <div
+    class="relative z-10 mx-auto flex max-w-7xl flex-col items-center px-6 pt-8 text-center lg:pt-10"
+  >
+
+    <p
+      class="mb-3 text-sm font-medium uppercase tracking-wide text-[#7547f5]"
+    >
       Votre prochain chez-vous à Lyon
     </p>
+
 
     <h1
       class="text-5xl font-extrabold leading-[0.95] text-[#202aaa] md:text-6xl lg:text-7xl"
     >
       Pars serein,<br />
-      <span class="text-[#7134f5]">loue malin</span>
+
+      <span class="text-[#7134f5]">
+        loue malin
+      </span>
     </h1>
 
-    <p class="mt-5 text-base text-gray-700 md:text-lg">
+
+    <p
+      class="mt-5 text-base text-gray-700 md:text-lg"
+    >
       Un logement étudiant pour un stage, un échange ou quelques mois
     </p>
 
+
     <!-- Recherche -->
+
     <div
       class="mt-48 flex w-full max-w-2xl flex-col overflow-hidden rounded-xl bg-white shadow-lg md:flex-row"
     >
+
+
       <!-- Arrivée -->
+
       <label
         class="flex flex-1 cursor-pointer items-center gap-3 border-b px-5 py-4 text-left md:border-b-0 md:border-r"
       >
-        <span class="text-xl">📅</span>
+
+        <span class="text-xl">
+          📅
+        </span>
+
 
         <span class="flex flex-col">
-          <span class="text-xs font-semibold uppercase text-gray-500">
+
+          <span
+            class="text-xs font-semibold uppercase text-gray-500"
+          >
             Arrivée
           </span>
 
+
           <input
             type="date"
+            [(ngModel)]="arrivalDate"
+            name="arrivalDate"
             class="w-full bg-transparent text-sm text-gray-700 outline-none"
           />
+
         </span>
+
       </label>
 
+
       <!-- Départ -->
+
       <label
         class="flex flex-1 cursor-pointer items-center gap-3 border-b px-5 py-4 text-left md:border-b-0"
       >
-        <span class="text-xl">📅</span>
+
+        <span class="text-xl">
+          📅
+        </span>
+
 
         <span class="flex flex-col">
-          <span class="text-xs font-semibold uppercase text-gray-500">
+
+          <span
+            class="text-xs font-semibold uppercase text-gray-500"
+          >
             Départ
           </span>
 
+
           <input
             type="date"
+            [(ngModel)]="departureDate"
+            name="departureDate"
             class="w-full bg-transparent text-sm text-gray-700 outline-none"
           />
+
         </span>
+
       </label>
 
-      <!-- Bouton -->
+
+      <!-- Rechercher -->
+
       <div class="flex items-center p-2">
+
         <button
           type="button"
-          class="w-full rounded-lg bg-[#7134f5] px-7 py-3 font-semibold text-white transition hover:bg-[#5f24df] md:w-auto"
+          (click)="search()"
+          [disabled]="!arrivalDate || !departureDate"
+          class="w-full rounded-lg bg-[#7134f5] px-7 py-3 font-semibold text-white transition hover:bg-[#5f24df] disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
         >
           Rechercher
         </button>
+
       </div>
+
     </div>
 
   </div>
+
 </section>

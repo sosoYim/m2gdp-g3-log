@@ -1,0 +1,380 @@
+<app-navbar />
+
+
+<main class="search-results-page">
+
+  <!-- =========================
+       BARRE DE RECHERCHE
+  ========================== -->
+
+  <section class="search-zone">
+
+    <form
+      class="search-bar"
+      (ngSubmit)="search()"
+    >
+
+      <!-- Arrivée -->
+      <div class="date-field">
+
+        <div class="date-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect
+              x="3"
+              y="5"
+              width="18"
+              height="16"
+              rx="2"
+            />
+
+            <path d="M16 3v4M8 3v4M3 10h18" />
+          </svg>
+        </div>
+
+
+        <div class="date-content">
+
+          <label for="arrival">
+            ARRIVÉE
+          </label>
+
+          <input
+            id="arrival"
+            name="arrival"
+            type="date"
+            [(ngModel)]="arrivalDate"
+          />
+
+        </div>
+
+      </div>
+
+
+      <div class="separator"></div>
+
+
+      <!-- Départ -->
+      <div class="date-field">
+
+        <div class="date-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect
+              x="3"
+              y="5"
+              width="18"
+              height="16"
+              rx="2"
+            />
+
+            <path d="M16 3v4M8 3v4M3 10h18" />
+          </svg>
+        </div>
+
+
+        <div class="date-content">
+
+          <label for="departure">
+            DÉPART
+          </label>
+
+          <input
+            id="departure"
+            name="departure"
+            type="date"
+            [(ngModel)]="departureDate"
+          />
+
+        </div>
+
+      </div>
+
+
+      <button
+        type="submit"
+        class="search-button"
+      >
+        Rechercher
+      </button>
+
+    </form>
+
+  </section>
+
+
+  <!-- =========================
+       RÉSULTATS
+  ========================== -->
+
+  <section class="results-section">
+
+    <div class="results-layout">
+
+
+      <!-- =========================
+           COLONNE GAUCHE
+      ========================== -->
+
+      <div class="results-left">
+
+        <h1>
+          34 appartements disponibles
+        </h1>
+
+
+        <!-- Filtres -->
+        <div class="filters">
+
+          <button
+            type="button"
+            class="filter-button"
+          >
+
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 10.5 12 3l9 7.5V21H3Z" />
+              <path d="M9 21v-6h6v6" />
+            </svg>
+
+            <span>Budget</span>
+            <span class="chevron">˅</span>
+
+          </button>
+
+
+          <button
+            type="button"
+            class="filter-button"
+          >
+
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 3H3v5" />
+              <path d="m3 3 6 6" />
+
+              <path d="M16 3h5v5" />
+              <path d="m21 3-6 6" />
+
+              <path d="M8 21H3v-5" />
+              <path d="m3 21 6-6" />
+
+              <path d="M16 21h5v-5" />
+              <path d="m21 21-6-6" />
+            </svg>
+
+            <span>Surface</span>
+            <span class="chevron">˅</span>
+
+          </button>
+
+
+          <button
+            type="button"
+            class="filter-button"
+          >
+
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+
+              <rect
+                x="3"
+                y="5"
+                width="18"
+                height="16"
+                rx="2"
+              />
+
+              <path d="M16 3v4M8 3v4M3 10h18" />
+
+            </svg>
+
+            <span>Disponibilités</span>
+            <span class="chevron">˅</span>
+
+          </button>
+
+
+          <button
+            type="button"
+            class="filter-button"
+          >
+
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+
+              <path d="M4 6h16" />
+              <circle cx="9" cy="6" r="2" />
+
+              <path d="M4 12h16" />
+              <circle cx="15" cy="12" r="2" />
+
+              <path d="M4 18h16" />
+              <circle cx="11" cy="18" r="2" />
+
+            </svg>
+
+            <span>Plus de filtres</span>
+            <span class="chevron">˅</span>
+
+          </button>
+
+        </div>
+
+
+        <!-- Bandeau information -->
+        <div class="info-banner">
+
+          <div class="info-icon">
+            i
+          </div>
+
+          <p>
+            Le loyer est réglé directement entre les utilisateurs.
+            Aucun paiement sur BailLyon.
+          </p>
+
+        </div>
+
+
+        <!-- =========================
+             LOGEMENTS
+        ========================== -->
+
+        <div class="listings-container">
+
+          @for (listing of listings; track listing.id) {
+
+            <article
+              class="listing-card"
+              [class.listing-card-highlighted]="listing.highlighted"
+            >
+
+              <!-- Image -->
+              <div class="listing-image-wrapper">
+
+                <img
+                  [src]="listing.image"
+                  [alt]="listing.title"
+                  class="listing-image"
+                />
+
+              </div>
+
+
+              <!-- Informations -->
+              <div class="listing-content">
+
+
+                <div class="listing-top">
+
+                  @if (listing.verified) {
+
+                    <span class="verified-badge">
+                      ✓ Profil vérifié
+                    </span>
+
+                  }
+
+
+                  <button
+                    type="button"
+                    class="favorite-button"
+                    [class.favorite-active]="listing.favorite"
+                    aria-label="Ajouter aux favoris"
+                    (click)="toggleFavorite(listing)"
+                  >
+
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M20.8 4.6
+                           a5.5 5.5 0 0 0-7.8 0
+                           L12 5.6
+                           l-1-1
+                           a5.5 5.5 0 0 0-7.8 7.8
+                           l1 1
+                           L12 21
+                           l7.8-7.6
+                           1-1
+                           a5.5 5.5 0 0 0 0-7.8Z"
+                      />
+                    </svg>
+
+                  </button>
+
+                </div>
+
+
+                <h2>
+                  {{ listing.title }}
+                </h2>
+
+
+                <p class="listing-location">
+                  {{ listing.location }}
+                </p>
+
+
+                <p class="listing-details">
+                  {{ listing.details }}
+                </p>
+
+
+                <div class="listing-footer">
+
+                  <strong class="listing-price">
+                    {{ listing.price }} € / mois
+                  </strong>
+
+
+                  <button
+                    type="button"
+                    class="listing-link"
+                    (click)="openListing(listing)"
+                  >
+                    Voir le logement →
+                  </button>
+
+                </div>
+
+              </div>
+
+            </article>
+
+          }
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           MAP
+      ========================== -->
+
+      <aside class="results-right">
+
+        <img
+          src="/images/rental/map.png"
+          alt="Carte des logements disponibles"
+          class="results-map"
+        />
+
+      </aside>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       CONTACT
+  ========================== -->
+
+  <app-contact-section />
+
+</main>
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<app-footer />
