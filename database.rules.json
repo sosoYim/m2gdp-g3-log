@@ -1,0 +1,27 @@
+{
+  "rules": {
+    "conversations": {
+      ".read": "auth != null && ((query.orderByChild == 'requesterId' && query.equalTo == auth.uid) || (query.orderByChild == 'ownerId' && query.equalTo == auth.uid))",
+
+      ".indexOn": [
+        "requesterId",
+        "ownerId"
+      ],
+
+      "$conversationId": {
+        ".read": "auth != null && (data.child('requesterId').val() === auth.uid || data.child('ownerId').val() === auth.uid)",
+
+        ".write": "auth != null && ((!data.exists() && newData.child('requesterId').val() === auth.uid) || (data.exists() && (data.child('requesterId').val() === auth.uid || data.child('ownerId').val() === auth.uid) && newData.child('requesterId').val() === data.child('requesterId').val() && newData.child('ownerId').val() === data.child('ownerId').val()))",
+
+        "messages": {
+          "$messageId": {
+            ".validate": "newData.hasChildren(['senderId', 'text', 'createdAt']) && newData.child('senderId').val() === auth.uid && newData.child('text').isString() && newData.child('text').val().length > 0 && newData.child('text').val().length <= 2000"
+          }
+        }
+      }
+    },
+
+    ".read": false,
+    ".write": false
+  }
+}

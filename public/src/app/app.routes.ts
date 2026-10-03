@@ -16,8 +16,6 @@ import { BookingRequest } from './pages/booking-request/booking-request';
 
 import { BookingConfirmation } from './pages/booking-confirmation/booking-confirmation';
 
-import { authGuard } from './core/guards/auth.guard';
-
 import { RenterAccount } from './pages/renter-account/renter-account';
 
 import { SavedListings } from './pages/saved-listings/saved-listings';
@@ -25,6 +23,8 @@ import { SavedListings } from './pages/saved-listings/saved-listings';
 import { Messages } from './pages/messages/messages';
 
 import { AccountSettings } from './pages/account-settings/account-settings';
+
+import { authGuard } from './core/guards/auth.guard';
 
 
 export const routes: Routes = [
@@ -39,6 +39,9 @@ export const routes: Routes = [
     component: AuthCallback
   },
 
+  /*
+   * Pages publiques
+   */
   {
     path: 'rental-search-results',
     component: RentalSearchResults
@@ -49,6 +52,9 @@ export const routes: Routes = [
     component: PropertyDetails
   },
 
+  /*
+   * Pages nécessitant une connexion
+   */
   {
     path: 'complete-profile',
     component: CompleteProfile,
@@ -63,28 +69,38 @@ export const routes: Routes = [
 
   {
     path: 'booking-request/:id',
-    component: BookingRequest
+    component: BookingRequest,
+    canActivate: [authGuard]
   },
 
   {
     path: 'booking-confirmation/:id',
-    component: BookingConfirmation
+    component: BookingConfirmation,
+    canActivate: [authGuard]
   },
+
   {
-  path: 'renter-account',
-  component: RenterAccount
+    path: 'renter-account',
+    component: RenterAccount,
+    canActivate: [authGuard]
   },
+
   {
-  path: 'saved-listings',
-  component: SavedListings
+    path: 'saved-listings',
+    component: SavedListings,
+    canActivate: [authGuard]
   },
+
   {
-  path: 'messages',
-  component: Messages
+    path: 'messages',
+    component: Messages,
+    canActivate: [authGuard]
   },
+
   {
-  path: 'account-settings',
-  component: AccountSettings
- }
+    path: 'account-settings',
+    component: AccountSettings,
+    canActivate: [authGuard]
+  }
 
 ];

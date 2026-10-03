@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   OnInit,
   signal
@@ -18,10 +19,47 @@ import { Footer } from '../landing/components/footer/footer';
 import { Auth } from '../../core/auth/auth';
 import { Profile } from '../../core/profile/profile';
 
+import {
+  Listing,
+  ListingDocument
+} from '../../core/listing/listing';
+
 
 interface Equipment {
   icon: string;
   alt: string;
+}
+
+
+interface PropertyDetailsViewModel {
+  title: string;
+  location: string;
+  owner: string;
+
+  rating: number;
+  reviews: number;
+
+  verified: boolean;
+
+  images: {
+    main: string;
+    kitchen: string;
+    window: string;
+    desk: string;
+    bathroom: string;
+  };
+
+  price: number;
+
+  minimumStay: string;
+
+  bedroom: string;
+  bed: string;
+  bathroom: string;
+
+  description: string;
+
+  equipments: Equipment[];
 }
 
 
@@ -49,36 +87,36 @@ export class PropertyDetails implements OnInit {
 
   authModalOpen = signal(false);
 
+  loadingListing = signal(true);
 
-  listing = {
+  listingError = signal('');
 
-    title: 'Charmant studio-loft',
 
-    location: 'Lyon',
+  listing: PropertyDetailsViewModel = {
 
-    owner: 'Lucas',
+    title: '',
 
-    rating: 4.9,
+    location: '',
+
+    owner: '',
+
+    rating: 0,
 
     reviews: 42,
 
-    verified: true,
+    verified: false,
 
     images: {
-      main: '/images/rental/property-1/Umeus.png',
+      main: '',
       kitchen: '/images/rental/property-1/kitchen.png',
       window: '/images/rental/property-1/window.png',
       desk: '/images/rental/property-1/desk.png',
       bathroom: '/images/rental/property-1/bathroom.png'
     },
 
-    price: 650,
+    price: 0,
 
     minimumStay: '1 mois',
-
-    arrivalDate: '01 mai 2026',
-
-    departureDate: '01 nov. 2026',
 
     bedroom: '1 chambre',
 
@@ -114,7 +152,7 @@ export class PropertyDetails implements OnInit {
         icon: '/images/rental/equipment/Equipement-lift.svg',
         alt: 'Ascenseur'
       }
-    ] as Equipment[]
+    ]
 
   };
 
@@ -123,21 +161,27 @@ export class PropertyDetails implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly authService: Auth,
-    private readonly profileService: Profile
+    private readonly profileService: Profile,
+    private readonly listingService: Listing,
+    private readonly cdr: ChangeDetectorRef
   ) {}
 
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
 
     /*
-     * ID du logement
+     * =========================================
+     * ID DU LOGEMENT
+     * =========================================
      */
     this.listingId =
       this.route.snapshot.paramMap.get('id') ?? '';
 
 
     /*
-     * Dates venant de la page de recherche
+     * =========================================
+     * DATES DE RECHERCHE
+     * =========================================
      */
     this.route.queryParamMap.subscribe(
       params => {
@@ -151,14 +195,137 @@ export class PropertyDetails implements OnInit {
       }
     );
 
+
+    /*
+     * =========================================
+     * CHARGEMENT DU LOGEMENT FIRESTORE
+     * =========================================
+     */
+    await this.loadListing();
+
+  }
+
+
+  private async loadListing(): Promise<void> {
+
+    this.loadingListing.set(true);
+
+    this.listingError.set('');
+
+
+    try {
+
+      const firestoreListing =
+        await this.listingService.getListingById(
+          this.listingId
+        );
+
+
+      if (!firestoreListing) {
+
+        this.listingError.set(
+          'Ce logement est introuvable.'
+        );
+
+        return;
+
+      }
+
+
+      /*
+       * On refuse d'afficher une annonce
+       * non publiée côté demandeur.
+       */
+      if (
+        firestoreListing.status !==
+        'published'
+      ) {
+
+        this.listingError.set(
+          'Ce logement n’est pas disponible.'
+        );
+
+        return;
+
+      }
+
+
+      this.applyFirestoreListing(
+        firestoreListing
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        'Erreur chargement logement :',
+        error
+      );
+
+
+      this.listingError.set(
+        'Impossible de charger ce logement.'
+      );
+
+
+    } finally {
+
+      this.loadingListing.set(false);
+
+      this.cdr.detectChanges();
+
+    }
+
+  }
+
+
+  private applyFirestoreListing(
+    firestoreListing: ListingDocument
+  ): void {
+
+    this.listing = {
+
+      ...this.listing,
+
+      title:
+        firestoreListing.title,
+
+      location:
+        firestoreListing.location,
+
+      owner:
+        firestoreListing.ownerName,
+
+      rating:
+        firestoreListing.rating,
+
+      verified:
+        firestoreListing.verified,
+
+      price:
+        firestoreListing.price,
+
+      images: {
+
+        ...this.listing.images,
+
+        main:
+          firestoreListing.image
+
+      }
+
+    };
+
   }
 
 
   /*
-   * Naviguer vers la demande
-   * tout en conservant les dates.
+   * =========================================
+   * NAVIGATION VERS LA DEMANDE
+   * =========================================
    */
-  private async goToBookingRequest(): Promise<void> {
+  private async goToBookingRequest():
+    Promise<void> {
 
     await this.router.navigate(
       [
@@ -167,8 +334,13 @@ export class PropertyDetails implements OnInit {
       ],
       {
         queryParams: {
-          arrival: this.arrivalDate || null,
-          departure: this.departureDate || null
+
+          arrival:
+            this.arrivalDate || null,
+
+          departure:
+            this.departureDate || null
+
         }
       }
     );
@@ -177,7 +349,9 @@ export class PropertyDetails implements OnInit {
 
 
   /*
-   * Bouton "Écrire à Lucas"
+   * =========================================
+   * CONTACTER L'ANNONCEUR
+   * =========================================
    */
   async contactOwner(): Promise<void> {
 
@@ -191,10 +365,7 @@ export class PropertyDetails implements OnInit {
 
 
     /*
-     * On mémorise également les dates.
-     *
-     * Elles serviront notamment après
-     * une connexion par Magic Link.
+     * On mémorise les dates.
      */
     if (this.arrivalDate) {
 
@@ -229,30 +400,31 @@ export class PropertyDetails implements OnInit {
 
 
     /*
-     * Attendre la restauration éventuelle
-     * de la session Firebase.
+     * Attendre la restauration
+     * éventuelle de Firebase Auth.
      */
     const user =
       await this.authService.waitForAuthState();
 
 
     /*
-     * PAS CONNECTÉ
-     *
-     * On ouvre la modale Magic Link.
+     * =========================================
+     * UTILISATEUR NON CONNECTÉ
+     * =========================================
      */
     if (!user) {
 
       this.authModalOpen.set(true);
 
       return;
+
     }
 
 
     /*
-     * CONNECTÉ
-     *
-     * Récupération du profil Firestore.
+     * =========================================
+     * UTILISATEUR CONNECTÉ
+     * =========================================
      */
     const profile =
       await this.profileService.getProfile(
@@ -260,9 +432,6 @@ export class PropertyDetails implements OnInit {
       );
 
 
-    /*
-     * Pas encore de profil.
-     */
     if (!profile) {
 
       await this.router.navigate([
@@ -270,12 +439,10 @@ export class PropertyDetails implements OnInit {
       ]);
 
       return;
+
     }
 
 
-    /*
-     * Aucun rôle choisi.
-     */
     if (!profile.role) {
 
       await this.router.navigate([
@@ -283,19 +450,17 @@ export class PropertyDetails implements OnInit {
       ]);
 
       return;
+
     }
 
 
     /*
+     * =========================================
      * DEMANDEUR
+     * =========================================
      */
     if (profile.role === 'guest') {
 
-      /*
-       * On peut maintenant entrer
-       * directement dans le parcours
-       * de demande.
-       */
       localStorage.removeItem(
         'baillYonPendingBooking'
       );
@@ -312,14 +477,14 @@ export class PropertyDetails implements OnInit {
       await this.goToBookingRequest();
 
       return;
+
     }
 
 
     /*
+     * =========================================
      * ANNONCEUR
-     *
-     * Il doit passer en rôle demandeur
-     * pour envoyer une demande.
+     * =========================================
      */
     if (profile.role === 'host') {
 

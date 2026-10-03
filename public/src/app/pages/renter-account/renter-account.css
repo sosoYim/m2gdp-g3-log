@@ -26,146 +26,6 @@
 
 
 /* =========================================================
-   SIDEBAR
-   ========================================================= */
-
-.account-sidebar {
-  position: relative;
-  z-index: 20;
-
-  padding: 34px 28px;
-
-  border-right: 1px solid #e6e7ef;
-
-  background: #ffffff;
-}
-
-
-.sidebar-title {
-  margin: 0 0 24px;
-
-  color: #4e5269;
-
-  font-size: 11px;
-
-  font-weight: 800;
-}
-
-
-.account-menu {
-  position: relative;
-  z-index: 21;
-
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 5px;
-}
-
-
-.menu-item {
-  position: relative;
-  z-index: 22;
-
-  pointer-events: auto;
-
-  width: 100%;
-
-  min-height: 48px;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 13px;
-
-  padding: 0 14px;
-
-  border: none;
-
-  border-radius: 7px;
-
-  background: transparent;
-
-  color: #3d4050;
-
-  font-family: inherit;
-
-  font-size: 14px;
-
-  text-align: left;
-
-  cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
-}
-
-
-.menu-item svg {
-  width: 21px;
-  height: 21px;
-
-  flex-shrink: 0;
-
-  fill: none;
-
-  stroke: currentColor;
-
-  stroke-width: 1.7;
-
-  stroke-linecap: round;
-
-  stroke-linejoin: round;
-
-  pointer-events: none;
-}
-
-
-.settings-icon {
-  width: 21px;
-  height: 21px;
-
-  flex-shrink: 0;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  font-size: 19px;
-
-  line-height: 1;
-
-  pointer-events: none;
-}
-
-
-.menu-item span {
-  pointer-events: none;
-}
-
-
-.menu-item:hover {
-  background: #f6f3ff;
-
-  color: #7134f5;
-}
-
-
-.menu-item-active {
-  background: #eee9ff;
-
-  color: #7134f5;
-
-  font-weight: 700;
-}
-
-
-/* =========================================================
    CONTENU PRINCIPAL
    ========================================================= */
 
@@ -191,7 +51,20 @@
 
 
 /* =========================================================
-   RÉSERVATION
+   LISTE DES DEMANDES
+   ========================================================= */
+
+.bookings-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 14px;
+}
+
+
+/* =========================================================
+   CARTE RÉSERVATION
    ========================================================= */
 
 .upcoming-card {
@@ -232,6 +105,32 @@
 }
 
 
+.upcoming-info h2 {
+  margin: 0 0 6px;
+
+  color: #191a24;
+
+  font-size: 18px;
+
+  font-weight: 800;
+}
+
+
+.upcoming-info p {
+  margin: 0;
+
+  color: #777c92;
+
+  font-size: 12px;
+
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   STATUT CONFIRMÉ
+   ========================================================= */
+
 .confirmed-badge {
   display: inline-block;
 
@@ -251,25 +150,55 @@
 }
 
 
-.upcoming-info h2 {
-  margin: 0 0 6px;
+/* =========================================================
+   STATUT EN ATTENTE
+   ========================================================= */
 
-  color: #191a24;
+.pending-badge {
+  display: inline-block;
 
-  font-size: 18px;
+  margin-bottom: 7px;
+
+  padding: 4px 12px;
+
+  border-radius: 999px;
+
+  background: #fff4d8;
+
+  color: #a66a00;
+
+  font-size: 9px;
 
   font-weight: 800;
 }
 
 
-.upcoming-info p {
-  margin: 0;
+/* =========================================================
+   STATUT REFUSÉ
+   ========================================================= */
 
-  color: #777c92;
+.rejected-badge {
+  display: inline-block;
 
-  font-size: 12px;
+  margin-bottom: 7px;
+
+  padding: 4px 12px;
+
+  border-radius: 999px;
+
+  background: #ffe8e8;
+
+  color: #c43b3b;
+
+  font-size: 9px;
+
+  font-weight: 800;
 }
 
+
+/* =========================================================
+   ACTIONS RÉSERVATION
+   ========================================================= */
 
 .upcoming-actions {
   flex-shrink: 0;
@@ -286,6 +215,8 @@
   color: #9296a8;
 
   font-size: 10px;
+
+  word-break: break-all;
 }
 
 
@@ -293,6 +224,12 @@
   min-width: 130px;
 
   height: 42px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
 
   padding: 0 18px;
 
@@ -310,12 +247,67 @@
 
   font-weight: 700;
 
+  text-decoration: none;
+
   cursor: pointer;
 }
 
 
 .manage-button:hover {
   background: #f8f5ff;
+}
+
+
+/* =========================================================
+   CHARGEMENT / VIDE / ERREUR
+   ========================================================= */
+
+.booking-state {
+  padding: 24px;
+
+  border: 1px solid #dfe2ec;
+
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  color: #777c92;
+
+  font-size: 13px;
+}
+
+
+.booking-state strong {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #171925;
+
+  font-size: 16px;
+}
+
+
+.booking-state p {
+  margin: 0 0 16px;
+}
+
+
+.booking-state-error {
+  color: #c43b3b;
+
+  background: #fff8f8;
+}
+
+
+.empty-booking-button {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-decoration: none;
 }
 
 
@@ -591,11 +583,6 @@
   }
 
 
-  .account-sidebar {
-    padding: 30px 18px;
-  }
-
-
   .account-content {
     padding: 38px 30px 60px;
   }
@@ -629,56 +616,13 @@
   }
 
 
-  .account-sidebar {
-    padding: 16px;
-
-    border-right: none;
-
-    border-bottom: 1px solid #e6e7ef;
-  }
-
-
-  .sidebar-title {
-    display: none;
-  }
-
-
-  .account-menu {
-    flex-direction: row;
-
-    overflow-x: auto;
-
-    gap: 7px;
-  }
-
-
-  .menu-item {
-    width: auto;
-
-    flex-shrink: 0;
-
-    padding: 0 12px;
-
-    font-size: 11px;
-  }
-
-
-  .menu-item svg {
-    width: 18px;
-    height: 18px;
-  }
-
-
-  .settings-icon {
-    width: 18px;
-    height: 18px;
-
-    font-size: 17px;
-  }
-
-
   .account-content {
     padding: 28px 16px 45px;
+  }
+
+
+  .account-content > h1 {
+    font-size: 24px;
   }
 
 
@@ -686,12 +630,32 @@
     align-items: flex-start;
 
     flex-direction: column;
+
+    gap: 14px;
+
+    padding: 14px;
   }
 
 
   .upcoming-image {
     width: 100%;
+
     height: 190px;
+  }
+
+
+  .upcoming-info {
+    width: 100%;
+  }
+
+
+  .upcoming-info h2 {
+    font-size: 16px;
+  }
+
+
+  .upcoming-info p {
+    font-size: 11px;
   }
 
 
@@ -703,6 +667,24 @@
     justify-content: space-between;
 
     align-items: center;
+
+    gap: 12px;
+  }
+
+
+  .booking-id {
+    max-width: 52%;
+
+    font-size: 9px;
+  }
+
+
+  .manage-button {
+    min-width: 120px;
+
+    height: 38px;
+
+    padding: 0 12px;
   }
 
 

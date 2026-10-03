@@ -1,16 +1,62 @@
 rules_version = '2';
 
 service cloud.firestore {
+
   match /databases/{database}/documents {
 
+
+    /*
+     * =========================================
+     * UTILISATEURS
+     * =========================================
+     */
     match /users/{userId} {
+
       allow read, create, update:
         if request.auth != null
         && request.auth.uid == userId;
 
-      allow delete: if false;
+      allow delete:
+        if false;
     }
 
+
+    /*
+     * =========================================
+     * FAVORIS D'UN UTILISATEUR
+     * =========================================
+     */
+    match /users/{userId}/favorites/{favoriteId} {
+
+      allow read:
+        if request.auth != null
+        && request.auth.uid == userId;
+
+
+      allow create, update:
+        if request.auth != null
+        && request.auth.uid == userId
+
+        && request.resource.data.listingId is string
+        && request.resource.data.title is string
+        && request.resource.data.location is string
+        && request.resource.data.details is string
+        && request.resource.data.price is number
+        && request.resource.data.rating is number
+        && request.resource.data.image is string;
+
+
+      allow delete:
+        if request.auth != null
+        && request.auth.uid == userId;
+    }
+
+
+    /*
+     * =========================================
+     * DEMANDES DE RÉSERVATION
+     * =========================================
+     */
     match /bookingRequests/{requestId} {
 
       allow create:
@@ -23,15 +69,52 @@ service cloud.firestore {
         && request.resource.data.departureDate is string
         && request.resource.data.message is string;
 
+
       allow read:
         if request.auth != null
         && resource.data.requesterId == request.auth.uid;
 
-      allow update, delete: if false;
+
+      allow update, delete:
+        if false;
     }
 
-    match /{document=**} {
-      allow read, write: if false;
+
+    /*
+     * =========================================
+     * LOGEMENTS / ANNONCES
+     * =========================================
+     *
+     * Pour le moment :
+     * - tout le monde peut lire les annonces
+     * - personne ne peut les modifier depuis
+     *   l'application
+     *
+     * Plus tard, quand Sohyung fera le parcours
+     * annonceur, on autorisera le propriétaire
+     * à créer/modifier ses propres annonces.
+     */
+    match /listings/{listingId} {
+
+      allow read:
+        if true;
+
+      allow create, update, delete:
+        if false;
     }
+
+
+    /*
+     * =========================================
+     * TOUT LE RESTE INTERDIT
+     * =========================================
+     */
+    match /{document=**} {
+
+      allow read, write:
+        if false;
+    }
+
   }
+
 }

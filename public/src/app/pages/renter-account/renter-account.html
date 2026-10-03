@@ -7,7 +7,7 @@
 
 
     <!-- =========================
-         MENU DU COMPTE PARTAGÉ
+         MENU DU COMPTE
     ========================== -->
 
     <app-account-sidebar active="reservations" />
@@ -26,56 +26,155 @@
 
 
       <!-- =========================
-           RÉSERVATION À VENIR
+           CHARGEMENT
       ========================== -->
 
-      <article class="upcoming-card">
+      @if (loadingBookings()) {
 
-        <img
-          src="/images/rental/property-1/Umeus.png"
-          alt="Charmant studio-loft"
-          class="upcoming-image"
-        />
+        <div class="booking-state">
+          Chargement de vos demandes...
+        </div>
 
-
-        <div class="upcoming-info">
-
-          <span class="confirmed-badge">
-            CONFIRMÉ
-          </span>
+      }
 
 
-          <h2>
-            Charmant studio-loft
-          </h2>
+      <!-- =========================
+           ERREUR
+      ========================== -->
 
+      @else if (bookingError()) {
+
+        <div class="booking-state booking-state-error">
+          {{ bookingError() }}
+        </div>
+
+      }
+
+
+      <!-- =========================
+           AUCUNE DEMANDE
+      ========================== -->
+
+      @else if (bookings().length === 0) {
+
+        <div class="booking-state">
+
+          <strong>
+            Aucune demande pour le moment.
+          </strong>
 
           <p>
-            Période de location :
-            1er mai 2026 – 1er novembre 2026
-            · Proposé par Lucas
+            Recherchez un logement puis contactez l’annonceur pour envoyer votre première demande.
           </p>
 
-        </div>
-
-
-        <div class="upcoming-actions">
-
-          <span class="booking-id">
-            ID : FLT-881903
-          </span>
-
-
-          <button
-            type="button"
-            class="manage-button"
+          <a
+            routerLink="/rental-search-results"
+            class="manage-button empty-booking-button"
           >
-            Gérer le bail
-          </button>
+            Rechercher un logement
+          </a>
 
         </div>
 
-      </article>
+      }
+
+
+      <!-- =========================
+           VRAIES DEMANDES FIRESTORE
+      ========================== -->
+
+      @else {
+
+        <div class="bookings-list">
+
+          @for (
+            booking of bookings();
+            track booking.id
+          ) {
+
+            <article class="upcoming-card">
+
+
+              <!-- IMAGE -->
+
+              <img
+                [src]="getListingImage(booking.listingId)"
+                [alt]="getListingTitle(booking.listingId)"
+                class="upcoming-image"
+              />
+
+
+              <!-- INFORMATIONS -->
+
+              <div class="upcoming-info">
+
+                <span
+                  [class]="getStatusClass(booking.status)"
+                >
+                  {{ getStatusLabel(booking.status) }}
+                </span>
+
+
+                <h2>
+                  {{ getListingTitle(booking.listingId) }}
+                </h2>
+
+
+                <p>
+
+                  Période de location :
+
+                  {{ formatDate(booking.arrivalDate) }}
+
+                  –
+
+                  {{ formatDate(booking.departureDate) }}
+
+                  · Proposé par
+
+                  {{ booking.ownerName || 'Annonceur BailLyon' }}
+
+                </p>
+
+              </div>
+
+
+              <!-- ACTIONS -->
+
+              <div class="upcoming-actions">
+
+                <span class="booking-id">
+                  ID : {{ booking.id }}
+                </span>
+
+
+                <button
+                  type="button"
+                  class="manage-button"
+                  routerLink="/messages"
+                >
+
+                  @if (booking.status === 'accepted') {
+
+                    Gérer le bail
+
+                  } @else {
+
+                    Voir la conversation
+
+                  }
+
+                </button>
+
+              </div>
+
+            </article>
+
+          }
+
+        </div>
+
+      }
 
 
       <!-- =========================
@@ -118,7 +217,7 @@
           class="all-favorites-button"
           routerLink="/saved-listings"
         >
-          Voir tous les favoris (12)
+          Voir tous les favoris ({{ favoriteCount }})
         </button>
 
       </div>
@@ -126,6 +225,7 @@
 
       <!-- =========================
            LISTE FAVORIS
+           encore temporairement fictive
       ========================== -->
 
       <div class="favorites-grid">
@@ -137,8 +237,6 @@
 
           <article class="favorite-card">
 
-
-            <!-- IMAGE -->
 
             <div class="favorite-image-wrapper">
 
@@ -181,8 +279,6 @@
 
             </div>
 
-
-            <!-- INFORMATIONS -->
 
             <div class="favorite-content">
 

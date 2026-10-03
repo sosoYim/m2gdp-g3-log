@@ -1,68 +1,94 @@
-<header class="w-full bg-white border-b border-gray-100">
+@if (authReady()) {
 
-  <nav
-    class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8"
-  >
+  @if (isAuthenticated()) {
 
-    <!-- Logo -->
-    <a href="/" class="brand">
+    <!-- =====================================
+         UTILISATEUR CONNECTÉ
+    ====================================== -->
 
-      <img
-        src="/images/landing/features/App.svg"
-        alt="Logo BailLyon"
-        class="brand-logo"
-      />
-
-      <span class="brand-name">
-        <span class="brand-bail">Bail</span><span class="brand-lyon">Lyon</span>
-      </span>
-
-    </a>
+    <app-user-navbar />
 
 
-    <!-- Navigation desktop -->
-    <div class="hidden items-center gap-8 text-sm text-gray-700 md:flex">
+  } @else {
 
-      <a href="#accueil" class="font-semibold text-[#7134f5]">
-        Accueil
-      </a>
+    <!-- =====================================
+         UTILISATEUR NON CONNECTÉ
+    ====================================== -->
 
-      <a
-        href="#services"
-        class="transition hover:text-[#7134f5]"
+    <header class="w-full bg-white border-b border-gray-100">
+
+      <nav
+        class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8"
       >
-        Services
-      </a>
 
-      <a
-        href="#apropos"
-        class="transition hover:text-[#7134f5]"
-      >
-        À propos
-      </a>
+        <!-- Logo -->
+        <a href="/" class="brand">
 
-    </div>
+          <img
+            src="/images/landing/features/App.svg"
+            alt="Logo BailLyon"
+            class="brand-logo"
+          />
 
+          <span class="brand-name">
+            <span class="brand-bail">Bail</span><span class="brand-lyon">Lyon</span>
+          </span>
 
-    <!-- Action -->
-    <div class="flex items-center">
-
-      <button
-        type="button"
-        (click)="openAuth()"
-        class="rounded-lg bg-[#7134f5] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#5f24df]"
-      >
-        Se connecter ou s'inscrire
-      </button>
-
-    </div>
-
-  </nav>
-
-</header>
+        </a>
 
 
-<app-auth-modal
-  [isOpen]="authModalOpen()"
-  (closed)="closeAuthModal()"
-/>
+        <!-- Navigation desktop -->
+        <div
+          class="hidden items-center gap-8 text-sm text-gray-700 md:flex"
+        >
+
+          <a
+            href="#accueil"
+            class="font-semibold text-[#7134f5]"
+          >
+            Accueil
+          </a>
+
+          <a
+            href="#services"
+            class="transition hover:text-[#7134f5]"
+          >
+            Services
+          </a>
+
+          <a
+            href="#apropos"
+            class="transition hover:text-[#7134f5]"
+          >
+            À propos
+          </a>
+
+        </div>
+
+
+        <!-- Connexion -->
+        <div class="flex items-center">
+
+          <button
+            type="button"
+            (click)="openAuth()"
+            class="rounded-lg bg-[#7134f5] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#5f24df]"
+          >
+            Se connecter ou s'inscrire
+          </button>
+
+        </div>
+
+      </nav>
+
+    </header>
+
+
+    <app-auth-modal
+      [isOpen]="authModalOpen()"
+      (closed)="closeAuthModal()"
+    />
+
+  }
+
+}

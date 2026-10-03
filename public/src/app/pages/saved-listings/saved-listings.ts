@@ -1,4 +1,9 @@
-import { Component } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit
+} from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -8,15 +13,27 @@ import { AccountSidebar } from '../../shared/components/account-sidebar/account-
 import { ContactSection } from '../landing/components/contact-section/contact-section';
 import { Footer } from '../landing/components/footer/footer';
 
+import { Auth } from '../../core/auth/auth';
+
+import {
+  Favorite,
+  FavoriteListing
+} from '../../core/favorite/favorite';
+
 
 interface SavedListing {
-  id: number;
+  id: string;
+
   title: string;
   location: string;
   details: string;
+
   price: number;
   rating: number;
+
   image: string;
+
+  createdAt: number;
 }
 
 
@@ -36,43 +53,108 @@ interface SavedListing {
   templateUrl: './saved-listings.html',
   styleUrl: './saved-listings.css'
 })
-export class SavedListings {
+export class SavedListings implements OnInit {
 
   sortOption = 'recent';
 
   visibleCount = 6;
 
 
-  savedListings: SavedListing[] =
-    Array.from(
-      { length: 12 },
-      (_, index) => ({
-        id: index + 1,
-
-        title:
-          'Charmant studio-loft',
-
-        location:
-          'LYON, ARRONDISSEMENT 2',
-
-        details:
-          'Meublé · 22 m² · 1 pièce',
-
-        price:
-          650 + (index % 3) * 20,
-
-        rating:
-          4.9,
-
-        image:
-          '/images/landing/Umeus-Harmounikahusene.jpg'
-      })
-    );
+  savedListings: SavedListing[] = [];
 
 
   constructor(
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly authService: Auth,
+    private readonly favoriteService: Favorite,
+    private readonly cdr: ChangeDetectorRef
   ) {}
+
+
+  async ngOnInit(): Promise<void> {
+
+    try {
+
+      /*
+       * On attend Firebase Auth.
+       */
+      const user =
+        await this.authService.waitForAuthState();
+
+
+      if (!user) {
+
+        this.savedListings = [];
+
+        return;
+
+      }
+
+
+      /*
+       * Lecture des vrais favoris Firestore.
+       */
+      const favorites =
+        await this.favoriteService.getFavorites(
+          user.uid
+        );
+
+
+      /*
+       * Transformation pour garder
+       * exactement le format utilisé
+       * par cette page.
+       */
+      this.savedListings =
+        favorites.map(
+          (
+            favorite: FavoriteListing
+          ): SavedListing => ({
+
+            id:
+              favorite.listingId,
+
+            title:
+              favorite.title,
+
+            location:
+              favorite.location,
+
+            details:
+              favorite.details,
+
+            price:
+              favorite.price,
+
+            rating:
+              favorite.rating,
+
+            image:
+              favorite.image,
+
+            createdAt:
+              favorite.createdAt?.toMillis() ?? 0
+
+          })
+        );
+
+
+      this.cdr.detectChanges();
+
+
+    } catch (error) {
+
+      console.error(
+        'Erreur chargement favoris :',
+        error
+      );
+
+
+      this.savedListings = [];
+
+    }
+
+  }
 
 
   get visibleListings(): SavedListing[] {
@@ -81,6 +163,9 @@ export class SavedListings {
       [...this.savedListings];
 
 
+    /*
+     * Prix croissant
+     */
     if (
       this.sortOption === 'price-low'
     ) {
@@ -93,6 +178,9 @@ export class SavedListings {
     }
 
 
+    /*
+     * Prix décroissant
+     */
     if (
       this.sortOption === 'price-high'
     ) {
@@ -105,13 +193,16 @@ export class SavedListings {
     }
 
 
+    /*
+     * Ajout récent
+     */
     if (
       this.sortOption === 'recent'
     ) {
 
       listings.sort(
         (a, b) =>
-          b.id - a.id
+          b.createdAt - a.createdAt
       );
 
     }
@@ -142,19 +233,56 @@ export class SavedListings {
   }
 
 
-  removeFavorite(
+  async removeFavorite(
     event: MouseEvent,
-    listingId: number
-  ): void {
+    listingId: string
+  ): Promise<void> {
 
     event.stopPropagation();
 
 
-    this.savedListings =
-      this.savedListings.filter(
-        listing =>
-          listing.id !== listingId
+    const user =
+      this.authService.getCurrentUser();
+
+
+    if (!user) {
+      return;
+    }
+
+
+    try {
+
+      /*
+       * Suppression réelle Firestore.
+       */
+      await this.favoriteService.removeFavorite(
+        user.uid,
+        listingId
       );
+
+
+      /*
+       * Suppression immédiate
+       * dans l'interface.
+       */
+      this.savedListings =
+        this.savedListings.filter(
+          listing =>
+            listing.id !== listingId
+        );
+
+
+      this.cdr.detectChanges();
+
+
+    } catch (error) {
+
+      console.error(
+        'Erreur suppression favori :',
+        error
+      );
+
+    }
 
   }
 

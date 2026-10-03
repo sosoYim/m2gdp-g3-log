@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   OnInit,
   inject,
@@ -9,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 
 import {
   ActivatedRoute,
+  Router,
   RouterLink
 } from '@angular/router';
 
@@ -19,6 +21,8 @@ import { Footer } from '../landing/components/footer/footer';
 
 import { Auth } from '../../core/auth/auth';
 import { Booking } from '../../core/booking/booking';
+import { Messaging } from '../../core/messaging/messaging';
+import { Listing } from '../../core/listing/listing';
 
 
 @Component({
@@ -43,6 +47,10 @@ export class BookingRequest implements OnInit {
     ActivatedRoute
   );
 
+  private readonly router = inject(
+    Router
+  );
+
   private readonly authService = inject(
     Auth
   );
@@ -51,42 +59,70 @@ export class BookingRequest implements OnInit {
     Booking
   );
 
+  private readonly messagingService = inject(
+    Messaging
+  );
+
+  private readonly listingService = inject(
+    Listing
+  );
+
+  private readonly cdr = inject(
+    ChangeDetectorRef
+  );
+
 
   listingId = '';
 
   arrivalDate = '';
+
   departureDate = '';
 
-  message =
-    'Bonjour Lucas, je suis intéressé(e) par votre logement.\nEst-il disponible aux dates indiquées ?';
+
+  message = '';
 
 
   loading = signal(false);
+
+  loadingListing = signal(true);
 
   errorMessage = signal('');
 
   successMessage = signal('');
 
 
+  /*
+   * Informations du logement
+   * récupérées depuis Firestore.
+   */
   listing = {
-    title: 'Charmant studio-loft',
-    owner: 'Lucas',
-    image: '/images/rental/property-1/Umeus.png'
+
+    title: '',
+
+    ownerId: '',
+
+    owner: '',
+
+    image: ''
+
   };
 
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
 
     /*
-     * ID du logement
+     * =========================================
+     * ID DU LOGEMENT
+     * =========================================
      */
     this.listingId =
       this.route.snapshot.paramMap.get('id') ?? '';
 
 
     /*
-     * Dates transmises depuis
-     * la recherche / fiche logement
+     * =========================================
+     * DATES
+     * =========================================
      */
     this.route.queryParamMap.subscribe(
       params => {
@@ -98,27 +134,24 @@ export class BookingRequest implements OnInit {
           params.get('departure');
 
 
-        /*
-         * Cas normal :
-         * les dates sont dans l'URL.
-         */
         if (arrival) {
-          this.arrivalDate = arrival;
+
+          this.arrivalDate =
+            arrival;
+
         }
 
 
         if (departure) {
-          this.departureDate = departure;
+
+          this.departureDate =
+            departure;
+
         }
 
 
         /*
-         * Cas Magic Link :
-         * après connexion, les query params
-         * peuvent ne plus être présents.
-         *
-         * On récupère alors les dates
-         * mémorisées dans localStorage.
+         * Retour éventuel après Magic Link.
          */
         if (!this.arrivalDate) {
 
@@ -141,8 +174,7 @@ export class BookingRequest implements OnInit {
 
 
         /*
-         * Une fois récupérées,
-         * on nettoie les valeurs temporaires.
+         * Nettoyage du stockage temporaire.
          */
         if (this.arrivalDate) {
 
@@ -164,15 +196,123 @@ export class BookingRequest implements OnInit {
       }
     );
 
+
+    /*
+     * =========================================
+     * CHARGEMENT DU LOGEMENT FIRESTORE
+     * =========================================
+     */
+    await this.loadListing();
+
   }
 
 
+  private async loadListing(): Promise<void> {
+
+    this.loadingListing.set(true);
+
+    this.errorMessage.set('');
+
+
+    try {
+
+      const firestoreListing =
+        await this.listingService.getListingById(
+          this.listingId
+        );
+
+
+      if (!firestoreListing) {
+
+        this.errorMessage.set(
+          'Ce logement est introuvable.'
+        );
+
+        return;
+
+      }
+
+
+      if (
+        firestoreListing.status !==
+        'published'
+      ) {
+
+        this.errorMessage.set(
+          'Ce logement n’est plus disponible.'
+        );
+
+        return;
+
+      }
+
+
+      /*
+       * =========================================
+       * DONNÉES RÉELLES DE L'ANNONCE
+       * =========================================
+       */
+      this.listing = {
+
+        title:
+          firestoreListing.title,
+
+        ownerId:
+          firestoreListing.ownerId,
+
+        owner:
+          firestoreListing.ownerName,
+
+        image:
+          firestoreListing.image
+
+      };
+
+
+      /*
+       * Message initial dynamique.
+       */
+      this.message =
+        `Bonjour ${firestoreListing.ownerName}, je suis intéressé(e) par votre logement.\nEst-il disponible aux dates indiquées ?`;
+
+
+    } catch (error) {
+
+      console.error(
+        'Erreur chargement logement :',
+        error
+      );
+
+
+      this.errorMessage.set(
+        'Impossible de charger ce logement.'
+      );
+
+
+    } finally {
+
+      this.loadingListing.set(false);
+
+      this.cdr.detectChanges();
+
+    }
+
+  }
+
+
+  /*
+   * =========================================
+   * FORMATAGE DES DATES
+   * =========================================
+   */
   formatDate(
     date: string
   ): string {
 
     if (!date) {
+
       return 'Choisir une date';
+
     }
 
 
@@ -188,9 +328,15 @@ export class BookingRequest implements OnInit {
   }
 
 
+  /*
+   * =========================================
+   * ENVOYER UNE DEMANDE
+   * =========================================
+   */
   async sendRequest(): Promise<void> {
 
     this.errorMessage.set('');
+
     this.successMessage.set('');
 
 
@@ -205,6 +351,26 @@ export class BookingRequest implements OnInit {
       );
 
       return;
+
+    }
+
+
+    /*
+     * Vérifier que l'annonce
+     * a bien été chargée.
+     */
+    if (
+      !this.listingId ||
+      !this.listing.title ||
+      !this.listing.owner
+    ) {
+
+      this.errorMessage.set(
+        'Impossible de récupérer les informations du logement.'
+      );
+
+      return;
+
     }
 
 
@@ -215,6 +381,7 @@ export class BookingRequest implements OnInit {
       );
 
       return;
+
     }
 
 
@@ -225,11 +392,13 @@ export class BookingRequest implements OnInit {
       );
 
       return;
+
     }
 
 
     if (
-      this.departureDate <= this.arrivalDate
+      this.departureDate <=
+      this.arrivalDate
     ) {
 
       this.errorMessage.set(
@@ -237,6 +406,7 @@ export class BookingRequest implements OnInit {
       );
 
       return;
+
     }
 
 
@@ -247,6 +417,7 @@ export class BookingRequest implements OnInit {
       );
 
       return;
+
     }
 
 
@@ -255,38 +426,153 @@ export class BookingRequest implements OnInit {
       this.loading.set(true);
 
 
+      /*
+       * =========================================
+       * ANTI-DOUBLON
+       * =========================================
+       */
+      const alreadyExists =
+        await this.bookingService.hasPendingRequest(
+          user.uid,
+          this.listingId,
+          this.arrivalDate,
+          this.departureDate
+        );
+
+
+      if (alreadyExists) {
+
+        this.errorMessage.set(
+          'Vous avez déjà une demande en attente pour ce logement à ces dates.'
+        );
+
+        return;
+
+      }
+
+
+      /*
+       * =========================================
+       * 1. BOOKING REQUEST FIRESTORE
+       * =========================================
+       */
       const requestId =
-        await this.bookingService.createRequest({
+        await this.bookingService.createRequest(
+          {
 
-          listingId:
-            this.listingId,
+            listingId:
+              this.listingId,
 
-          requesterId:
-            user.uid,
+            requesterId:
+              user.uid,
 
-          ownerName:
-            this.listing.owner,
+            /*
+             * UID Firebase de l'annonceur.
+             */
+            ownerId:
+              this.listing.ownerId,
 
-          arrivalDate:
-            this.arrivalDate,
+            ownerName:
+              this.listing.owner,
 
-          departureDate:
-            this.departureDate,
+            arrivalDate:
+              this.arrivalDate,
 
-          message:
-            this.message
+            departureDate:
+              this.departureDate,
 
-        });
+            message:
+              this.message
 
-
-      console.log(
-        'Demande créée :',
-        requestId
-      );
+          }
+        );
 
 
-      this.successMessage.set(
-        'Votre demande a bien été envoyée à Lucas.'
+      /*
+       * =========================================
+       * 2. CONVERSATION REALTIME DATABASE
+       * =========================================
+       */
+      try {
+
+        await this.messagingService.createConversation(
+          {
+
+            bookingRequestId:
+              requestId,
+
+            requesterId:
+              user.uid,
+
+            /*
+             * IMPORTANT :
+             * ownerId est aussi enregistré
+             * dans la conversation.
+             */
+            ownerId:
+              this.listing.ownerId,
+
+            listingId:
+              this.listingId,
+
+            listingTitle:
+              this.listing.title,
+
+            ownerName:
+              this.listing.owner
+
+          }
+        );
+
+
+        /*
+         * Premier message de la conversation.
+         */
+        await this.messagingService.sendMessage(
+          requestId,
+          user.uid,
+          this.message
+        );
+
+
+      } catch (messagingError) {
+
+        /*
+         * Si la conversation échoue,
+         * la demande Firestore existe déjà.
+         */
+        console.error(
+          'Erreur création conversation :',
+          messagingError
+        );
+
+      }
+
+
+      /*
+       * =========================================
+       * 3. CONFIRMATION
+       * =========================================
+       */
+      await this.router.navigate(
+        [
+          '/booking-confirmation',
+          this.listingId
+        ],
+        {
+          queryParams: {
+
+            arrival:
+              this.arrivalDate,
+
+            departure:
+              this.departureDate,
+
+            requestId:
+              requestId
+
+          }
+        }
       );
 
 

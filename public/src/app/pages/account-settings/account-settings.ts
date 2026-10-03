@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   OnInit,
   signal
@@ -39,11 +40,11 @@ import {
 })
 export class AccountSettings implements OnInit {
 
-  firstName = 'Alice';
+  firstName = '';
 
-  lastName = 'Martin';
+  lastName = '';
 
-  email = 'alice.martin@gmail.com';
+  email = '';
 
 
   currentRole =
@@ -70,7 +71,8 @@ export class AccountSettings implements OnInit {
   constructor(
     private readonly router: Router,
     private readonly authService: Auth,
-    private readonly profileService: Profile
+    private readonly profileService: Profile,
+    private readonly cdr: ChangeDetectorRef
   ) {}
 
 
@@ -78,30 +80,65 @@ export class AccountSettings implements OnInit {
 
     try {
 
+      /*
+       * On attend que Firebase ait terminé
+       * la restauration de la session.
+       */
       const user =
         await this.authService.waitForAuthState();
 
 
+      /*
+       * Aucun utilisateur connecté.
+       */
       if (!user) {
         return;
       }
 
 
+      /*
+       * L'adresse e-mail officielle vient
+       * toujours de Firebase Authentication.
+       */
       this.email =
-        user.email ?? this.email;
+        user.email ?? '';
 
 
+      /*
+       * Firebase fonctionne en dehors du cycle
+       * de détection Angular dans notre configuration.
+       * On force donc immédiatement l'affichage
+       * de l'adresse e-mail.
+       */
+      this.cdr.detectChanges();
+
+
+      /*
+       * Chargement des informations complémentaires
+       * depuis Firestore.
+       */
       const profile =
         await this.profileService.getProfile(
           user.uid
         );
 
 
+      /*
+       * Le compte Firebase peut exister sans
+       * document de profil Firestore.
+       */
       if (!profile) {
+
+        this.cdr.detectChanges();
+
         return;
+
       }
 
 
+      /*
+       * Prénom
+       */
       if (profile.firstName) {
 
         this.firstName =
@@ -110,6 +147,9 @@ export class AccountSettings implements OnInit {
       }
 
 
+      /*
+       * Nom
+       */
       if (profile.lastName) {
 
         this.lastName =
@@ -118,14 +158,9 @@ export class AccountSettings implements OnInit {
       }
 
 
-      if (profile.email) {
-
-        this.email =
-          profile.email;
-
-      }
-
-
+      /*
+       * Rôle
+       */
       if (profile.role) {
 
         this.currentRole.set(
@@ -134,12 +169,27 @@ export class AccountSettings implements OnInit {
 
       }
 
+
+      /*
+       * Actualisation de l'interface après
+       * le chargement asynchrone Firestore.
+       */
+      this.cdr.detectChanges();
+
+
     } catch (error) {
 
       console.error(
         'Erreur chargement paramètres :',
         error
       );
+
+
+      /*
+       * Permet également d'afficher l'e-mail
+       * Firebase si Firestore rencontre une erreur.
+       */
+      this.cdr.detectChanges();
 
     }
 
@@ -153,13 +203,28 @@ export class AccountSettings implements OnInit {
     this.errorMessage.set('');
 
 
-    if (
-      !this.firstName.trim() ||
-      !this.lastName.trim()
-    ) {
+    const firstName =
+      this.firstName.trim();
+
+    const lastName =
+      this.lastName.trim();
+
+
+    if (!firstName) {
 
       this.errorMessage.set(
-        'Veuillez renseigner votre prénom et votre nom.'
+        'Veuillez renseigner votre prénom.'
+      );
+
+      return;
+
+    }
+
+
+    if (!lastName) {
+
+      this.errorMessage.set(
+        'Veuillez renseigner votre nom.'
       );
 
       return;
@@ -190,14 +255,15 @@ export class AccountSettings implements OnInit {
       await this.profileService.saveProfile(
         user.uid,
         {
-          firstName:
-            this.firstName,
+          firstName,
+          lastName,
 
-          lastName:
-            this.lastName,
-
+          /*
+           * L'e-mail sauvegardé reste synchronisé
+           * avec Firebase Authentication.
+           */
           email:
-            user.email ?? this.email,
+            user.email ?? '',
 
           role:
             this.currentRole()
@@ -208,6 +274,7 @@ export class AccountSettings implements OnInit {
       this.successMessage.set(
         'Vos modifications ont bien été enregistrées.'
       );
+
 
     } catch (error) {
 
@@ -220,6 +287,7 @@ export class AccountSettings implements OnInit {
       this.errorMessage.set(
         'Impossible d’enregistrer vos modifications.'
       );
+
 
     } finally {
 
@@ -234,6 +302,12 @@ export class AccountSettings implements OnInit {
     role: UserRole
   ): Promise<void> {
 
+    this.errorMessage.set('');
+
+
+    /*
+     * Mise à jour immédiate de l'interface.
+     */
     this.currentRole.set(
       role
     );
@@ -244,7 +318,13 @@ export class AccountSettings implements OnInit {
 
 
     if (!user) {
+
+      this.errorMessage.set(
+        'Vous devez être connecté pour changer de rôle.'
+      );
+
       return;
+
     }
 
 
@@ -255,11 +335,17 @@ export class AccountSettings implements OnInit {
         role
       );
 
+
     } catch (error) {
 
       console.error(
         'Erreur changement de rôle :',
         error
+      );
+
+
+      this.errorMessage.set(
+        'Impossible de modifier votre rôle.'
       );
 
     }
@@ -271,20 +357,13 @@ export class AccountSettings implements OnInit {
 
     try {
 
-      const user =
-        this.authService.getCurrentUser();
-
-
-      if (user) {
-
-        await this.authService.logout();
-
-      }
+      await this.authService.logout();
 
 
       await this.router.navigate([
         '/'
       ]);
+
 
     } catch (error) {
 
@@ -300,6 +379,9 @@ export class AccountSettings implements OnInit {
 
   deleteAccount(): void {
 
+    /*
+     * Fonctionnalité à implémenter plus tard.
+     */
     console.log(
       'Suppression du compte à implémenter.'
     );

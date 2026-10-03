@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   OnInit,
   inject
@@ -13,6 +14,8 @@ import { UserNavbar } from '../../shared/components/user-navbar/user-navbar';
 
 import { ContactSection } from '../landing/components/contact-section/contact-section';
 import { Footer } from '../landing/components/footer/footer';
+
+import { Listing } from '../../core/listing/listing';
 
 
 @Component({
@@ -39,37 +42,61 @@ export class BookingConfirmation implements OnInit {
     Router
   );
 
+  private readonly listingService = inject(
+    Listing
+  );
 
-  listingId = '1';
+  private readonly cdr = inject(
+    ChangeDetectorRef
+  );
+
+
+  listingId = '';
+
+  requestId = '';
 
   arrivalDate = '';
+
   departureDate = '';
 
 
+  /*
+   * Plus aucune donnée logement
+   * codée en dur ici.
+   */
   listing = {
 
-    title: 'Charmant studio-loft',
+    title: '',
 
-    location: 'Lyon 2e',
+    location: '',
 
-    details: 'Meublé · 22 m²',
+    details: '',
 
-    owner: 'Lucas',
+    owner: '',
 
-    price: 650,
+    price: 0,
 
-    image:
-      '/images/rental/property-1/Umeus.png'
+    image: ''
 
   };
 
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
 
+    /*
+     * =========================================
+     * ID DU LOGEMENT
+     * =========================================
+     */
     this.listingId =
-      this.route.snapshot.paramMap.get('id') ?? '1';
+      this.route.snapshot.paramMap.get('id') ?? '';
 
 
+    /*
+     * =========================================
+     * PARAMÈTRES DE LA DEMANDE
+     * =========================================
+     */
     this.route.queryParamMap.subscribe(
       params => {
 
@@ -79,8 +106,97 @@ export class BookingConfirmation implements OnInit {
         this.departureDate =
           params.get('departure') ?? '';
 
+
+        /*
+         * ID réel de la bookingRequest.
+         *
+         * Il correspond également
+         * à l'ID de la conversation RTDB.
+         */
+        this.requestId =
+          params.get('requestId') ?? '';
+
       }
     );
+
+
+    /*
+     * =========================================
+     * CHARGEMENT DU LOGEMENT FIRESTORE
+     * =========================================
+     */
+    await this.loadListing();
+
+  }
+
+
+  private async loadListing(): Promise<void> {
+
+    if (!this.listingId) {
+
+      return;
+
+    }
+
+
+    try {
+
+      const firestoreListing =
+        await this.listingService.getListingById(
+          this.listingId
+        );
+
+
+      if (!firestoreListing) {
+
+        console.error(
+          'Logement introuvable :',
+          this.listingId
+        );
+
+        return;
+
+      }
+
+
+      /*
+       * Toutes les informations principales
+       * viennent maintenant de Firestore.
+       */
+      this.listing = {
+
+        title:
+          firestoreListing.title,
+
+        location:
+          firestoreListing.location,
+
+        details:
+          firestoreListing.details,
+
+        owner:
+          firestoreListing.ownerName,
+
+        price:
+          firestoreListing.price,
+
+        image:
+          firestoreListing.image
+
+      };
+
+
+      this.cdr.detectChanges();
+
+
+    } catch (error) {
+
+      console.error(
+        'Erreur chargement logement :',
+        error
+      );
+
+    }
 
   }
 
@@ -90,12 +206,16 @@ export class BookingConfirmation implements OnInit {
   ): string {
 
     if (!date) {
+
       return 'Non définie';
+
     }
 
 
     const parsedDate =
-      new Date(`${date}T00:00:00`);
+      new Date(
+        `${date}T00:00:00`
+      );
 
 
     return new Intl.DateTimeFormat(
@@ -105,7 +225,9 @@ export class BookingConfirmation implements OnInit {
         month: 'short',
         year: 'numeric'
       }
-    ).format(parsedDate);
+    ).format(
+      parsedDate
+    );
 
   }
 
@@ -113,13 +235,38 @@ export class BookingConfirmation implements OnInit {
   async openConversation(): Promise<void> {
 
     /*
-     * La vraie messagerie
-     * sera branchée plus tard.
+     * Si on possède l'ID réel
+     * de la demande, on ouvre directement
+     * la bonne conversation.
      */
-    console.log(
-      'Ouvrir conversation avec',
-      this.listing.owner
-    );
+    if (this.requestId) {
+
+      await this.router.navigate(
+        [
+          '/messages'
+        ],
+        {
+          queryParams: {
+
+            conversationId:
+              this.requestId
+
+          }
+        }
+      );
+
+      return;
+
+    }
+
+
+    /*
+     * Compatibilité avec les anciennes
+     * demandes sans requestId.
+     */
+    await this.router.navigate([
+      '/messages'
+    ]);
 
   }
 
@@ -127,7 +274,9 @@ export class BookingConfirmation implements OnInit {
   async backToListings(): Promise<void> {
 
     await this.router.navigate(
-      ['/rental-search-results'],
+      [
+        '/rental-search-results'
+      ],
       {
         queryParams: {
 

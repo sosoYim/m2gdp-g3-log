@@ -69,7 +69,7 @@
           </div>
 
 
-          <!-- Conversations -->
+          <!-- Liste des conversations -->
 
           <div class="conversation-list">
 
@@ -90,10 +90,14 @@
                 )"
               >
 
+                <!-- Avatar -->
+
                 <span class="conversation-avatar">
                   {{ conversation.initial }}
                 </span>
 
+
+                <!-- Informations -->
 
                 <span class="conversation-info">
 
@@ -134,6 +138,35 @@
 
             }
 
+
+            <!-- Aucune conversation -->
+
+            @if (filteredConversations.length === 0) {
+
+              <div
+                style="
+                  padding: 30px 18px;
+                  text-align: center;
+                  color: #85899b;
+                  font-size: 12px;
+                  line-height: 1.5;
+                "
+              >
+
+                @if (searchTerm.trim()) {
+
+                  Aucune conversation trouvée.
+
+                } @else {
+
+                  Aucune conversation pour le moment.
+
+                }
+
+              </div>
+
+            }
+
           </div>
 
         </aside>
@@ -143,221 +176,289 @@
              CHAT
         ========================== -->
 
-        <section class="chat-panel">
+        @if (hasConversations) {
+
+          <section class="chat-panel">
 
 
-          <!-- Header -->
+            <!-- =========================
+                 HEADER
+            ========================== -->
 
-          <header class="chat-header">
+            <header class="chat-header">
 
-            <div class="chat-user">
+              <div class="chat-user">
 
-              <span class="chat-avatar">
-                {{ selectedConversation.initial }}
-              </span>
-
-
-              <div>
-
-                <h2>
-                  {{ selectedConversation.name }}
-                </h2>
-
-                <p>
-                  Propriétaire · ✓ Profil vérifié
-                </p>
-
-              </div>
-
-            </div>
+                <span class="chat-avatar">
+                  {{ selectedConversation.initial }}
+                </span>
 
 
-            <button
-              type="button"
-              class="listing-link"
-              (click)="openListing()"
-            >
-              Voir l’annonce →
-            </button>
+                <div>
 
-          </header>
+                  <h2>
+                    {{ selectedConversation.name }}
+                  </h2>
 
-
-          <!-- =========================
-               RÉSUMÉ DU LOGEMENT
-          ========================== -->
-
-          <div class="request-card">
-
-            <img
-              src="/images/rental/property-1/Umeus.png"
-              alt="Charmant studio-loft"
-            />
-
-
-            <div class="request-card-content">
-
-              <strong>
-                Charmant studio-loft ·
-                1er mai – 1er nov. 2026
-              </strong>
-
-              <span>
-                Demande envoyée ·
-                650 € / mois (exemple)
-              </span>
-
-            </div>
-
-
-            <span class="request-status">
-              EN ATTENTE
-            </span>
-
-          </div>
-
-
-          <!-- =========================
-               MESSAGES
-          ========================== -->
-
-          <div class="chat-body">
-
-            <p class="today-label">
-              Aujourd’hui
-            </p>
-
-
-            @for (
-              message of messages;
-              track message.id
-            ) {
-
-              <div
-                class="message-row"
-                [class.message-row-me]="
-                  message.sender === 'me'
-                "
-              >
-
-                <div
-                  class="message-bubble"
-                  [class.message-me]="
-                    message.sender === 'me'
-                  "
-                  [class.message-other]="
-                    message.sender === 'other'
-                  "
-                >
-
-                  {{ message.text }}
+                  <p>
+                    Propriétaire · ✓ Profil vérifié
+                  </p>
 
                 </div>
 
+              </div>
 
-                <span class="message-time">
 
-                  @if (
-                    message.sender === 'other'
-                  ) {
+              <button
+                type="button"
+                class="listing-link"
+                (click)="openListing()"
+              >
+                Voir l’annonce →
+              </button>
 
-                    Lucas ·
+            </header>
 
-                  }
 
-                  {{ message.time }}
+            <!-- =========================
+                 RÉSUMÉ DU LOGEMENT
+            ========================== -->
 
-                  @if (
-                    message.sender === 'me'
-                  ) {
+            <div class="request-card">
 
-                    · Lu
+              <img
+                src="/images/rental/property-1/Umeus.png"
+                [alt]="selectedConversation.listingTitle"
+              />
 
-                  }
 
+              <div class="request-card-content">
+
+                <strong>
+                  {{ selectedConversation.listingTitle }}
+                </strong>
+
+                <span>
+                  Demande envoyée
                 </span>
 
               </div>
 
-            }
 
-          </div>
+              <span class="request-status">
+                EN ATTENTE
+              </span>
 
-
-          <!-- =========================
-               INFORMATION PAIEMENT
-          ========================== -->
-
-          <div class="payment-note">
-
-            <span>
-              i
-            </span>
+            </div>
 
 
-            <p>
+            <!-- =========================
+                 MESSAGES
+            ========================== -->
 
-              Le loyer est réglé directement entre vous.
-
-              <strong>
-                Aucun paiement sur BailLyon.
-              </strong>
-
-            </p>
-
-          </div>
+            <div class="chat-body">
 
 
-          <!-- =========================
-               NOUVEAU MESSAGE
-          ========================== -->
+              @if (messages.length === 0) {
 
-          <form
-            class="message-form"
-            (ngSubmit)="sendMessage()"
-          >
+                <p class="today-label">
+                  Aucun message pour le moment.
+                </p>
 
-            <input
-              type="text"
-              name="message"
-              placeholder="Écrivez votre message..."
-              [(ngModel)]="messageText"
-              autocomplete="off"
-            />
+              } @else {
+
+                <p class="today-label">
+                  Aujourd’hui
+                </p>
 
 
-            <button
-              type="submit"
-              class="send-button"
-              aria-label="Envoyer le message"
+                @for (
+                  message of messages;
+                  track message.id
+                ) {
+
+                  <div
+                    class="message-row"
+                    [class.message-row-me]="
+                      message.sender === 'me'
+                    "
+                  >
+
+                    <!-- Bulle -->
+
+                    <div
+                      class="message-bubble"
+                      [class.message-me]="
+                        message.sender === 'me'
+                      "
+                      [class.message-other]="
+                        message.sender === 'other'
+                      "
+                    >
+
+                      {{ message.text }}
+
+                    </div>
+
+
+                    <!-- Heure -->
+
+                    <span class="message-time">
+
+                      @if (
+                        message.sender === 'other'
+                      ) {
+
+                        {{ selectedConversation.name }} ·
+
+                      }
+
+                      {{ message.time }}
+
+                      @if (
+                        message.sender === 'me'
+                      ) {
+
+                        · Envoyé
+
+                      }
+
+                    </span>
+
+                  </div>
+
+                }
+
+              }
+
+            </div>
+
+
+            <!-- =========================
+                 INFORMATION PAIEMENT
+            ========================== -->
+
+            <div class="payment-note">
+
+              <span>
+                i
+              </span>
+
+
+              <p>
+
+                Le loyer est réglé directement entre vous.
+
+                <strong>
+                  Aucun paiement sur BailLyon.
+                </strong>
+
+              </p>
+
+            </div>
+
+
+            <!-- =========================
+                 NOUVEAU MESSAGE
+            ========================== -->
+
+            <form
+              class="message-form"
+              (ngSubmit)="sendMessage()"
             >
 
-              <svg
-                viewBox="0 0 24 24"
-                aria-hidden="true"
+              <input
+                type="text"
+                name="message"
+                placeholder="Écrivez votre message..."
+                [(ngModel)]="messageText"
+                autocomplete="off"
+              />
+
+
+              <button
+                type="submit"
+                class="send-button"
+                aria-label="Envoyer le message"
               >
 
-                <path
-                  d="M22 2 11 13"
-                ></path>
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
 
-                <path
-                  d="
-                    M22 2
-                    15 22
-                    11 13
-                    2 9
-                    Z
-                  "
-                ></path>
+                  <path
+                    d="M22 2 11 13"
+                  ></path>
 
-              </svg>
+                  <path
+                    d="
+                      M22 2
+                      15 22
+                      11 13
+                      2 9
+                      Z
+                    "
+                  ></path>
 
-            </button>
+                </svg>
 
-          </form>
+              </button>
 
-        </section>
+            </form>
+
+          </section>
+
+
+        } @else {
+
+          <!-- =========================
+               AUCUNE CONVERSATION
+          ========================== -->
+
+          <section class="chat-panel">
+
+            <div
+              style="
+                min-height: 420px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 32px;
+                text-align: center;
+              "
+            >
+
+              <h2
+                style="
+                  margin: 0 0 10px;
+                  color: #171925;
+                  font-size: 20px;
+                  font-weight: 800;
+                "
+              >
+                Aucune conversation
+              </h2>
+
+
+              <p
+                style="
+                  max-width: 360px;
+                  margin: 0;
+                  color: #777c92;
+                  font-size: 13px;
+                  line-height: 1.6;
+                "
+              >
+                Vos conversations apparaîtront ici après l’envoi d’une demande de logement.
+              </p>
+
+            </div>
+
+          </section>
+
+        }
 
       </div>
 
