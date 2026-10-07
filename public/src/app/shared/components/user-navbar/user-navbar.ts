@@ -231,6 +231,14 @@ export class UserNavbar
 
       }
 
+      if (newRole === 'host') {
+
+        await this.router.navigate([
+          '/host/dashboard'
+        ]);
+
+      }
+
       return;
 
     }
@@ -274,17 +282,11 @@ export class UserNavbar
 
       /*
        * ANNONCEUR
-       *
-       * L'espace annonceur n'est pas encore
-       * développé par l'équipe UX.
-       *
-       * On revient temporairement sur
-       * la sélection du rôle.
        */
       if (newRole === 'host') {
 
         await this.router.navigate([
-          '/role-selection'
+          '/host/dashboard'
         ]);
 
       }

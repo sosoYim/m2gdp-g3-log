@@ -262,6 +262,114 @@ export class Booking {
 
   /*
    * =========================================
+   * DEMANDES REÇUES PAR L'ANNONCEUR
+   * =========================================
+   */
+  async getRequestsForOwner(
+    ownerId: string
+  ): Promise<BookingRequest[]> {
+
+    const bookingRequestsRef =
+      collection(
+        firestore,
+        'bookingRequests'
+      );
+
+
+    const ownerQuery =
+      query(
+        bookingRequestsRef,
+        where(
+          'ownerId',
+          '==',
+          ownerId
+        )
+      );
+
+
+    const snapshot =
+      await getDocs(
+        ownerQuery
+      );
+
+
+    const requests =
+      snapshot.docs.map(
+        documentSnapshot => {
+
+          const data =
+            documentSnapshot.data();
+
+
+          return {
+
+            id:
+              documentSnapshot.id,
+
+            listingId:
+              data['listingId'] ?? '',
+
+            requesterId:
+              data['requesterId'] ?? '',
+
+            ownerId:
+              data['ownerId'] ?? '',
+
+            ownerName:
+              data['ownerName'] ?? '',
+
+            arrivalDate:
+              data['arrivalDate'] ?? '',
+
+            departureDate:
+              data['departureDate'] ?? '',
+
+            message:
+              data['message'] ?? '',
+
+            status:
+              this.normalizeStatus(
+                data['status']
+              ),
+
+            createdAt:
+              data['createdAt'] instanceof Timestamp
+                ? data['createdAt']
+                : null,
+
+            updatedAt:
+              data['updatedAt'] instanceof Timestamp
+                ? data['updatedAt']
+                : null
+
+          } satisfies BookingRequest;
+
+        }
+      );
+
+
+    requests.sort(
+      (a, b) => {
+
+        const dateA =
+          a.createdAt?.toMillis() ?? 0;
+
+        const dateB =
+          b.createdAt?.toMillis() ?? 0;
+
+        return dateB - dateA;
+
+      }
+    );
+
+
+    return requests;
+
+  }
+
+
+  /*
+   * =========================================
    * ANTI-DOUBLON
    * =========================================
    */

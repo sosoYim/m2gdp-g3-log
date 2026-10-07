@@ -276,6 +276,116 @@ export class Listing {
 
   /*
    * =========================================
+   * LOGEMENTS PAR ANNONCEUR
+   * =========================================
+   */
+  async getListingsByOwner(
+    ownerId: string
+  ): Promise<ListingDocument[]> {
+
+    const listingsRef =
+      collection(
+        firestore,
+        'listings'
+      );
+
+
+    const ownerQuery =
+      query(
+        listingsRef,
+        where(
+          'ownerId',
+          '==',
+          ownerId
+        )
+      );
+
+
+    const snapshot =
+      await getDocs(
+        ownerQuery
+      );
+
+
+    return snapshot.docs.map(
+      documentSnapshot => {
+
+        const data =
+          documentSnapshot.data();
+
+
+        return {
+
+          id:
+            documentSnapshot.id,
+
+          title:
+            data['title'] ?? '',
+
+          location:
+            data['location'] ?? '',
+
+          latitude:
+            typeof data['latitude'] === 'number'
+              ? data['latitude']
+              : 0,
+
+          longitude:
+            typeof data['longitude'] === 'number'
+              ? data['longitude']
+              : 0,
+
+          details:
+            data['details'] ?? '',
+
+          price:
+            typeof data['price'] === 'number'
+              ? data['price']
+              : 0,
+
+          rating:
+            typeof data['rating'] === 'number'
+              ? data['rating']
+              : 0,
+
+          image:
+            data['image'] ?? '',
+
+          verified:
+            data['verified'] === true,
+
+          highlighted:
+            data['highlighted'] === true,
+
+          ownerId:
+            data['ownerId'] ?? '',
+
+          ownerName:
+            data['ownerName'] ?? '',
+
+          availableFrom:
+            data['availableFrom'] ?? '',
+
+          availableTo:
+            data['availableTo'] ?? '',
+
+          status:
+            data['status'] === 'draft'
+              ? 'draft'
+              : data['status'] === 'inactive'
+                ? 'inactive'
+                : 'published'
+
+        } satisfies ListingDocument;
+
+      }
+    );
+
+  }
+
+
+  /*
+   * =========================================
    * FILTRER PAR DATES
    * =========================================
    */

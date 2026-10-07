@@ -1,0 +1,419 @@
+<app-user-navbar />
+
+
+<main class="account-page">
+
+  <div class="account-layout">
+
+
+    <!-- =========================
+         MENU DU COMPTE
+    ========================== -->
+
+    <app-host-sidebar
+      active="dashboard"
+      [pendingCount]="pendingCount"
+    />
+
+
+    <!-- =========================
+         CONTENU PRINCIPAL
+    ========================== -->
+
+    <section class="account-content">
+
+
+      <!-- =========================
+           CHARGEMENT
+      ========================== -->
+
+      @if (loading()) {
+
+        <div class="state-box">
+          Chargement du tableau de bord...
+        </div>
+
+      }
+
+
+      <!-- =========================
+           ERREUR
+      ========================== -->
+
+      @else if (error()) {
+
+        <div class="state-box state-box-error">
+          {{ error() }}
+        </div>
+
+      }
+
+
+      <!-- =========================
+           CONTENU
+      ========================== -->
+
+      @else {
+
+
+        <!-- EN-TÊTE -->
+
+        <div class="dashboard-header">
+
+          <div class="dashboard-greeting">
+
+            <h1>
+              Bonjour {{ firstName() }}
+            </h1>
+
+            <p>
+              Voici l'activité de vos annonces.
+            </p>
+
+          </div>
+
+
+          <a
+            routerLink="/host/listings/new"
+            class="new-listing-btn"
+          >
+            + Déposer une annonce
+          </a>
+
+        </div>
+
+
+        <!-- =========================
+             CARTES STATISTIQUES
+        ========================== -->
+
+        <div class="stats-grid">
+
+          <div class="stat-card">
+            <span class="stat-number">{{ onlineCount }}</span>
+            <span class="stat-label">
+              {{ onlineCount > 1 ? 'Annonces en ligne' : 'Annonce en ligne' }}
+            </span>
+          </div>
+
+          <div class="stat-card">
+            <span class="stat-number">{{ pendingCount }}</span>
+            <span class="stat-label">
+              {{ pendingCount > 1 ? 'Demandes en attente' : 'Demande en attente' }}
+            </span>
+          </div>
+
+          <div class="stat-card">
+            <span class="stat-number">{{ requests().length }}</span>
+            <span class="stat-label">
+              {{ requests().length > 1 ? 'Demandes reçues' : 'Demande reçue' }}
+            </span>
+          </div>
+
+        </div>
+
+
+        <!-- =========================
+             DEMANDES REÇUES
+        ========================== -->
+
+        <div class="section-header">
+
+          <h2>
+            Demandes reçues
+          </h2>
+
+          <a
+            routerLink="/host/requests"
+            class="see-all-link"
+          >
+            Voir toutes les demandes +
+          </a>
+
+        </div>
+
+
+        @if (recentRequests.length === 0) {
+
+          <div class="state-box">
+
+            <strong>
+              Aucune demande reçue pour le moment.
+            </strong>
+
+            <p>
+              Vos demandes de location apparaîtront ici dès qu'un demandeur vous contactera.
+            </p>
+
+          </div>
+
+        }
+
+        @else {
+
+          <div class="requests-list">
+
+            @for (
+              request of recentRequests;
+              track request.id
+            ) {
+
+              <article class="request-row">
+
+
+                <!-- DEMANDEUR -->
+
+                <div class="requester-info">
+
+                  <div class="requester-avatar">
+                    {{ getRequesterInitial(request.requesterId) }}
+                  </div>
+
+                  <div class="requester-details">
+
+                    <span class="requester-name">
+                      {{ getRequesterName(request.requesterId) }}
+                    </span>
+
+                    <span class="verified-label">
+                      ✓ Profil vérifié
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                <!-- DÉTAILS -->
+
+                <div class="request-details">
+
+                  <span class="request-listing-title">
+                    {{ getListingTitle(request.listingId) }}
+                  </span>
+
+                  <span class="request-dates-info">
+                    {{ formatDate(request.arrivalDate) }}
+                    –
+                    {{ formatDate(request.departureDate) }}
+                    ·
+                    {{ getRelativeDate(request.createdAt) }}
+                  </span>
+
+                </div>
+
+
+                <!-- ACTIONS -->
+
+                <div class="request-actions">
+
+                  <span class="pending-badge">
+                    EN ATTENTE
+                  </span>
+
+                  <a
+                    routerLink="/messages"
+                    class="action-btn"
+                  >
+                    Voir la demande
+                  </a>
+
+                </div>
+
+              </article>
+
+            }
+
+          </div>
+
+        }
+
+
+        <!-- =========================
+             MES ANNONCES
+        ========================== -->
+
+        <div class="section-header">
+
+          <h2>
+            Mes annonces
+          </h2>
+
+          <a
+            routerLink="/host/listings"
+            class="see-all-link"
+          >
+            Gérer mes annonces +
+          </a>
+
+        </div>
+
+
+        @if (listings().length === 0) {
+
+          <div class="state-box">
+
+            <strong>
+              Vous n'avez pas encore d'annonces.
+            </strong>
+
+            <p>
+              Déposez votre première annonce pour commencer à recevoir des demandes.
+            </p>
+
+            <a
+              routerLink="/host/listings/new"
+              class="new-listing-btn"
+            >
+              + Déposer une annonce
+            </a>
+
+          </div>
+
+        }
+
+        @else {
+
+          <div class="listings-list">
+
+            @for (
+              listing of listings().slice(0, 3);
+              track listing.id
+            ) {
+
+              <article class="listing-row">
+
+
+                <!-- IMAGE -->
+
+                <img
+                  [src]="listing.image"
+                  [alt]="listing.title"
+                  class="listing-image"
+                />
+
+
+                <!-- INFOS -->
+
+                <div class="listing-info">
+
+                  <span
+                    class="listing-status-badge"
+                    [class]="getStatusClass(listing.status)"
+                  >
+                    {{ getStatusLabel(listing.status) }}
+                  </span>
+
+
+                  <h3>
+                    {{ listing.title }}
+                  </h3>
+
+
+                  <p class="listing-details">
+                    {{ listing.location }}
+                    @if (listing.details) {
+                      · {{ listing.details }}
+                    }
+                  </p>
+
+
+                  <p class="listing-availability">
+                    @if (listing.availableFrom && listing.availableTo) {
+                      Disponible du {{ formatDate(listing.availableFrom) }}
+                      au {{ formatDate(listing.availableTo) }}
+                    }
+                  </p>
+
+
+                  <div class="listing-price-row">
+
+                    <strong>
+                      {{ listing.price }} €/mois
+                    </strong>
+
+                    @if (getPendingCountForListing(listing.id) > 0) {
+
+                      <a
+                        routerLink="/host/requests"
+                        class="pending-requests-link"
+                      >
+                        {{ getPendingCountForListing(listing.id) }}
+                        {{ getPendingCountForListing(listing.id) > 1 ? 'demandes' : 'demande' }}
+                        en attente +
+                      </a>
+
+                    }
+
+                  </div>
+
+                </div>
+
+
+                <!-- ACTIONS -->
+
+                <div class="listing-actions">
+
+                  <a
+                    routerLink="/host/listings/edit"
+                    [queryParams]="{ id: listing.id }"
+                    class="action-btn"
+                  >
+                    Modifier
+                  </a>
+
+                  <button
+                    type="button"
+                    class="pause-btn"
+                  >
+                    Mettre en pause
+                  </button>
+
+                </div>
+
+              </article>
+
+            }
+
+          </div>
+
+        }
+
+
+        <!-- =========================
+             INFORMATION PAIEMENT
+        ========================== -->
+
+        <div class="payment-info">
+
+          <span class="payment-icon">
+            i
+          </span>
+
+
+          <p>
+
+            Le loyer est réglé directement entre les utilisateurs.
+
+            <strong>
+              Aucun paiement sur BailLyon.
+            </strong>
+
+          </p>
+
+        </div>
+
+
+      }
+
+    </section>
+
+  </div>
+
+
+  <app-contact-section />
+
+</main>
+
+
+<app-footer />

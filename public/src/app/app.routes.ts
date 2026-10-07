@@ -24,6 +24,8 @@ import { Messages } from './pages/messages/messages';
 
 import { AccountSettings } from './pages/account-settings/account-settings';
 
+import { HostDashboard } from './pages/host-dashboard/host-dashboard';
+
 import { authGuard } from './core/guards/auth.guard';
 
 
@@ -100,6 +102,15 @@ export const routes: Routes = [
   {
     path: 'account-settings',
     component: AccountSettings,
+    canActivate: [authGuard]
+  },
+
+  /*
+   * Pages Annonceur
+   */
+  {
+    path: 'host/dashboard',
+    component: HostDashboard,
     canActivate: [authGuard]
   }
 
