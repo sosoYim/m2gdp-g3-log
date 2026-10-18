@@ -567,12 +567,38 @@
     height: 320px;
   }
 
+  /*
+   * Une colonne : propriétaire → carte prix
+   * → présentation → équipements
+   */
   .property-layout {
     grid-template-columns: 1fr;
+
+    gap: 0;
+  }
+
+  .property-main {
+    display: contents;
+  }
+
+  .property-main > * {
+    order: 2;
+  }
+
+  .property-main > .owner-section {
+    order: 0;
+  }
+
+  .property-main > .section-divider:first-of-type {
+    display: none;
   }
 
   .booking-card {
+    order: 1;
+
     max-width: 420px;
+
+    margin: 18px 0 28px;
   }
 
   .equipment-grid {
@@ -627,13 +653,19 @@
     height: auto;
 
     grid-template-columns:
-      1fr
-      1fr;
+      repeat(4, minmax(0, 1fr));
+
+    grid-template-rows: auto;
+
+    gap: 8px;
   }
 
 
-  .gallery-small img {
-    height: 140px;
+  .gallery-small img,
+  .gallery-small .gallery-empty {
+    height: 64px;
+
+    border-radius: 6px;
   }
 
 
