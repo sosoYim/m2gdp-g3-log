@@ -234,11 +234,16 @@ export class PropertyDetails implements OnInit {
 
       /*
        * On refuse d'afficher une annonce
-       * non publiée côté demandeur.
+       * non publiée côté demandeur
+       * (l'annonceur peut voir la sienne).
        */
+      const user =
+        await this.authService.waitForAuthState();
+
       if (
         firestoreListing.status !==
-        'published'
+        'published' &&
+        firestoreListing.ownerId !== user?.uid
       ) {
 
         this.listingError.set(

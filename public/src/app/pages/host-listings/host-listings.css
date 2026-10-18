@@ -301,6 +301,18 @@
 }
 
 
+.listing-title-link {
+  color: inherit;
+
+  text-decoration: none;
+}
+
+
+.listing-title-link:hover {
+  color: #7134f5;
+}
+
+
 .listing-details,
 .listing-availability,
 .completion-label {

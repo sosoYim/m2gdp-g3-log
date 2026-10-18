@@ -181,7 +181,12 @@
 
 
                   <h3>
-                    {{ listing.title || 'Sans titre' }}
+                    <a
+                      class="listing-title-link"
+                      [routerLink]="['/property-details', listing.id]"
+                    >
+                      {{ listing.title || 'Sans titre' }}
+                    </a>
                   </h3>
 
 
