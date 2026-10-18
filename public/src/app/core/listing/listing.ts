@@ -2,10 +2,13 @@ import { Injectable } from '@angular/core';
 
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
   query,
+  serverTimestamp,
+  updateDoc,
   where
 } from 'firebase/firestore';
 
@@ -379,6 +382,59 @@ export class Listing {
         } satisfies ListingDocument;
 
       }
+    );
+
+  }
+
+
+  /*
+   * =========================================
+   * METTRE EN PAUSE / REMETTRE EN LIGNE
+   * =========================================
+   */
+  async updateListingStatus(
+    listingId: string,
+    status: ListingDocument['status']
+  ): Promise<void> {
+
+    const listingRef =
+      doc(
+        firestore,
+        'listings',
+        listingId
+      );
+
+
+    await updateDoc(
+      listingRef,
+      {
+        status,
+        updatedAt: serverTimestamp()
+      }
+    );
+
+  }
+
+
+  /*
+   * =========================================
+   * SUPPRIMER UNE ANNONCE
+   * =========================================
+   */
+  async deleteListing(
+    listingId: string
+  ): Promise<void> {
+
+    const listingRef =
+      doc(
+        firestore,
+        'listings',
+        listingId
+      );
+
+
+    await deleteDoc(
+      listingRef
     );
 
   }

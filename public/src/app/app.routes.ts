@@ -26,6 +26,8 @@ import { AccountSettings } from './pages/account-settings/account-settings';
 
 import { HostDashboard } from './pages/host-dashboard/host-dashboard';
 
+import { HostListings } from './pages/host-listings/host-listings';
+
 import { authGuard } from './core/guards/auth.guard';
 
 
@@ -111,6 +113,12 @@ export const routes: Routes = [
   {
     path: 'host/dashboard',
     component: HostDashboard,
+    canActivate: [authGuard]
+  },
+
+  {
+    path: 'host/listings',
+    component: HostListings,
     canActivate: [authGuard]
   }
 

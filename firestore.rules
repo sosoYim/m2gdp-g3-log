@@ -70,9 +70,16 @@ service cloud.firestore {
         && request.resource.data.message is string;
 
 
+      /*
+       * Lecture par le demandeur
+       * ou par l'annonceur concerné.
+       */
       allow read:
         if request.auth != null
-        && resource.data.requesterId == request.auth.uid;
+        && (
+          resource.data.requesterId == request.auth.uid
+          || resource.data.ownerId == request.auth.uid
+        );
 
 
       allow update, delete:
@@ -85,22 +92,37 @@ service cloud.firestore {
      * LOGEMENTS / ANNONCES
      * =========================================
      *
-     * Pour le moment :
      * - tout le monde peut lire les annonces
-     * - personne ne peut les modifier depuis
-     *   l'application
-     *
-     * Plus tard, quand Sohyung fera le parcours
-     * annonceur, on autorisera le propriétaire
-     * à créer/modifier ses propres annonces.
+     * - l'annonceur gère uniquement
+     *   ses propres annonces
      */
     match /listings/{listingId} {
 
       allow read:
         if true;
 
-      allow create, update, delete:
-        if false;
+      /*
+       * L'annonceur crée uniquement
+       * des annonces à son nom.
+       */
+      allow create:
+        if request.auth != null
+        && request.resource.data.ownerId == request.auth.uid;
+
+
+      /*
+       * L'annonceur peut modifier (pause,
+       * remise en ligne) ou supprimer
+       * ses propres annonces.
+       */
+      allow update:
+        if request.auth != null
+        && resource.data.ownerId == request.auth.uid
+        && request.resource.data.ownerId == resource.data.ownerId;
+
+      allow delete:
+        if request.auth != null
+        && resource.data.ownerId == request.auth.uid;
     }
 
 
