@@ -297,6 +297,7 @@
 
   font-size: 12px;
   line-height: 1.55;
+  white-space: pre-line;
 }
 
 
@@ -327,6 +328,22 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
+}
+
+
+/* Équipement sans icône */
+.equipment-text {
+  color: #171925;
+
+  font-size: 13px;
+}
+
+
+/* Emplacement photo vide */
+.gallery-empty {
+  min-height: 0;
+
+  background: #f6f3ff;
 }
 
 

@@ -58,10 +58,12 @@
       <!-- Grande photo -->
       <div class="gallery-main">
 
-        <img
-          [src]="listing.images.main"
-          [alt]="listing.title"
-        />
+        @if (listing.mainImage) {
+          <img
+            [src]="listing.mainImage"
+            [alt]="listing.title"
+          />
+        }
 
       </div>
 
@@ -69,25 +71,18 @@
       <!-- 4 petites photos -->
       <div class="gallery-small">
 
-        <img
-          [src]="listing.images.kitchen"
-          alt="Cuisine du logement"
-        />
+        @for (url of listing.thumbnails; track $index) {
 
-        <img
-          [src]="listing.images.window"
-          alt="Coin fenêtre du logement"
-        />
+          @if (url) {
+            <img
+              [src]="url"
+              [alt]="'Photo ' + ($index + 2) + ' du logement'"
+            />
+          } @else {
+            <div class="gallery-empty"></div>
+          }
 
-        <img
-          [src]="listing.images.desk"
-          alt="Bureau du logement"
-        />
-
-        <img
-          [src]="listing.images.bathroom"
-          alt="Salle de bains du logement"
-        />
+        }
 
       </div>
 
@@ -119,11 +114,7 @@
             </h2>
 
             <p>
-              {{ listing.bedroom }}
-              ·
-              {{ listing.bed }}
-              ·
-              {{ listing.bathroom }}
+              {{ listing.details }}
             </p>
 
           </div>
@@ -140,25 +131,25 @@
         </section>
 
 
-        <div class="section-divider"></div>
+        @if (listing.description) {
+
+          <div class="section-divider"></div>
 
 
+          <!-- Présentation -->
+          <section class="description-section">
 
-        <!-- Présentation -->
-        <section class="description-section">
+            <h3>
+              Présentation
+            </h3>
 
-          <h3>
-            Présentation
-          </h3>
+            <p>
+              {{ listing.description }}
+            </p>
 
-          <p>
-            {{ listing.description }}
-          </p>
+          </section>
 
-        </section>
-
-
-        <div class="section-divider"></div>
+        }
 
 
 
@@ -166,35 +157,46 @@
              ÉQUIPEMENTS
         ========================== -->
 
-        <section class="equipment-section">
+        @if (listing.equipments.length) {
 
-          <h3>
-            Ce que le logement propose
-          </h3>
+          <div class="section-divider"></div>
 
 
-          <div class="equipment-grid">
+          <section class="equipment-section">
 
-            @for (
-              equipment of listing.equipments;
-              track equipment.alt
-            ) {
+            <h3>
+              Ce que le logement propose
+            </h3>
 
-              <div class="equipment-item">
 
-                <img
-                  [src]="equipment.icon"
-                  [alt]="equipment.alt"
-                  class="equipment-svg"
-                />
+            <div class="equipment-grid">
 
-              </div>
+              @for (
+                equipment of listing.equipments;
+                track equipment.label
+              ) {
 
-            }
+                <div class="equipment-item">
 
-          </div>
+                  @if (equipment.icon) {
+                    <img
+                      [src]="equipment.icon"
+                      [alt]="equipment.label"
+                      class="equipment-svg"
+                    />
+                  } @else {
+                    <span class="equipment-text">{{ equipment.label }}</span>
+                  }
 
-        </section>
+                </div>
+
+              }
+
+            </div>
+
+          </section>
+
+        }
 
       </div>
 

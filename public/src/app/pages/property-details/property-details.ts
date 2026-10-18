@@ -21,13 +21,21 @@ import { Profile } from '../../core/profile/profile';
 
 import {
   Listing,
-  ListingDocument
+  ListingDocument,
+  ListingForm,
+  createEmptyListingForm
 } from '../../core/listing/listing';
+
+import { getAmenityLabel } from '../host-listing-form/listing-form.data';
 
 
 interface Equipment {
+  /*
+   * SVG (icône + texte) si disponible,
+   * sinon seul le libellé est affiché.
+   */
   icon: string;
-  alt: string;
+  label: string;
 }
 
 
@@ -41,26 +49,37 @@ interface PropertyDetailsViewModel {
 
   verified: boolean;
 
-  images: {
-    main: string;
-    kitchen: string;
-    window: string;
-    desk: string;
-    bathroom: string;
-  };
+  /*
+   * 1re photo + 4 vignettes
+   * ('' = emplacement vide)
+   */
+  mainImage: string;
+  thumbnails: string[];
 
   price: number;
 
   minimumStay: string;
 
-  bedroom: string;
-  bed: string;
-  bathroom: string;
+  details: string;
 
   description: string;
 
   equipments: Equipment[];
 }
+
+
+/*
+ * Icônes existantes par équipement
+ * (valeurs de AMENITIES).
+ */
+const EQUIPMENT_ICONS: Record<string, string> = {
+  wifi: 'Equipement-wifi.svg',
+  kitchen: 'Equipement-cook.svg',
+  desk: 'Equipement-desk.svg',
+  washer: 'Equipement-wash.svg',
+  dishwasher: 'Equipement-dish.svg',
+  elevator: 'Equipement-lift.svg'
+};
 
 
 @Component({
@@ -93,67 +112,19 @@ export class PropertyDetails implements OnInit {
 
 
   listing: PropertyDetailsViewModel = {
-
     title: '',
-
     location: '',
-
     owner: '',
-
     rating: 0,
-
     reviews: 42,
-
     verified: false,
-
-    images: {
-      main: '',
-      kitchen: '/images/rental/property-1/kitchen.png',
-      window: '/images/rental/property-1/window.png',
-      desk: '/images/rental/property-1/desk.png',
-      bathroom: '/images/rental/property-1/bathroom.png'
-    },
-
+    mainImage: '',
+    thumbnails: ['', '', '', ''],
     price: 0,
-
-    minimumStay: '1 mois',
-
-    bedroom: '1 chambre',
-
-    bed: '1 lit',
-
-    bathroom: '1 salle de bains',
-
-    description:
-      'L’appartement est idéalement situé, à proximité des transports, des commerces et de nombreux cafés et restaurants. Un logement pratique et cosy, idéal pour un étudiant ou un jeune professionnel le temps d’un séjour à Lyon.',
-
-    equipments: [
-      {
-        icon: '/images/rental/equipment/Equipement-wifi.svg',
-        alt: 'Wi-Fi'
-      },
-      {
-        icon: '/images/rental/equipment/Equipement-cook.svg',
-        alt: 'Cuisine entièrement équipée'
-      },
-      {
-        icon: '/images/rental/equipment/Equipement-desk.svg',
-        alt: 'Bureau dédié'
-      },
-      {
-        icon: '/images/rental/equipment/Equipement-wash.svg',
-        alt: 'Lave-linge'
-      },
-      {
-        icon: '/images/rental/equipment/Equipement-dish.svg',
-        alt: 'Lave-vaisselle'
-      },
-      {
-        icon: '/images/rental/equipment/Equipement-lift.svg',
-        alt: 'Ascenseur'
-      }
-    ]
-
+    minimumStay: '',
+    details: '',
+    description: '',
+    equipments: []
   };
 
 
@@ -215,10 +186,11 @@ export class PropertyDetails implements OnInit {
 
     try {
 
-      const firestoreListing =
-        await this.listingService.getListingById(
-          this.listingId
-        );
+      const [firestoreListing, listingForm] =
+        await Promise.all([
+          this.listingService.getListingById(this.listingId),
+          this.listingService.getListingForm(this.listingId)
+        ]);
 
 
       if (!firestoreListing) {
@@ -256,7 +228,8 @@ export class PropertyDetails implements OnInit {
 
 
       this.applyFirestoreListing(
-        firestoreListing
+        firestoreListing,
+        listingForm?.form ?? createEmptyListingForm()
       );
 
 
@@ -285,8 +258,16 @@ export class PropertyDetails implements OnInit {
 
 
   private applyFirestoreListing(
-    firestoreListing: ListingDocument
+    firestoreListing: ListingDocument,
+    form: ListingForm
   ): void {
+
+    const photos =
+      form.photos.map(photo => photo.url);
+
+    const thumbnails =
+      [1, 2, 3, 4].map(i => photos[i] ?? '');
+
 
     this.listing = {
 
@@ -310,14 +291,27 @@ export class PropertyDetails implements OnInit {
       price:
         firestoreListing.price,
 
-      images: {
+      mainImage:
+        photos[0] ?? firestoreListing.image,
 
-        ...this.listing.images,
+      thumbnails,
 
-        main:
-          firestoreListing.image
+      minimumStay:
+        `${form.minStayMonths} mois`,
 
-      }
+      details:
+        firestoreListing.details,
+
+      description:
+        form.description,
+
+      equipments:
+        form.amenities.map(value => ({
+          icon: EQUIPMENT_ICONS[value]
+            ? `/images/rental/equipment/${EQUIPMENT_ICONS[value]}`
+            : '',
+          label: getAmenityLabel(value)
+        }))
 
     };
 
