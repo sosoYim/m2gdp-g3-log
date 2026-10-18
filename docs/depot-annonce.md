@@ -37,6 +37,7 @@ Code : `public/src/app/pages/host-listing-form/` (page, `steps/`, `components/`)
 | `listings/{id}/private/address` | `address`, `addressDetails`, `placeId`, `postalCode`, `latitude` / `longitude` exactes | l'annonceur seulement |
 
 - Les anciennes annonces qui ont encore `address` dans le document public sont nettoyées au prochain enregistrement.
+- Migration des annonces existantes (dev) : connecté en annonceur, dans la console du navigateur `await migrateListingAddress()`. Ajoute `postalCode` (`''` si inconnu) et `arrondissement` au document public, crée l'adresse privée (`addressDetails` / `placeId` vides) et retire l'adresse du document public. Uniquement les annonces de l'utilisateur connecté (règles Firestore) ; à lancer après le déploiement des règles.
 - Suppression d'une annonce : l'adresse privée est supprimée d'abord.
 
 ### Clé Google Maps

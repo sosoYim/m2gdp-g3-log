@@ -6,9 +6,9 @@ info:
   description: |
     API REST de SubLyon, l'application de sous-location temporaire entre étudiants à Lyon.
 
-    **État d'implémentation.** Seule la route `GET /health` est implémentée dans le
-    Worker Cloudflare (`workers/src/index.ts`). Les autres opérations sont aujourd'hui
-    réalisées côté client avec le SDK Firebase (Firestore et Realtime Database).
+    **État d'implémentation.** Les routes `GET /health` et `/media` (photos sur R2) sont
+    implémentées dans le Worker Cloudflare (`workers/src/index.ts`). Les autres opérations
+    sont aujourd'hui réalisées côté client avec le SDK Firebase (Firestore et Realtime Database).
     Cette spécification décrit le contrat REST cible. Les chemins reprennent les noms
     des collections existantes (`users`, `listings`, `bookingRequests`, `conversations`). Chaque opération porte l'extension `x-implemented`.
 
@@ -18,6 +18,7 @@ servers:
 
 tags:
   - name: Système
+  - name: Médias
   - name: Authentification
   - name: Utilisateurs
   - name: Favoris
@@ -304,6 +305,129 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/NotFound"
+
+  /listings/{listingId}/address:
+    parameters:
+      - $ref: "#/components/parameters/ListingId"
+    get:
+      tags: [Annonces]
+      summary: Lire l'adresse exacte d'une annonce
+      description: |
+        Réservé à l'annonceur propriétaire. Firestore : `listings/{listingId}/private/address`.
+        L'annonce publique n'expose que `postalCode`, `arrondissement` et une position approximative.
+      operationId: getListingAddress
+      x-implemented: false
+      responses:
+        "200":
+          description: Adresse exacte.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListingAddress"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [Annonces]
+      summary: Enregistrer l'adresse exacte d'une annonce
+      description: |
+        Réservé à l'annonceur propriétaire. Met aussi à jour, sur l'annonce publique,
+        `postalCode`, `arrondissement`, `location` (« Lyon 2e ») et une position
+        approximative (décalage fixe de 100 à 300 m).
+      operationId: putListingAddress
+      x-implemented: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListingAddress"
+      responses:
+        "200":
+          description: Adresse enregistrée.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListingAddress"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /media:
+    post:
+      tags: [Médias]
+      summary: Envoyer une photo d'annonce
+      description: |
+        Corps = image brute (JPG ou PNG, 5 Mo max). Stockée dans R2 sous
+        `listings/{uid}/{uuid}.{ext}`.
+      operationId: uploadMedia
+      x-implemented: true
+      requestBody:
+        required: true
+        content:
+          image/jpeg:
+            schema:
+              type: string
+              format: binary
+          image/png:
+            schema:
+              type: string
+              format: binary
+      responses:
+        "201":
+          description: Photo enregistrée.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListingPhoto"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /media/{key}:
+    parameters:
+      - name: key
+        in: path
+        required: true
+        description: Clé R2, ex. `listings/{uid}/{uuid}.jpg` (encodée).
+        schema:
+          type: string
+    get:
+      tags: [Médias]
+      summary: Lire une photo
+      operationId: getMedia
+      x-implemented: true
+      security: []
+      responses:
+        "200":
+          description: Image (cache immuable).
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Médias]
+      summary: Supprimer une photo
+      description: Uniquement une photo envoyée par l'utilisateur connecté (clé `listings/{uid}/…`).
+      operationId: deleteMedia
+      x-implemented: true
+      responses:
+        "204":
+          description: Photo supprimée.
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   /bookingRequests:
     get:
@@ -644,17 +768,118 @@ components:
       type: string
       enum: [published, draft, inactive]
 
+    PropertyType:
+      type: string
+      enum: [studio, apartment, room]
+
+    OwnerConsent:
+      type: string
+      enum: ["", "yes", "no", "owner"]
+      description: Accord du propriétaire pour sous-louer (`""` = pas encore répondu).
+
+    ListingPhoto:
+      type: object
+      required: [key, url]
+      properties:
+        key:
+          type: string
+          description: Clé R2 (pour la suppression).
+          example: listings/abc123/0f8e….jpg
+        url:
+          type: string
+          description: URL publique (`GET /media/{key}`).
+
+    ListingAddress:
+      type: object
+      description: |
+        Adresse exacte, privée (annonceur uniquement).
+        Firestore : `listings/{listingId}/private/address`. Les champs texte vides valent `""`.
+      required: [address, addressDetails, placeId, postalCode]
+      properties:
+        address:
+          type: string
+          description: Adresse complète (Google Places).
+          example: 12 Rue Mercière, 69002 Lyon, France
+        addressDetails:
+          type: string
+          description: Complément (bâtiment, n° d'appartement, digicode).
+          example: ""
+        placeId:
+          type: string
+          description: Identifiant Google Places (`""` si saisie libre).
+        postalCode:
+          type: string
+          example: "69002"
+        latitude:
+          type: number
+          nullable: true
+          description: Position exacte (`null` si l'adresse n'est pas géocodée).
+        longitude:
+          type: number
+          nullable: true
+
     ListingPatch:
       type: object
       properties:
         title:
           type: string
+        propertyType:
+          $ref: "#/components/schemas/PropertyType"
         location:
           type: string
+          description: Libellé public déduit de l'arrondissement (« Lyon 2e », « Lyon »).
+        postalCode:
+          type: string
+          description: Code postal public (`""` si inconnu).
+          example: "69002"
+        arrondissement:
+          type: integer
+          minimum: 1
+          maximum: 9
+          nullable: true
+          description: Déduit du code postal (69001 → 1), `null` hors Lyon.
         latitude:
           type: number
+          description: Position approximative (100 à 300 m de l'adresse exacte).
         longitude:
           type: number
+          description: Position approximative (100 à 300 m de l'adresse exacte).
+        surface:
+          type: number
+          nullable: true
+          description: Surface en m².
+        rooms:
+          type: integer
+          nullable: true
+        floor:
+          type: integer
+          nullable: true
+        furnished:
+          type: boolean
+        description:
+          type: string
+        photos:
+          type: array
+          maxItems: 10
+          description: 1re photo = photo principale (5 minimum pour publier).
+          items:
+            $ref: "#/components/schemas/ListingPhoto"
+        amenities:
+          type: array
+          items:
+            type: string
+            enum: [wifi, kitchen, desk, washer, dishwasher, elevator, balcony, parking, linen]
+        nonSmoking:
+          type: boolean
+        petsAllowed:
+          type: boolean
+        ownerConsent:
+          $ref: "#/components/schemas/OwnerConsent"
+        chargesIncluded:
+          type: boolean
+        minStayMonths:
+          type: integer
+          minimum: 1
         details:
           type: string
         price:
