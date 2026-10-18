@@ -5,6 +5,8 @@ import {
   signal
 } from '@angular/core';
 
+import { Location, NgTemplateOutlet } from '@angular/common';
+
 import {
   ActivatedRoute,
   Router
@@ -26,13 +28,28 @@ import {
   createEmptyListingForm
 } from '../../core/listing/listing';
 
+import { Favorite } from '../../core/favorite/favorite';
+
+import { EquipmentIcon } from '../../shared/components/equipment-icon/equipment-icon';
+
 import { getAmenityLabel } from '../host-listing-form/listing-form.data';
+
+
+/*
+ * Listes qui mènent à cette page :
+ * « Retour à la liste » y revient
+ * (filtres et défilement conservés).
+ */
+const LIST_PAGES = [
+  '/rental-search-results',
+  '/saved-listings',
+  '/host/listings'
+];
 
 
 interface Equipment {
   /*
-   * SVG (icône + texte) si disponible,
-   * sinon seul le libellé est affiché.
+   * SVG de l'icône ('' si aucune)
    */
   icon: string;
   label: string;
@@ -73,12 +90,12 @@ interface PropertyDetailsViewModel {
  * (valeurs de AMENITIES).
  */
 const EQUIPMENT_ICONS: Record<string, string> = {
-  wifi: 'Equipement-wifi.svg',
-  kitchen: 'Equipement-cook.svg',
-  desk: 'Equipement-desk.svg',
-  washer: 'Equipement-wash.svg',
-  dishwasher: 'Equipement-dish.svg',
-  elevator: 'Equipement-lift.svg'
+  wifi: 'icon-wifi.svg',
+  kitchen: 'icon-cook.svg',
+  desk: 'icon-desk.svg',
+  washer: 'icon-wash.svg',
+  dishwasher: 'icon-dish.svg',
+  elevator: 'icon-lift.svg'
 };
 
 
@@ -88,8 +105,10 @@ const EQUIPMENT_ICONS: Record<string, string> = {
   standalone: true,
 
   imports: [
+    NgTemplateOutlet,
     Navbar,
     AuthModal,
+    EquipmentIcon,
     ContactSection,
     Footer
   ],
@@ -109,6 +128,17 @@ export class PropertyDetails implements OnInit {
   loadingListing = signal(true);
 
   listingError = signal('');
+
+  favorite = signal(false);
+
+  private favoriteSaving = false;
+
+  private firestoreListing: ListingDocument | null = null;
+
+  /*
+   * Page précédente = une liste de l'app
+   */
+  private cameFromList = false;
 
 
   listing: PropertyDetailsViewModel = {
@@ -134,6 +164,8 @@ export class PropertyDetails implements OnInit {
     private readonly authService: Auth,
     private readonly profileService: Profile,
     private readonly listingService: Listing,
+    private readonly favoriteService: Favorite,
+    private readonly location: Location,
     private readonly cdr: ChangeDetectorRef
   ) {}
 
@@ -147,6 +179,20 @@ export class PropertyDetails implements OnInit {
      */
     this.listingId =
       this.route.snapshot.paramMap.get('id') ?? '';
+
+
+    const previousUrl =
+      this.router.lastSuccessfulNavigation()?.previousNavigation?.finalUrl;
+
+    if (previousUrl) {
+
+      const path =
+        this.router.serializeUrl(previousUrl).split(/[?#]/)[0];
+
+      this.cameFromList =
+        LIST_PAGES.includes(path);
+
+    }
 
 
     /*
@@ -224,6 +270,17 @@ export class PropertyDetails implements OnInit {
 
         return;
 
+      }
+
+
+      this.firestoreListing =
+        firestoreListing;
+
+      if (user) {
+        const favoriteIds =
+          await this.favoriteService.getFavoriteIds(user.uid);
+
+        this.favorite.set(favoriteIds.has(this.listingId));
       }
 
 
@@ -492,6 +549,113 @@ export class PropertyDetails implements OnInit {
       ]);
 
     }
+
+  }
+
+
+  /*
+   * =========================================
+   * FAVORI
+   * =========================================
+   */
+  async toggleFavorite(): Promise<void> {
+
+    const listing =
+      this.firestoreListing;
+
+    if (!listing || this.favoriteSaving) {
+      return;
+    }
+
+
+    const user =
+      await this.authService.waitForAuthState();
+
+    if (!user) {
+      this.authModalOpen.set(true);
+      return;
+    }
+
+
+    this.favoriteSaving = true;
+
+    try {
+
+      if (this.favorite()) {
+
+        await this.favoriteService.removeFavorite(user.uid, listing.id);
+
+        this.favorite.set(false);
+
+      } else {
+
+        await this.favoriteService.addFavorite(user.uid, {
+          listingId: listing.id,
+          title: listing.title,
+          location: listing.location,
+          details: listing.details,
+          price: listing.price,
+          rating: listing.rating,
+          image: this.listing.mainImage
+        });
+
+        this.favorite.set(true);
+
+      }
+
+    } catch (err) {
+
+      console.error('Erreur favori :', err);
+
+    } finally {
+
+      this.favoriteSaving = false;
+
+    }
+
+  }
+
+
+  /*
+   * =========================================
+   * RETOUR À LA LISTE
+   * =========================================
+   *
+   * Venu d'une liste : retour arrière.
+   * Sinon : mes annonces (annonceur)
+   * ou résultats de recherche.
+   */
+  async goBack(): Promise<void> {
+
+    if (this.cameFromList) {
+      this.location.back();
+      return;
+    }
+
+
+    let target =
+      '/rental-search-results';
+
+    try {
+
+      const user =
+        await this.authService.waitForAuthState();
+
+      const profile =
+        user ? await this.profileService.getProfile(user.uid) : null;
+
+      if (profile?.role === 'host') {
+        target = '/host/listings';
+      }
+
+    } catch (err) {
+
+      console.error('Erreur lecture du rôle :', err);
+
+    }
+
+
+    await this.router.navigateByUrl(target);
 
   }
 
