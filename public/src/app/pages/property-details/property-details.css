@@ -29,7 +29,7 @@
 
   background: none;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-family: inherit;
   font-size: 13px;
@@ -51,7 +51,7 @@
 .property-heading h1 {
   margin: 0;
 
-  color: #171925;
+  color: var(--bl-heading);
 
   font-size: 28px;
   font-weight: 800;
@@ -69,7 +69,7 @@
 
   gap: 14px;
 
-  color: #30354f;
+  color: var(--bl-heading);
 
   font-size: 13px;
 }
@@ -98,7 +98,7 @@
 }
 
 .location {
-  color: #566078;
+  color: var(--bl-text-muted);
 }
 
 
@@ -161,7 +161,7 @@
 }
 
 .photo-favorite .favorite-button:hover {
-  background: #eee9ff;
+  background: var(--bl-bg-accent);
 }
 
 .photo-favorite .favorite-button img {
@@ -208,7 +208,7 @@
 .owner-info h2 {
   margin: 0 0 7px;
 
-  color: #17194f;
+  color: var(--bl-heading);
 
   font-size: 18px;
   font-weight: 800;
@@ -217,7 +217,7 @@
 .owner-info p {
   margin: 0;
 
-  color: #7d849f;
+  color: var(--bl-text-muted);
 
   font-size: 12px;
 }
@@ -239,9 +239,9 @@
 
   border-radius: 999px;
 
-  background: #eee8ff;
+  background: var(--bl-bg-accent);
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-size: 11px;
   font-weight: 700;
@@ -272,7 +272,7 @@
 .equipment-section h3 {
   margin: 0 0 13px;
 
-  color: #17194f;
+  color: var(--bl-text);
 
   font-size: 15px;
   font-weight: 800;
@@ -286,7 +286,7 @@
 .description-section p {
   margin: 0;
 
-  color: #77809e;
+  color: var(--bl-text);
 
   font-size: 12px;
   line-height: 1.55;
@@ -325,7 +325,7 @@
 
 
 .equipment-label {
-  color: #171925;
+  color: var(--bl-text);
 
   font-size: 13px;
 }
@@ -360,14 +360,14 @@
 }
 
 .price strong {
-  color: #17194f;
+  color: var(--bl-text);
 
   font-size: 28px;
   font-weight: 800;
 }
 
 .price span {
-  color: #7f859e;
+  color: var(--bl-text-muted);
 
   font-size: 13px;
 }
@@ -375,7 +375,7 @@
 .minimum-stay {
   margin: 4px 0 17px;
 
-  color: #8790aa;
+  color: var(--bl-text-muted);
 
   font-size: 10px;
 }
@@ -413,14 +413,14 @@
 
   margin-bottom: 5px;
 
-  color: #7d849e;
+  color: var(--bl-text-muted);
 
   font-size: 9px;
   font-weight: 700;
 }
 
 .booking-date span {
-  color: #343952;
+  color: var(--bl-text);
 
   font-size: 11px;
 }
@@ -437,7 +437,7 @@
   border: 0;
   border-radius: 7px;
 
-  background: #7134f5;
+  background: var(--bl-primary);
 
   color: #ffffff;
 
@@ -451,7 +451,7 @@
 }
 
 .contact-button:hover {
-  background: #6026dc;
+  background: var(--bl-primary-hover);
 }
 
 
@@ -471,7 +471,7 @@
 
   border-radius: 7px;
 
-  background: #eee9ff;
+  background: var(--bl-bg-accent);
 }
 
 .payment-icon {
@@ -486,7 +486,7 @@
 
   border-radius: 50%;
 
-  background: #8b5cf6;
+  background: var(--bl-primary);
 
   color: #ffffff;
 
@@ -497,7 +497,7 @@
 .payment-info p {
   margin: 0;
 
-  color: #6652b5;
+  color: var(--bl-primary);
 
   font-size: 9px;
   line-height: 1.55;
@@ -508,13 +508,13 @@
 
   margin-top: 2px;
 
-  color: #5f43bd;
+  color: var(--bl-primary);
 }
 
 .price-info {
   margin: 11px 0 0;
 
-  color: #969aad;
+  color: var(--bl-text-muted);
 
   font-size: 9px;
 }

@@ -31,7 +31,7 @@
 
   border-radius: 10px;
 
-  background: #f6f3ff;
+  background: var(--bl-bg-accent);
 }
 
 
@@ -96,7 +96,7 @@ img {
   position: absolute;
   inset: 0;
 
-  border: 3px solid #7134f5;
+  border: 3px solid var(--bl-primary);
   border-radius: 10px;
 }
 
@@ -104,7 +104,7 @@ img {
 .gallery-empty {
   border-radius: 10px;
 
-  background: #f6f3ff;
+  background: var(--bl-bg-accent);
 }
 
 
@@ -141,7 +141,7 @@ img {
 
   background: rgba(255, 255, 255, 0.92);
 
-  color: #17194f;
+  color: var(--bl-heading);
 
   font-size: 24px;
   line-height: 1;
@@ -152,7 +152,7 @@ img {
 }
 
 .arrow:hover {
-  background: #eee9ff;
+  background: var(--bl-bg-accent);
 }
 
 .arrow-prev {
@@ -222,7 +222,7 @@ img {
 
     background: #ffffff;
 
-    color: #17194f;
+    color: var(--bl-heading);
 
     font-size: 12px;
     font-weight: 800;
@@ -272,7 +272,7 @@ img {
 
 
   .strip-item-active {
-    border-color: #7134f5;
+    border-color: var(--bl-primary);
   }
 
 }

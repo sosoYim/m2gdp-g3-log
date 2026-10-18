@@ -14,6 +14,25 @@
 
 
 /* =========================
+   COULEURS BAILLYON (sémantiques)
+   =========================
+   À utiliser partout : color: var(--bl-text);
+   Préfixe bl- : --color-* est réservé
+   à Tailwind / Spartan.
+========================= */
+
+:root {
+  --bl-primary: #7034f4;        /* couleur d'accent : liens, boutons, étoile, badge */
+  --bl-primary-hover: #6026dc;  /* survol des boutons primaires */
+  --bl-heading: #19154f;        /* titres, icônes d'équipement, compteur photo */
+  --bl-text: #111110;           /* texte noir (prix, intertitres, contenu) */
+  --bl-text-muted: #70768f;     /* texte secondaire (ville, détails, dates, mentions) */
+  --bl-bg-accent: #ece8fe;      /* fond violet clair (badges, encadrés, icônes) */
+  --bl-bg-footer: #e7e8fd;      /* fond du bloc de bas de page */
+}
+
+
+/* =========================
    VARIABLES GLOBALES
 ========================= */
 

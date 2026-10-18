@@ -14,7 +14,7 @@
 
   border-radius: 8px;
 
-  background: #ece8fe;
+  background: var(--bl-bg-accent);
 }
 
 
