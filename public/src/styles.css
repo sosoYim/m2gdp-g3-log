@@ -25,9 +25,11 @@
   --bl-primary: #7034f4;        /* couleur d'accent : liens, boutons, étoile, badge */
   --bl-primary-hover: #6026dc;  /* survol des boutons primaires */
   --bl-heading: #19154f;        /* titres, icônes d'équipement, compteur photo */
+  --bl-secondary: #16229c;      /* actions secondaires (Mettre en pause, Supprimer), texte des encadrés d'information */
   --bl-text: #111110;           /* texte noir (prix, intertitres, contenu) */
   --bl-text-muted: #70768f;     /* texte secondaire (ville, détails, dates, mentions) */
   --bl-bg-accent: #ece8fe;      /* fond violet clair (badges, encadrés, icônes) */
+  --bl-icon-placeholder: #a174f5; /* icône d'image vide (annonce sans photo) */
   --bl-bg-footer: #e7e8fd;      /* fond du bloc de bas de page */
 
   /* Tailles de texte (police Montserrat) */
