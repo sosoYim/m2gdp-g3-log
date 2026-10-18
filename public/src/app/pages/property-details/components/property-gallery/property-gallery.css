@@ -64,42 +64,6 @@ img {
 }
 
 
-/* Vignettes desktop cliquables */
-.small-item {
-  position: relative;
-
-  min-height: 0;
-
-  padding: 0;
-
-  border: 0;
-  border-radius: 10px;
-
-  background: none;
-
-  overflow: hidden;
-
-  cursor: pointer;
-}
-
-.small-item img {
-  transition: opacity 0.15s ease;
-}
-
-.small-item:hover img {
-  opacity: 0.85;
-}
-
-.small-item-active::after {
-  content: '';
-
-  position: absolute;
-  inset: 0;
-
-  border: 3px solid var(--bl-primary);
-  border-radius: 10px;
-}
-
 
 .gallery-empty {
   border-radius: 10px;
@@ -108,6 +72,7 @@ img {
 }
 
 
+.main-mobile,
 .photo-counter,
 .gallery-strip {
   display: none;
@@ -164,8 +129,8 @@ img {
 }
 
 
-/* Écrans tactiles : balayage, pas de flèches */
-@media (hover: hover) {
+/* Mobile avec souris : flèches au survol (écrans tactiles : balayage) */
+@media (max-width: 700px) and (hover: hover) {
 
   .gallery-main:hover .arrow {
     display: flex;
@@ -204,8 +169,14 @@ img {
   }
 
 
+  .main-desktop,
   .gallery-small {
     display: none;
+  }
+
+
+  .main-mobile {
+    display: block;
   }
 
 

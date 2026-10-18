@@ -10,13 +10,21 @@
 
     @if (photoList.length) {
 
+      <!-- Desktop : 1re photo / mobile : photo choisie -->
       <img
+        class="main-desktop"
+        [src]="photoList[0]"
+        [alt]="title"
+      />
+
+      <img
+        class="main-mobile"
         [src]="photoList[selected()]"
         [alt]="title"
       />
 
 
-      <!-- Flèches (au survol, appareils avec souris) -->
+      <!-- Flèches (mobile, au survol avec une souris) -->
       @if (photoList.length > 1) {
 
         <button
@@ -56,15 +64,7 @@
     @for (url of desktopThumbnails; track $index) {
 
       @if (url) {
-        <button
-          type="button"
-          class="small-item"
-          [class.small-item-active]="$index + 1 === selected()"
-          [attr.aria-label]="'Voir la photo ' + ($index + 2)"
-          (click)="select($index + 1)"
-        >
-          <img [src]="url" alt="" />
-        </button>
+        <img [src]="url" [alt]="'Photo ' + ($index + 2) + ' du logement'" />
       } @else {
         <div class="gallery-empty"></div>
       }

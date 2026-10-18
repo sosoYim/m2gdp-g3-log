@@ -12,8 +12,7 @@ import {
  * GALERIE DU LOGEMENT
  * =========================================
  *
- * Desktop : grande photo + 4 vignettes,
- * flèches au survol.
+ * Desktop : grande photo + 4 vignettes (fixe).
  * Mobile : photo choisie en grand (n / total)
  * + carrousel de vignettes, balayage gauche / droite.
  *
