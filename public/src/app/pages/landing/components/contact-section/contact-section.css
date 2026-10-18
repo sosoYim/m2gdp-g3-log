@@ -149,8 +149,17 @@
     font-size: 14px;
   }
 
+  .contact-content button {
+    width: 100%;
+
+    height: 46px;
+  }
+
+  /* Enveloppe au-dessus du titre */
   .contact-image {
     position: static;
+
+    order: -1;
 
     width: 150px;
 

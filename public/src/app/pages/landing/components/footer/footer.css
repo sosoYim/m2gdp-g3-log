@@ -271,15 +271,23 @@
     margin: 26px 0 20px;
   }
 
+  /* Liens légaux au-dessus du copyright */
   .footer-bottom {
-    flex-direction: column;
+    flex-direction: column-reverse;
     align-items: flex-start;
 
     gap: 14px;
   }
 
   .footer-links {
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 14px;
+  }
+
+  .footer-links span {
+    display: none;
   }
 
 }

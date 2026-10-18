@@ -141,12 +141,12 @@
 
   border-radius: 10px;
 
-  background: #ffffff;
+  background: #f9f9fc;
 }
 
 
 .stat-number {
-  color: #171925;
+  color: #7134f5;
 
   font-size: 36px;
 
@@ -206,6 +206,11 @@
 
 .see-all-link:hover {
   text-decoration: underline;
+}
+
+
+.link-short {
+  display: none;
 }
 
 
@@ -275,7 +280,13 @@
    ========================================================= */
 
 .request-row {
-  display: flex;
+  display: grid;
+
+  grid-template-columns:
+    165px
+    minmax(0, 1fr)
+    120px
+    auto;
 
   align-items: center;
 
@@ -322,9 +333,9 @@
 
   border-radius: 50%;
 
-  background: #eee9ff;
+  background: #cdd0f9;
 
-  color: #7134f5;
+  color: #3d43a4;
 
   font-size: 15px;
 
@@ -411,28 +422,20 @@
    ========================================================= */
 
 .request-actions {
-  flex-shrink: 0;
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: flex-end;
-
-  gap: 8px;
+  display: contents;
 }
 
 
 .pending-badge {
-  display: inline-block;
+  justify-self: start;
 
   padding: 4px 12px;
 
   border-radius: 999px;
 
-  background: #fff4d8;
+  background: #fde6df;
 
-  color: #a66a00;
+  color: #17194f;
 
   font-size: 9px;
 
@@ -557,9 +560,9 @@
 
 
 .status-online {
-  background: #e6f9f0;
+  background: #eee9ff;
 
-  color: #1a7a4a;
+  color: #3d43a4;
 }
 
 
@@ -626,6 +629,13 @@
 }
 
 
+.listing-price-row small {
+  font-size: 11px;
+
+  font-weight: 600;
+}
+
+
 .pending-requests-link {
   color: #7134f5;
 
@@ -672,15 +682,17 @@
 
   border: none;
 
+  border-radius: 6px;
+
   background: transparent;
 
-  color: #777c92;
+  color: #17194f;
 
   font-family: inherit;
 
   font-size: 11px;
 
-  font-weight: 600;
+  font-weight: 700;
 
   cursor: pointer;
 
@@ -689,7 +701,7 @@
 
 
 .pause-btn:hover {
-  color: #171925;
+  color: #7134f5;
 }
 
 
@@ -770,14 +782,12 @@
   }
 
 
-  .stats-grid {
+  .request-row {
     grid-template-columns:
-      repeat(3, minmax(0, 1fr));
-  }
-
-
-  .requester-info {
-    width: 140px;
+      140px
+      minmax(0, 1fr)
+      auto
+      auto;
   }
 
 }
@@ -795,16 +805,18 @@
 
 
   .account-content {
-    padding: 28px 16px 45px;
+    padding: 24px 16px 40px;
   }
 
 
   .dashboard-header {
     flex-direction: column;
 
-    align-items: flex-start;
+    align-items: stretch;
 
-    gap: 14px;
+    gap: 16px;
+
+    margin-bottom: 18px;
   }
 
 
@@ -813,64 +825,137 @@
   }
 
 
+  .new-listing-btn {
+    justify-content: center;
+
+    height: 46px;
+
+    font-size: 15px;
+  }
+
+
+  /* 3 cartes côte à côte */
+
   .stats-grid {
-    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+
+    margin-bottom: 30px;
   }
 
 
-  .stats-grid .stat-card:last-child {
-    grid-column: span 2;
+  .stat-card {
+    padding: 12px 10px;
   }
 
+
+  .stat-number {
+    font-size: 22px;
+  }
+
+
+  .stat-label {
+    font-size: 11px;
+  }
+
+
+  .section-header h2 {
+    font-size: 19px;
+  }
+
+
+  .link-long {
+    display: none;
+  }
+
+
+  .link-short {
+    display: inline;
+  }
+
+
+  /* Carte demande : demandeur + badge / détails / bouton */
 
   .request-row {
-    flex-wrap: wrap;
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto;
 
-    gap: 12px;
+    gap: 12px 8px;
+
+    padding: 14px 12px;
   }
 
 
-  .requester-info {
-    width: 100%;
+  .pending-badge {
+    align-self: start;
   }
 
 
   .request-details {
-    width: 100%;
+    grid-column: 1 / -1;
   }
 
 
-  .request-actions {
-    width: 100%;
+  .request-row .action-btn {
+    grid-column: 1 / -1;
 
-    flex-direction: row;
-
-    align-items: center;
-
-    justify-content: space-between;
+    font-size: 13px;
   }
 
+
+  /* Carte annonce : image en haut, boutons côte à côte */
 
   .listing-row {
-    flex-wrap: wrap;
+    flex-direction: column;
 
-    gap: 14px;
+    align-items: stretch;
+
+    gap: 12px;
+
+    padding: 8px 8px 12px;
   }
 
 
   .listing-image {
     width: 100%;
 
-    height: 180px;
+    height: 170px;
+  }
+
+
+  .listing-info {
+    padding: 0 4px;
+  }
+
+
+  .listing-price-row {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 6px;
   }
 
 
   .listing-actions {
-    width: 100%;
-
     flex-direction: row;
 
-    justify-content: flex-start;
+    padding: 0 4px;
+  }
+
+
+  .listing-actions .action-btn,
+  .pause-btn {
+    flex: 1;
+
+    min-width: 0;
+
+    font-size: 13px;
+  }
+
+
+  .pause-btn {
+    border: 1px solid #7134f5;
   }
 
 }

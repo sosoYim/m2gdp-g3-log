@@ -127,7 +127,9 @@
             routerLink="/host/requests"
             class="see-all-link"
           >
-            Voir toutes les demandes +
+            <span class="link-long">Voir toutes les demandes</span>
+            <span class="link-short">Voir tout</span>
+            →
           </a>
 
         </div>
@@ -243,7 +245,9 @@
             routerLink="/host/listings"
             class="see-all-link"
           >
-            Gérer mes annonces +
+            <span class="link-long">Gérer mes annonces</span>
+            <span class="link-short">Gérer</span>
+            →
           </a>
 
         </div>
@@ -329,7 +333,7 @@
                   <div class="listing-price-row">
 
                     <strong>
-                      {{ listing.price }} €/mois
+                      {{ listing.price }} €<small>/ mois</small>
                     </strong>
 
                     @if (getPendingCountForListing(listing.id) > 0) {
@@ -340,7 +344,7 @@
                       >
                         {{ getPendingCountForListing(listing.id) }}
                         {{ getPendingCountForListing(listing.id) > 1 ? 'demandes' : 'demande' }}
-                        en attente +
+                        en attente →
                       </a>
 
                     }
