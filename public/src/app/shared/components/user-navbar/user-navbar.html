@@ -233,8 +233,53 @@
 
       </div>
 
+
+      <!-- =========================
+           MENU MOBILE (BURGER / FERMER)
+      ========================== -->
+
+      <button
+        type="button"
+        class="menu-toggle"
+        [class.menu-toggle-open]="mobileMenuOpen()"
+        [attr.aria-label]="mobileMenuOpen() ? 'Fermer le menu' : 'Ouvrir le menu'"
+        [attr.aria-expanded]="mobileMenuOpen()"
+        (click)="toggleMobileMenu()"
+      >
+
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+
+          @if (mobileMenuOpen()) {
+            <path d="M6 6l12 12M18 6L6 18"></path>
+          } @else {
+            <path d="M4 7h16M4 12h16M4 17h16"></path>
+          }
+
+        </svg>
+
+      </button>
+
     </div>
 
   </nav>
 
 </header>
+
+
+@if (mobileMenuOpen()) {
+
+  <app-mobile-menu
+    [fullName]="userFullName"
+    [email]="userEmail"
+    [initial]="userInitial"
+    [role]="currentRole"
+    [switchingRole]="switchingRole()"
+    (closed)="closeMobileMenu()"
+    (roleChange)="switchRole($event)"
+    (logout)="logout()"
+  />
+
+}

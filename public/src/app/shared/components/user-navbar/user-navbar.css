@@ -1,3 +1,8 @@
+:host {
+  display: block;
+}
+
+
 /* =========================================================
    NAVBAR
    ========================================================= */
@@ -502,10 +507,65 @@
 
 
 /* =========================================================
+   BOUTON MENU MOBILE
+   ========================================================= */
+
+.menu-toggle {
+  width: 42px;
+  height: 42px;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 10px;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+
+.menu-toggle.menu-toggle-open {
+  background: #eee9ff;
+}
+
+
+.menu-toggle svg {
+  width: 24px;
+  height: 24px;
+
+  fill: none;
+
+  stroke: #171925;
+
+  stroke-width: 1.8;
+
+  stroke-linecap: round;
+}
+
+
+/* =========================================================
    MOBILE
    ========================================================= */
 
-@media (max-width: 700px) {
+@media (max-width: 760px) {
+
+  /*
+   * Menu ouvert : header fixé en haut
+   * au-dessus de l'overlay.
+   */
+  :host(.mobile-menu-open) {
+    position: sticky;
+
+    top: 0;
+
+    z-index: 1000;
+  }
+
 
   .user-navbar {
     height: 68px;
@@ -517,8 +577,15 @@
   }
 
 
-  .navbar-links {
+  .navbar-links,
+  .role-switch,
+  .profile-menu-wrapper {
     display: none;
+  }
+
+
+  .menu-toggle {
+    display: flex;
   }
 
 
@@ -534,72 +601,13 @@
 
 
   .navbar-user {
-    gap: 7px;
-  }
-
-
-  .role-switch {
-    padding: 2px;
-  }
-
-
-  .role-button {
-    height: 31px;
-
-    padding: 0 9px;
-
-    font-size: 9px;
-  }
-
-
-  .message-button,
-  .avatar {
-    width: 36px;
-    height: 36px;
-  }
-
-
-  .profile-menu {
-    width: 260px;
-
-    right: -4px;
-  }
-
-
-  .profile-menu-email {
-    max-width: 160px;
-  }
-
-}
-
-
-/* =========================================================
-   TRÈS PETIT MOBILE
-   ========================================================= */
-
-@media (max-width: 520px) {
-
-  .brand-name {
-    display: none;
-  }
-
-
-  .role-button {
-    padding: 0 7px;
-
-    font-size: 8px;
+    gap: 8px;
   }
 
 
   .message-button {
-    width: 34px;
-    height: 34px;
-  }
-
-
-  .avatar {
-    width: 34px;
-    height: 34px;
+    width: 42px;
+    height: 42px;
   }
 
 }

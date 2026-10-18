@@ -1,5 +1,6 @@
 import {
   Component,
+  HostBinding,
   HostListener,
   OnDestroy,
   OnInit,
@@ -20,6 +21,8 @@ import {
   UserRole
 } from '../../../core/profile/profile';
 
+import { MobileMenu } from '../mobile-menu/mobile-menu';
+
 
 @Component({
   selector: 'app-user-navbar',
@@ -27,7 +30,8 @@ import {
   standalone: true,
 
   imports: [
-    RouterLink
+    RouterLink,
+    MobileMenu
   ],
 
   templateUrl: './user-navbar.html',
@@ -38,6 +42,8 @@ export class UserNavbar
 
   userMenuOpen = signal(false);
 
+  mobileMenuOpen = signal(false);
+
   role = signal<UserRole>('guest');
 
   switchingRole = signal(false);
@@ -46,6 +52,8 @@ export class UserNavbar
   private initial = signal('');
 
   private email = signal('');
+
+  private fullName = signal('');
 
 
   private unsubscribeAuth?: Unsubscribe;
@@ -72,6 +80,8 @@ export class UserNavbar
             this.initial.set('');
 
             this.email.set('');
+
+            this.fullName.set('');
 
             this.role.set('guest');
 
@@ -118,6 +128,11 @@ export class UserNavbar
                   .charAt(0)
                   .toUpperCase();
 
+
+              this.fullName.set(
+                `${profile.firstName} ${profile.lastName}`.trim()
+              );
+
             }
 
 
@@ -156,6 +171,8 @@ export class UserNavbar
 
     this.unsubscribeAuth?.();
 
+    this.setBodyScrollLocked(false);
+
   }
 
 
@@ -180,6 +197,16 @@ export class UserNavbar
 
 
   /*
+   * Nom complet affiché dans le menu mobile
+   */
+  get userFullName(): string {
+
+    return this.fullName();
+
+  }
+
+
+  /*
    * Rôle actuellement sélectionné
    */
   get currentRole(): UserRole {
@@ -199,6 +226,9 @@ export class UserNavbar
     if (this.switchingRole()) {
       return;
     }
+
+
+    this.closeMobileMenu();
 
 
     const user =
@@ -334,6 +364,84 @@ export class UserNavbar
 
 
   /*
+   * =========================================
+   * MENU MOBILE
+   * =========================================
+   */
+
+  /*
+   * Header fixé en haut pendant que
+   * le menu mobile est ouvert.
+   */
+  @HostBinding('class.mobile-menu-open')
+  get isMobileMenuOpen(): boolean {
+
+    return this.mobileMenuOpen();
+
+  }
+
+
+  toggleMobileMenu(): void {
+
+    if (this.mobileMenuOpen()) {
+
+      this.closeMobileMenu();
+
+      return;
+
+    }
+
+
+    this.mobileMenuOpen.set(true);
+
+    this.setBodyScrollLocked(true);
+
+  }
+
+
+  closeMobileMenu(): void {
+
+    this.mobileMenuOpen.set(false);
+
+    this.setBodyScrollLocked(false);
+
+  }
+
+
+  /*
+   * Bloque le défilement de la page
+   * derrière le menu ouvert.
+   */
+  private setBodyScrollLocked(
+    locked: boolean
+  ): void {
+
+    document.body.style.overflow =
+      locked ? 'hidden' : '';
+
+  }
+
+
+  /*
+   * Passage en affichage desktop :
+   * on ferme le menu mobile.
+   */
+  @HostListener('window:resize')
+  onWindowResize(): void {
+
+    if (
+      this.mobileMenuOpen() &&
+      window.innerWidth > 760
+    ) {
+
+      this.closeMobileMenu();
+
+    }
+
+  }
+
+
+  /*
    * Déconnexion
    */
   async logout(): Promise<void> {
@@ -344,6 +452,8 @@ export class UserNavbar
 
 
       this.closeUserMenu();
+
+      this.closeMobileMenu();
 
 
       await this.router.navigate([

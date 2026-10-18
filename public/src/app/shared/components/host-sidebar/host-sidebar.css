@@ -154,51 +154,15 @@
 
 
 /* =========================================================
-   TABLETTE / MOBILE
+   MOBILE
+   =========================================================
+   Remplacée par le menu mobile de la navbar.
    ========================================================= */
 
 @media (max-width: 760px) {
 
-  .account-sidebar {
-    height: auto;
-
-    padding: 16px;
-
-    border-right: none;
-
-    border-bottom: 1px solid #e6e7ef;
-  }
-
-
-  .sidebar-title {
+  :host {
     display: none;
-  }
-
-
-  .account-menu {
-    flex-direction: row;
-
-    gap: 7px;
-
-    overflow-x: auto;
-  }
-
-
-  .menu-item {
-    width: auto;
-
-    flex-shrink: 0;
-
-    padding: 0 12px;
-
-    font-size: 11px;
-  }
-
-
-  .menu-item svg,
-  .settings-icon {
-    width: 18px;
-    height: 18px;
   }
 
 }
