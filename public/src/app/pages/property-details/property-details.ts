@@ -30,6 +30,8 @@ import {
 
 import { Favorite } from '../../core/favorite/favorite';
 
+import { PropertyGallery } from './components/property-gallery/property-gallery';
+
 import { EquipmentIcon } from '../../shared/components/equipment-icon/equipment-icon';
 
 import { getAmenityLabel } from '../host-listing-form/listing-form.data';
@@ -67,11 +69,9 @@ interface PropertyDetailsViewModel {
   verified: boolean;
 
   /*
-   * 1re photo + 4 vignettes
-   * ('' = emplacement vide)
+   * Toutes les photos (1re = principale)
    */
-  mainImage: string;
-  thumbnails: string[];
+  photos: string[];
 
   price: number;
 
@@ -109,6 +109,7 @@ const EQUIPMENT_ICONS: Record<string, string> = {
     Navbar,
     AuthModal,
     EquipmentIcon,
+    PropertyGallery,
     ContactSection,
     Footer
   ],
@@ -148,8 +149,7 @@ export class PropertyDetails implements OnInit {
     rating: 0,
     reviews: 42,
     verified: false,
-    mainImage: '',
-    thumbnails: ['', '', '', ''],
+    photos: [],
     price: 0,
     minimumStay: '',
     details: '',
@@ -322,8 +322,6 @@ export class PropertyDetails implements OnInit {
     const photos =
       form.photos.map(photo => photo.url);
 
-    const thumbnails =
-      [1, 2, 3, 4].map(i => photos[i] ?? '');
 
 
     this.listing = {
@@ -348,10 +346,10 @@ export class PropertyDetails implements OnInit {
       price:
         firestoreListing.price,
 
-      mainImage:
-        photos[0] ?? firestoreListing.image,
-
-      thumbnails,
+      photos:
+        photos.length
+          ? photos
+          : [firestoreListing.image].filter(Boolean),
 
       minimumStay:
         `${form.minStayMonths} mois`,
@@ -596,7 +594,7 @@ export class PropertyDetails implements OnInit {
           details: listing.details,
           price: listing.price,
           rating: listing.rating,
-          image: this.listing.mainImage
+          image: this.listing.photos[0] ?? listing.image
         });
 
         this.favorite.set(true);

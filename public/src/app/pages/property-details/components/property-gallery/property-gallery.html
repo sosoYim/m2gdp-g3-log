@@ -1,0 +1,100 @@
+<section class="gallery">
+
+
+  <!-- Grande photo -->
+  <div
+    class="gallery-main"
+    (touchstart)="onTouchStart($event)"
+    (touchend)="onTouchEnd($event)"
+  >
+
+    @if (photoList.length) {
+
+      <img
+        [src]="photoList[selected()]"
+        [alt]="title"
+      />
+
+
+      <!-- Flèches (au survol, appareils avec souris) -->
+      @if (photoList.length > 1) {
+
+        <button
+          type="button"
+          class="arrow arrow-prev"
+          aria-label="Photo précédente"
+          (click)="select(selected() - 1)"
+        >
+          ‹
+        </button>
+
+        <button
+          type="button"
+          class="arrow arrow-next"
+          aria-label="Photo suivante"
+          (click)="select(selected() + 1)"
+        >
+          ›
+        </button>
+
+      }
+
+      <span class="photo-counter">
+        {{ selected() + 1 }} / {{ photoList.length }}
+      </span>
+
+    }
+
+    <ng-content />
+
+  </div>
+
+
+  <!-- Desktop : 4 petites photos -->
+  <div class="gallery-small">
+
+    @for (url of desktopThumbnails; track $index) {
+
+      @if (url) {
+        <button
+          type="button"
+          class="small-item"
+          [class.small-item-active]="$index + 1 === selected()"
+          [attr.aria-label]="'Voir la photo ' + ($index + 2)"
+          (click)="select($index + 1)"
+        >
+          <img [src]="url" alt="" />
+        </button>
+      } @else {
+        <div class="gallery-empty"></div>
+      }
+
+    }
+
+  </div>
+
+
+  <!-- Mobile : carrousel -->
+  @if (photoList.length > 1) {
+
+    <div #strip class="gallery-strip">
+
+      @for (url of photoList; track $index) {
+
+        <button
+          type="button"
+          class="strip-item"
+          [class.strip-item-active]="$index === selected()"
+          [attr.aria-label]="'Voir la photo ' + ($index + 1)"
+          (click)="select($index)"
+        >
+          <img [src]="url" alt="" />
+        </button>
+
+      }
+
+    </div>
+
+  }
+
+</section>

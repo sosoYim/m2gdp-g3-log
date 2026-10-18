@@ -1,0 +1,278 @@
+/* =========================
+   DESKTOP
+========================= */
+
+.gallery {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+
+  gap: 10px;
+
+  margin-bottom: 28px;
+}
+
+
+.gallery-main,
+.gallery-small {
+  min-width: 0;
+  height: 360px;
+}
+
+
+.gallery-main {
+  position: relative;
+
+  overflow: hidden;
+
+  border-radius: 10px;
+
+  background: #f6f3ff;
+}
+
+
+.gallery-small {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+
+  gap: 10px;
+}
+
+
+img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  min-height: 0;
+
+  object-fit: cover;
+
+  border-radius: 10px;
+}
+
+
+.gallery-main img {
+  border-radius: 0;
+}
+
+
+/* Vignettes desktop cliquables */
+.small-item {
+  position: relative;
+
+  min-height: 0;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 10px;
+
+  background: none;
+
+  overflow: hidden;
+
+  cursor: pointer;
+}
+
+.small-item img {
+  transition: opacity 0.15s ease;
+}
+
+.small-item:hover img {
+  opacity: 0.85;
+}
+
+.small-item-active::after {
+  content: '';
+
+  position: absolute;
+  inset: 0;
+
+  border: 3px solid #7134f5;
+  border-radius: 10px;
+}
+
+
+.gallery-empty {
+  border-radius: 10px;
+
+  background: #f6f3ff;
+}
+
+
+.photo-counter,
+.gallery-strip {
+  display: none;
+}
+
+
+/* =========================
+   FLÈCHES (SURVOL)
+========================= */
+
+.gallery-main {
+  touch-action: pan-y;
+}
+
+
+.arrow {
+  position: absolute;
+  top: 50%;
+
+  width: 36px;
+  height: 36px;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 0 3px;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.92);
+
+  color: #17194f;
+
+  font-size: 24px;
+  line-height: 1;
+
+  transform: translateY(-50%);
+
+  cursor: pointer;
+}
+
+.arrow:hover {
+  background: #eee9ff;
+}
+
+.arrow-prev {
+  left: 12px;
+}
+
+.arrow-next {
+  right: 12px;
+}
+
+
+/* Écrans tactiles : balayage, pas de flèches */
+@media (hover: hover) {
+
+  .gallery-main:hover .arrow {
+    display: flex;
+  }
+
+}
+
+
+/* =========================
+   TABLETTE
+========================= */
+
+@media (max-width: 1100px) {
+
+  .gallery-main,
+  .gallery-small {
+    height: 320px;
+  }
+
+}
+
+
+/* =========================
+   MOBILE : CARROUSEL
+========================= */
+
+@media (max-width: 700px) {
+
+  .gallery {
+    display: block;
+  }
+
+
+  .gallery-main {
+    height: 270px;
+  }
+
+
+  .gallery-small {
+    display: none;
+  }
+
+
+  .photo-counter {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+
+    display: block;
+
+    padding: 5px 12px;
+
+    border-radius: 999px;
+
+    background: #ffffff;
+
+    color: #17194f;
+
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+
+  .gallery-strip {
+    position: relative;
+
+    display: flex;
+
+    gap: 8px;
+
+    margin-top: 8px;
+
+    overflow-x: auto;
+
+    scroll-snap-type: x mandatory;
+
+    scrollbar-width: none;
+  }
+
+
+  .strip-item {
+    flex: 0 0 calc((100% - 24px) / 4);
+
+    height: 64px;
+
+    padding: 0;
+
+    border: 2px solid transparent;
+    border-radius: 8px;
+
+    background: none;
+
+    overflow: hidden;
+
+    scroll-snap-align: start;
+
+    cursor: pointer;
+  }
+
+
+  .strip-item img {
+    border-radius: 6px;
+  }
+
+
+  .strip-item-active {
+    border-color: #7134f5;
+  }
+
+}

@@ -129,48 +129,22 @@
 
 
 /* =========================
-   GALERIE
+   FAVORI SUR LA PHOTO (MOBILE)
 ========================= */
 
-.gallery {
-  width: 100%;
-  height: 360px;
-
-  display: grid;
-
-  grid-template-columns:
-    minmax(0, 1fr)
-    minmax(0, 1fr);
-
-  gap: 10px;
-
-  margin-bottom: 28px;
-
-  overflow: hidden;
-}
-
-
-/* Grande image */
-
-.gallery-main {
-  position: relative;
-
-  min-width: 0;
-  height: 360px;
-
-  overflow: hidden;
-}
-
-
-.gallery-main .favorite-button {
+.photo-favorite {
   display: none;
 
   position: absolute;
   top: 12px;
   right: 12px;
+}
 
+.photo-favorite .favorite-button {
   width: 34px;
   height: 34px;
+
+  display: flex;
   align-items: center;
   justify-content: center;
 
@@ -186,59 +160,13 @@
   transition: background 0.15s ease;
 }
 
-.gallery-main .favorite-button:hover {
+.photo-favorite .favorite-button:hover {
   background: #eee9ff;
 }
 
-
-.gallery-main .favorite-button img {
+.photo-favorite .favorite-button img {
   width: 20px;
   height: 20px;
-}
-
-.gallery-main img {
-  display: block;
-
-  width: 100%;
-  height: 100%;
-
-  object-fit: cover;
-  object-position: center;
-}
-
-
-/* 4 petites images */
-
-.gallery-small {
-  min-width: 0;
-  height: 360px;
-
-  display: grid;
-
-  grid-template-columns:
-    1fr
-    1fr;
-
-  grid-template-rows:
-    1fr
-    1fr;
-
-  gap: 10px;
-}
-
-.gallery-small img {
-  display: block;
-
-  width: 100%;
-  height: 100%;
-
-  min-width: 0;
-  min-height: 0;
-
-  object-fit: cover;
-  object-position: center;
-
-  overflow: hidden;
 }
 
 
@@ -405,12 +333,6 @@
 
 
 
-/* Emplacement photo vide */
-.gallery-empty {
-  min-height: 0;
-
-  background: #f6f3ff;
-}
 
 
 
@@ -607,14 +529,6 @@
   .property-container {
   width: calc(100% - 48px);
  }
-  .gallery {
-    height: 320px;
-  }
-
-  .gallery-main,
-  .gallery-small {
-    height: 320px;
-  }
 
   /*
    * Une colonne : propriétaire → carte prix
@@ -689,45 +603,13 @@
     display: none;
   }
 
-  .gallery-main .favorite-button {
-    display: flex;
+  .photo-favorite {
+    display: block;
   }
 
 
   .property-heading h1 {
     font-size: 23px;
-  }
-
-
-  .gallery {
-    height: auto;
-
-    grid-template-columns: 1fr;
-  }
-
-
-  .gallery-main {
-    height: 270px;
-  }
-
-
-  .gallery-small {
-    height: auto;
-
-    grid-template-columns:
-      repeat(4, minmax(0, 1fr));
-
-    grid-template-rows: auto;
-
-    gap: 8px;
-  }
-
-
-  .gallery-small img,
-  .gallery-small .gallery-empty {
-    height: 64px;
-
-    border-radius: 6px;
   }
 
 

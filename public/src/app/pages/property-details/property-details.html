@@ -67,45 +67,17 @@
          GALERIE
     ========================== -->
 
-    <section class="gallery">
+    <app-property-gallery
+      [photos]="listing.photos"
+      [title]="listing.title"
+    >
 
-
-      <!-- Grande photo -->
-      <div class="gallery-main">
-
-        @if (listing.mainImage) {
-          <img
-            [src]="listing.mainImage"
-            [alt]="listing.title"
-          />
-        }
-
-
-        <!-- Favori (mobile) -->
+      <!-- Favori (mobile) -->
+      <div class="photo-favorite">
         <ng-container *ngTemplateOutlet="favoriteButton" />
-
       </div>
 
-
-      <!-- 4 petites photos -->
-      <div class="gallery-small">
-
-        @for (url of listing.thumbnails; track $index) {
-
-          @if (url) {
-            <img
-              [src]="url"
-              [alt]="'Photo ' + ($index + 2) + ' du logement'"
-            />
-          } @else {
-            <div class="gallery-empty"></div>
-          }
-
-        }
-
-      </div>
-
-    </section>
+    </app-property-gallery>
 
 
 
