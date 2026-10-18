@@ -1,0 +1,806 @@
+openapi: 3.0.3
+
+info:
+  title: SubLyon API
+  version: 0.1.0
+  description: |
+    API REST de SubLyon, l'application de sous-location temporaire entre étudiants à Lyon.
+
+    **État d'implémentation.** Seule la route `GET /health` est implémentée dans le
+    Worker Cloudflare (`workers/src/index.ts`). Les autres opérations sont aujourd'hui
+    réalisées côté client avec le SDK Firebase (Firestore et Realtime Database).
+    Cette spécification décrit le contrat REST cible. Les chemins reprennent les noms
+    des collections existantes (`users`, `listings`, `bookingRequests`, `conversations`). Chaque opération porte l'extension `x-implemented`.
+
+servers:
+  - url: http://127.0.0.1:8787/api
+    description: Worker local (`npm run dev:back`)
+
+tags:
+  - name: Système
+  - name: Authentification
+  - name: Utilisateurs
+  - name: Favoris
+  - name: Annonces
+  - name: Demandes
+  - name: Messagerie
+
+security:
+  - firebaseAuth: []
+
+paths:
+  /health:
+    get:
+      tags: [Système]
+      summary: Vérifier l'état de l'API
+      operationId: getHealth
+      x-implemented: true
+      security: []
+      responses:
+        "200":
+          description: L'API répond.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+
+  /auth/magic-link:
+    post:
+      tags: [Authentification]
+      summary: Envoyer un lien de connexion par email
+      description: |
+        Envoie un lien magique Firebase à l'adresse indiquée. Le lien ramène
+        l'utilisateur sur la page `/auth/callback` de l'application, qui termine la connexion.
+      operationId: sendMagicLink
+      x-implemented: false
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        "202":
+          description: Lien envoyé.
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /users:
+    post:
+      tags: [Utilisateurs]
+      summary: Créer le profil de l'utilisateur connecté
+      operationId: createUser
+      x-implemented: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserInput"
+      responses:
+        "201":
+          description: Profil créé.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /users/{uid}:
+    parameters:
+      - $ref: "#/components/parameters/Uid"
+    get:
+      tags: [Utilisateurs]
+      summary: Lire un profil
+      operationId: getUser
+      x-implemented: false
+      responses:
+        "200":
+          description: Profil de l'utilisateur.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      tags: [Utilisateurs]
+      summary: Modifier son profil ou son rôle
+      operationId: updateUser
+      x-implemented: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPatch"
+      responses:
+        "200":
+          description: Profil mis à jour.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /users/{uid}/favorites:
+    parameters:
+      - $ref: "#/components/parameters/Uid"
+    get:
+      tags: [Favoris]
+      summary: Lister les favoris d'un utilisateur
+      description: Triés du plus récent au plus ancien.
+      operationId: listFavorites
+      x-implemented: false
+      responses:
+        "200":
+          description: Favoris de l'utilisateur.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Favorite"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /users/{uid}/favorites/{listingId}:
+    parameters:
+      - $ref: "#/components/parameters/Uid"
+      - $ref: "#/components/parameters/ListingId"
+    put:
+      tags: [Favoris]
+      summary: Ajouter une annonce aux favoris
+      description: Enregistre une copie du titre, du prix et de l'image de l'annonce.
+      operationId: addFavorite
+      x-implemented: false
+      responses:
+        "200":
+          description: Favori enregistré.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Favorite"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Favoris]
+      summary: Retirer une annonce des favoris
+      operationId: removeFavorite
+      x-implemented: false
+      responses:
+        "204":
+          description: Favori supprimé.
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /listings:
+    get:
+      tags: [Annonces]
+      summary: Rechercher des logements
+      description: |
+        Retourne les annonces publiées. Avec `arrivalDate` et `departureDate`, ne garde
+        que les annonces disponibles sur toute la période. Avec `ownerId`, retourne les
+        annonces de cet annonceur, quel que soit leur statut.
+      operationId: listListings
+      x-implemented: false
+      security: []
+      parameters:
+        - name: arrivalDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: departureDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: ownerId
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Annonces correspondantes.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Listing"
+    post:
+      tags: [Annonces]
+      summary: Publier une annonce
+      description: L'annonce est rattachée à l'utilisateur connecté (`ownerId`).
+      operationId: createListing
+      x-implemented: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListingInput"
+      responses:
+        "201":
+          description: Annonce créée.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /listings/{listingId}:
+    parameters:
+      - $ref: "#/components/parameters/ListingId"
+    get:
+      tags: [Annonces]
+      summary: Lire une annonce
+      operationId: getListing
+      x-implemented: false
+      security: []
+      responses:
+        "200":
+          description: Détail de l'annonce.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      tags: [Annonces]
+      summary: Modifier une annonce
+      description: Réservé à l'annonceur propriétaire.
+      operationId: updateListing
+      x-implemented: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListingPatch"
+      responses:
+        "200":
+          description: Annonce mise à jour.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /bookingRequests:
+    get:
+      tags: [Demandes]
+      summary: Lister ses demandes de réservation
+      operationId: listBookingRequests
+      x-implemented: false
+      parameters:
+        - name: role
+          in: query
+          description: "`requester` pour les demandes envoyées, `owner` pour les demandes reçues."
+          schema:
+            type: string
+            enum: [requester, owner]
+            default: requester
+      responses:
+        "200":
+          description: Demandes de l'utilisateur connecté.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BookingRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      tags: [Demandes]
+      summary: Envoyer une demande de réservation
+      description: La demande est créée avec le statut `pending`.
+      operationId: createBookingRequest
+      x-implemented: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingRequestInput"
+      responses:
+        "201":
+          description: Demande créée.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingRequest"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /bookingRequests/{requestId}:
+    parameters:
+      - $ref: "#/components/parameters/RequestId"
+    get:
+      tags: [Demandes]
+      summary: Lire une demande
+      description: Réservé au demandeur et à l'annonceur concernés.
+      operationId: getBookingRequest
+      x-implemented: false
+      responses:
+        "200":
+          description: Détail de la demande.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      tags: [Demandes]
+      summary: Accepter ou refuser une demande
+      description: Réservé à l'annonceur concerné.
+      operationId: updateBookingRequestStatus
+      x-implemented: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [accepted, rejected]
+      responses:
+        "200":
+          description: Statut mis à jour.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingRequest"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /conversations:
+    get:
+      tags: [Messagerie]
+      summary: Lister ses conversations
+      description: Triées par dernier message, du plus récent au plus ancien.
+      operationId: listConversations
+      x-implemented: false
+      responses:
+        "200":
+          description: Conversations de l'utilisateur connecté.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Conversation"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      tags: [Messagerie]
+      summary: Ouvrir la conversation d'une demande de réservation
+      description: |
+        La conversation prend l'identifiant de la demande. Si elle existe déjà,
+        elle est retournée telle quelle.
+      operationId: createConversation
+      x-implemented: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bookingRequestId]
+              properties:
+                bookingRequestId:
+                  type: string
+      responses:
+        "200":
+          description: Conversation ouverte.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /conversations/{conversationId}/messages:
+    parameters:
+      - name: conversationId
+        in: path
+        required: true
+        description: Identique à l'identifiant de la demande de réservation.
+        schema:
+          type: string
+    get:
+      tags: [Messagerie]
+      summary: Lire les messages d'une conversation
+      description: Triés du plus ancien au plus récent.
+      operationId: listMessages
+      x-implemented: false
+      responses:
+        "200":
+          description: Messages de la conversation.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    post:
+      tags: [Messagerie]
+      summary: Envoyer un message
+      operationId: sendMessage
+      x-implemented: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                text:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+      responses:
+        "201":
+          description: Message envoyé.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+components:
+  securitySchemes:
+    firebaseAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Jeton d'identité Firebase Authentication.
+
+  parameters:
+    Uid:
+      name: uid
+      in: path
+      required: true
+      description: UID Firebase de l'utilisateur.
+      schema:
+        type: string
+    ListingId:
+      name: listingId
+      in: path
+      required: true
+      schema:
+        type: string
+    RequestId:
+      name: requestId
+      in: path
+      required: true
+      schema:
+        type: string
+
+  responses:
+    BadRequest:
+      description: Requête invalide.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Jeton absent ou invalide.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Forbidden:
+      description: L'utilisateur connecté n'a pas accès à cette ressource.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Ressource introuvable.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  schemas:
+    Health:
+      type: object
+      required: [status, service]
+      properties:
+        status:
+          type: string
+          example: ok
+        service:
+          type: string
+          example: sublyon-api
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          example: Route not found
+
+    UserRole:
+      type: string
+      enum: [guest, host]
+      description: "`guest` pour un demandeur, `host` pour un annonceur."
+
+    UserInput:
+      type: object
+      required: [firstName, lastName, email]
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          $ref: "#/components/schemas/UserRole"
+
+    UserPatch:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          $ref: "#/components/schemas/UserRole"
+
+    User:
+      allOf:
+        - $ref: "#/components/schemas/UserInput"
+        - type: object
+          required: [uid]
+          properties:
+            uid:
+              type: string
+            updatedAt:
+              type: string
+              format: date-time
+
+    ListingStatus:
+      type: string
+      enum: [published, draft, inactive]
+
+    ListingPatch:
+      type: object
+      properties:
+        title:
+          type: string
+        location:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        details:
+          type: string
+        price:
+          type: number
+        image:
+          type: string
+          description: URL de l'image principale.
+        availableFrom:
+          type: string
+          format: date
+        availableTo:
+          type: string
+          format: date
+        status:
+          $ref: "#/components/schemas/ListingStatus"
+
+    ListingInput:
+      allOf:
+        - $ref: "#/components/schemas/ListingPatch"
+        - type: object
+          required: [title, location, price, availableFrom, availableTo]
+
+    Listing:
+      allOf:
+        - $ref: "#/components/schemas/ListingInput"
+        - type: object
+          required: [id, ownerId, ownerName, status]
+          properties:
+            id:
+              type: string
+            ownerId:
+              type: string
+            ownerName:
+              type: string
+            rating:
+              type: number
+            verified:
+              type: boolean
+            highlighted:
+              type: boolean
+
+    Favorite:
+      type: object
+      required: [listingId, title, location, details, price, rating, image]
+      properties:
+        listingId:
+          type: string
+        title:
+          type: string
+        location:
+          type: string
+        details:
+          type: string
+        price:
+          type: number
+        rating:
+          type: number
+        image:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    BookingStatus:
+      type: string
+      enum: [pending, accepted, rejected]
+
+    BookingRequestInput:
+      type: object
+      required: [listingId, arrivalDate, departureDate, message]
+      properties:
+        listingId:
+          type: string
+        arrivalDate:
+          type: string
+          format: date
+        departureDate:
+          type: string
+          format: date
+        message:
+          type: string
+
+    BookingRequest:
+      allOf:
+        - $ref: "#/components/schemas/BookingRequestInput"
+        - type: object
+          required: [id, requesterId, ownerId, ownerName, status]
+          properties:
+            id:
+              type: string
+            requesterId:
+              type: string
+            ownerId:
+              type: string
+            ownerName:
+              type: string
+            status:
+              $ref: "#/components/schemas/BookingStatus"
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    Conversation:
+      type: object
+      required: [id, bookingRequestId, requesterId, ownerId, listingId]
+      properties:
+        id:
+          type: string
+        bookingRequestId:
+          type: string
+        requesterId:
+          type: string
+        ownerId:
+          type: string
+        listingId:
+          type: string
+        listingTitle:
+          type: string
+        ownerName:
+          type: string
+        lastMessage:
+          type: string
+        lastMessageAt:
+          type: integer
+          format: int64
+          description: Horodatage en millisecondes.
+        updatedAt:
+          type: integer
+          format: int64
+          description: Horodatage en millisecondes.
+
+    Message:
+      type: object
+      required: [id, senderId, text, createdAt]
+      properties:
+        id:
+          type: string
+        senderId:
+          type: string
+        text:
+          type: string
+          maxLength: 2000
+        createdAt:
+          type: integer
+          format: int64
+          description: Horodatage en millisecondes.

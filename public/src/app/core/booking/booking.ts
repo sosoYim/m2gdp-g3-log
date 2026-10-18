@@ -3,10 +3,13 @@ import { Injectable } from '@angular/core';
 import {
   addDoc,
   collection,
+  doc,
+  getDoc,
   getDocs,
   query,
   serverTimestamp,
   Timestamp,
+  updateDoc,
   where
 } from 'firebase/firestore';
 
@@ -364,6 +367,113 @@ export class Booking {
 
 
     return requests;
+
+  }
+
+
+  /*
+   * =========================================
+   * RÉCUPÉRER UNE DEMANDE PAR SON ID
+   * =========================================
+   */
+  async getRequestById(
+    requestId: string
+  ): Promise<BookingRequest | null> {
+
+    const requestRef =
+      doc(
+        firestore,
+        'bookingRequests',
+        requestId
+      );
+
+
+    const snapshot =
+      await getDoc(
+        requestRef
+      );
+
+
+    if (!snapshot.exists()) {
+      return null;
+    }
+
+
+    const data =
+      snapshot.data();
+
+
+    return {
+
+      id:
+        snapshot.id,
+
+      listingId:
+        data['listingId'] ?? '',
+
+      requesterId:
+        data['requesterId'] ?? '',
+
+      ownerId:
+        data['ownerId'] ?? '',
+
+      ownerName:
+        data['ownerName'] ?? '',
+
+      arrivalDate:
+        data['arrivalDate'] ?? '',
+
+      departureDate:
+        data['departureDate'] ?? '',
+
+      message:
+        data['message'] ?? '',
+
+      status:
+        this.normalizeStatus(
+          data['status']
+        ),
+
+      createdAt:
+        data['createdAt'] instanceof Timestamp
+          ? data['createdAt']
+          : null,
+
+      updatedAt:
+        data['updatedAt'] instanceof Timestamp
+          ? data['updatedAt']
+          : null
+
+    } satisfies BookingRequest;
+
+  }
+
+
+  /*
+   * =========================================
+   * METTRE À JOUR LE STATUT D'UNE DEMANDE
+   * =========================================
+   */
+  async updateRequestStatus(
+    requestId: string,
+    status: BookingStatus
+  ): Promise<void> {
+
+    const requestRef =
+      doc(
+        firestore,
+        'bookingRequests',
+        requestId
+      );
+
+
+    await updateDoc(
+      requestRef,
+      {
+        status,
+        updatedAt: serverTimestamp()
+      }
+    );
 
   }
 
