@@ -13,5 +13,17 @@ export const environment = {
    * URL du Worker Cloudflare (API).
    * Local : npm run dev:back
    */
-  apiUrl: "http://127.0.0.1:8787"
+  apiUrl: "http://127.0.0.1:8787",
+
+  /*
+   * Google Maps (Places + carte) — étape 1 « Déposer une annonce ».
+   * Clé du projet m2gdp-g3-log-3963b, restreinte aux domaines de l'app.
+   * Vide = saisie libre de l'adresse.
+   */
+  googleMapsApiKey: "",
+
+  /*
+   * Map ID (marqueurs). Vide = DEMO_MAP_ID (développement).
+   */
+  googleMapsMapId: ""
 };

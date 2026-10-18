@@ -52,7 +52,7 @@ export class StepReview {
 
   get areaLabel(): string {
 
-    return getAreaLabel(this.form.address);
+    return getAreaLabel(this.form.arrondissement);
 
   }
 

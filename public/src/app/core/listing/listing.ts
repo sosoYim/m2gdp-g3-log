@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import {
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getDoc,
   getDocs,
@@ -103,7 +104,38 @@ export interface ListingForm {
 
   propertyType: PropertyType;
 
+  /*
+   * Adresse complète (Google Places).
+   * Privée : listings/{id}/private/address
+   */
   address: string;
+
+  /*
+   * Bâtiment, n° d'appartement… (privé)
+   */
+  addressDetails: string;
+
+  /*
+   * Identifiant Google Places (privé)
+   */
+  placeId: string;
+
+  /*
+   * Public : seul l'arrondissement
+   * est affiché sur l'annonce.
+   */
+  postalCode: string;
+
+  arrondissement: number | null;
+
+  /*
+   * Position exacte (privée).
+   * L'annonce publique reçoit une
+   * position approximative (~100-300 m).
+   */
+  latitude: number | null;
+
+  longitude: number | null;
 
   surface: number | null;
 
@@ -159,6 +191,12 @@ export function createEmptyListingForm(): ListingForm {
     title: '',
     propertyType: 'studio',
     address: '',
+    addressDetails: '',
+    placeId: '',
+    postalCode: '',
+    arrondissement: null,
+    latitude: null,
+    longitude: null,
     surface: null,
     rooms: null,
     floor: null,
@@ -197,6 +235,67 @@ const ARRONDISSEMENT_CENTERS: Record<number, [number, number]> = {
 };
 
 const LYON_CENTER: [number, number] = [45.7578, 4.832];
+
+
+/*
+ * Champs d'adresse jamais écrits
+ * dans le document public.
+ */
+const PRIVATE_ADDRESS_FIELDS = [
+  'address',
+  'addressDetails',
+  'placeId'
+] as const;
+
+
+/*
+ * Position publique approximative :
+ * décalage fixe de 100 à 300 m,
+ * calculé à partir de l'ID de l'annonce
+ * (toujours le même pour une annonce).
+ */
+function approximateCoordinates(
+  latitude: number,
+  longitude: number,
+  seed: string
+): [number, number] {
+
+  let hash = 0;
+
+  for (const char of seed) {
+    hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+  }
+
+
+  const angle =
+    (hash % 360) * Math.PI / 180;
+
+  const meters =
+    100 + (hash % 200);
+
+
+  return [
+    latitude + meters * Math.cos(angle) / 111320,
+    longitude + meters * Math.sin(angle) / (111320 * Math.cos(latitude * Math.PI / 180))
+  ];
+
+}
+
+
+/*
+ * « Lyon 2e », « Lyon 1er », « Lyon »
+ */
+export function getLocationLabel(
+  arrondissement: number | null
+): string {
+
+  if (!arrondissement) {
+    return 'Lyon';
+  }
+
+  return `Lyon ${arrondissement}${arrondissement === 1 ? 'er' : 'e'}`;
+
+}
 
 
 /*
@@ -253,7 +352,8 @@ export class Listing {
    * =========================================
    */
   async getListingForm(
-    listingId: string
+    listingId: string,
+    includePrivate = false
   ): Promise<ListingFormDocument | null> {
 
     const snapshot =
@@ -287,6 +387,50 @@ export class Listing {
         (form as unknown as Record<string, unknown>)[key] = data[key];
       }
 
+    }
+
+
+    /*
+     * Les coordonnées publiques sont
+     * approximatives : jamais reprises
+     * dans le formulaire.
+     */
+    form.latitude = null;
+    form.longitude = null;
+
+
+    /*
+     * Adresse privée (annonceur uniquement)
+     */
+    if (includePrivate) {
+
+      const privateSnapshot =
+        await getDoc(
+          doc(firestore, 'listings', listingId, 'private', 'address')
+        );
+
+      const privateData =
+        privateSnapshot.exists() ? privateSnapshot.data() : {};
+
+
+      form.address = privateData['address'] ?? form.address;
+      form.addressDetails = privateData['addressDetails'] ?? '';
+      form.placeId = privateData['placeId'] ?? '';
+
+      if (typeof privateData['latitude'] === 'number') {
+        form.latitude = privateData['latitude'];
+        form.longitude = privateData['longitude'];
+      }
+
+    }
+
+
+    /*
+     * Anciennes annonces : arrondissement
+     * déduit de l'adresse.
+     */
+    if (!form.arrondissement) {
+      form.arrondissement = getArrondissement(form.address);
     }
 
 
@@ -336,23 +480,40 @@ export class Listing {
 
 
     const arrondissement =
-      getArrondissement(form.address);
+      form.arrondissement ?? getArrondissement(form.address);
 
+
+    /*
+     * Position publique : approximative si
+     * l'adresse est géocodée, sinon centre
+     * de l'arrondissement.
+     */
     const [latitude, longitude] =
-      arrondissement
-        ? ARRONDISSEMENT_CENTERS[arrondissement]
-        : LYON_CENTER;
+      form.latitude !== null && form.longitude !== null
+        ? approximateCoordinates(form.latitude, form.longitude, listingRef.id)
+        : arrondissement
+          ? ARRONDISSEMENT_CENTERS[arrondissement]
+          : LYON_CENTER;
+
+
+    const publicForm: Record<string, unknown> =
+      { ...form };
+
+    for (const field of PRIVATE_ADDRESS_FIELDS) {
+      publicForm[field] = deleteField();
+    }
 
 
     await setDoc(
       listingRef,
       {
-        ...form,
+        ...publicForm,
 
         title: form.title.trim(),
         description: form.description.trim(),
 
-        location: arrondissement ? `Lyon ${arrondissement}${arrondissement === 1 ? 'er' : 'e'}` : 'Lyon',
+        arrondissement,
+        location: getLocationLabel(arrondissement),
         details: getListingDetails(form),
         image: form.photos[0]?.url ?? '',
         price: form.price ?? 0,
@@ -370,6 +531,24 @@ export class Listing {
       },
       {
         merge: true
+      }
+    );
+
+
+    /*
+     * Adresse exacte : lisible uniquement
+     * par l'annonceur (règles Firestore).
+     */
+    await setDoc(
+      doc(listingRef, 'private', 'address'),
+      {
+        address: form.address.trim(),
+        addressDetails: form.addressDetails.trim(),
+        placeId: form.placeId,
+        postalCode: form.postalCode,
+        latitude: form.latitude,
+        longitude: form.longitude,
+        updatedAt: serverTimestamp()
       }
     );
 
@@ -745,6 +924,14 @@ export class Listing {
         listingId
       );
 
+
+    /*
+     * L'adresse privée d'abord : la règle
+     * vérifie le propriétaire de l'annonce.
+     */
+    await deleteDoc(
+      doc(listingRef, 'private', 'address')
+    );
 
     await deleteDoc(
       listingRef

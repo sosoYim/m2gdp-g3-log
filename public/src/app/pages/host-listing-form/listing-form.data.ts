@@ -1,7 +1,6 @@
 import {
   ListingForm,
-  PropertyType,
-  getArrondissement
+  PropertyType
 } from '../../core/listing/listing';
 
 
@@ -102,11 +101,8 @@ export function getFloorLabel(
  * la mise en forme se fait en CSS).
  */
 export function getAreaLabel(
-  address: string
+  arrondissement: number | null
 ): string {
-
-  const arrondissement =
-    getArrondissement(address);
 
   return arrondissement
     ? `Lyon, arrondissement ${arrondissement}`

@@ -6,6 +6,8 @@ import { ListingForm } from '../../../../core/listing/listing';
 
 import { PROPERTY_TYPES } from '../../listing-form.data';
 
+import { AddressField } from '../../components/address-field/address-field';
+
 
 /*
  * Étape 1 — Le logement
@@ -16,7 +18,8 @@ import { PROPERTY_TYPES } from '../../listing-form.data';
   standalone: true,
 
   imports: [
-    FormsModule
+    FormsModule,
+    AddressField
   ],
 
   templateUrl: './step-housing.html'

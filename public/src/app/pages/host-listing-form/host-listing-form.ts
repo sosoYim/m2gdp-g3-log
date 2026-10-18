@@ -20,6 +20,7 @@ import { ContactSection } from '../landing/components/contact-section/contact-se
 import { Footer } from '../landing/components/footer/footer';
 
 import { Auth } from '../../core/auth/auth';
+import { GoogleMaps } from '../../core/maps/google-maps';
 import { Profile } from '../../core/profile/profile';
 import { Booking } from '../../core/booking/booking';
 import {
@@ -155,6 +156,7 @@ export class HostListingForm implements OnInit {
     private readonly profileService: Profile,
     private readonly listingService: Listing,
     private readonly bookingService: Booking,
+    private readonly maps: GoogleMaps,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly location: Location,
@@ -193,7 +195,7 @@ export class HostListingForm implements OnInit {
       const [profile, existing, requests] =
         await Promise.all([
           this.profileService.getProfile(user.uid),
-          listingId ? this.listingService.getListingForm(listingId) : null,
+          listingId ? this.listingService.getListingForm(listingId, true) : null,
           this.bookingService.getRequestsForOwner(user.uid)
         ]);
 
@@ -475,6 +477,8 @@ export class HostListingForm implements OnInit {
 
         if (!form.address.trim()) {
           errors.push('Indiquez l\'adresse du logement.');
+        } else if (this.maps.enabled && !form.placeId) {
+          errors.push('Choisissez l\'adresse dans la liste proposée.');
         }
 
         if (!form.surface || form.surface <= 0) {

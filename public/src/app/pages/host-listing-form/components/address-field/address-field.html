@@ -1,0 +1,95 @@
+<!-- ADRESSE -->
+
+<div class="lf-field">
+
+  <label
+    class="lf-label"
+    for="listing-address"
+  >
+    Adresse
+  </label>
+
+  <div class="lf-input-wrap address-wrap">
+
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"></path>
+      <circle cx="12" cy="9.5" r="2.5"></circle>
+    </svg>
+
+    <input
+      id="listing-address"
+      class="lf-input"
+      placeholder="Ex. : 12 rue Mercière, 69002 Lyon"
+      autocomplete="off"
+      role="combobox"
+      aria-autocomplete="list"
+      [attr.aria-expanded]="suggestions().length > 0"
+      [(ngModel)]="form.address"
+      (ngModelChange)="onAddressInput()"
+      (blur)="closeSuggestions()"
+      (keydown.escape)="suggestions.set([])"
+    />
+
+
+    @if (suggestions().length) {
+
+      <ul class="suggestions" role="listbox">
+
+        @for (suggestion of suggestions(); track suggestion.id) {
+
+          <li role="option">
+            <button
+              type="button"
+              (mousedown)="$event.preventDefault()"
+              (click)="choose(suggestion)"
+            >
+              <strong>{{ suggestion.mainText }}</strong>
+              <span>{{ suggestion.secondaryText }}</span>
+            </button>
+          </li>
+
+        }
+
+      </ul>
+
+    }
+
+  </div>
+
+
+  @if (searchError()) {
+    <p class="lf-hint address-error">{{ searchError() }}</p>
+  } @else if (maps.enabled && form.address && !form.placeId) {
+    <p class="lf-hint">Choisissez une adresse dans la liste.</p>
+  } @else {
+    <p class="lf-hint">Seul l'arrondissement est visible sur l'annonce : l'adresse exacte reste privée.</p>
+  }
+
+
+  @if (hasPosition) {
+    <div #map class="address-map"></div>
+  }
+
+</div>
+
+
+<!-- COMPLÉMENT D'ADRESSE -->
+
+<div class="lf-field">
+
+  <label
+    class="lf-label"
+    for="listing-address-details"
+  >
+    Complément d'adresse (facultatif)
+  </label>
+
+  <input
+    id="listing-address-details"
+    class="lf-input"
+    maxlength="100"
+    placeholder="Bâtiment, n° d'appartement, digicode…"
+    [(ngModel)]="form.addressDetails"
+  />
+
+</div>

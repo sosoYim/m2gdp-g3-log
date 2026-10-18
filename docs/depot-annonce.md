@@ -12,7 +12,7 @@ Code : `public/src/app/pages/host-listing-form/` (page, `steps/`, `components/`)
 
 ## Étapes
 
-1. **Le logement** : titre, type, adresse, surface, pièces, étage, meublé, description
+1. **Le logement** : titre, type, adresse (Google Places), complément d'adresse, surface, pièces, étage, meublé, description
 2. **Photos** : envoi vers Cloudflare R2, ordre par glisser-déposer (1re photo = photo principale)
 3. **Équipements** : équipements, règles du logement, accord du propriétaire
 4. **Dates et loyer** : disponibilités, séjour minimum, loyer, charges comprises — *mise en page provisoire, maquette à recevoir*
@@ -22,8 +22,31 @@ Code : `public/src/app/pages/host-listing-form/` (page, `steps/`, `components/`)
 
 - Le brouillon (`status: 'draft'`) est enregistré dans `listings` à chaque changement d'étape et avec « Enregistrer le brouillon ».
 - À la première sauvegarde, l'URL devient `/host/listings/edit?id=…` (sans rechargement).
-- `Listing.saveListingForm()` remplit aussi les champs utilisés par les autres pages : `location` (« Lyon 2e »), `details`, `image` (1re photo), `latitude` / `longitude` (centre de l'arrondissement, en attendant Google Places).
-- L'arrondissement est déduit du code postal de l'adresse (69001 à 69009).
+- `Listing.saveListingForm()` remplit aussi les champs utilisés par les autres pages : `location` (« Lyon 2e »), `details`, `image` (1re photo), `latitude` / `longitude` (position approximative, ou centre de l'arrondissement si l'adresse n'est pas géocodée).
+- L'arrondissement est déduit automatiquement du code postal de l'adresse (69001 à 69009), sans champ dans le formulaire.
+
+## Adresse (Google Maps)
+
+- Saisie avec les suggestions Google Places (limitées à Lyon), puis petite carte avec marqueur.
+- Avec une clé Google, il faut choisir une adresse dans la liste pour continuer.
+- Sans clé (`googleMapsApiKey` vide), le champ reste une saisie libre.
+
+| Où | Champs | Lecture |
+| --- | --- | --- |
+| `listings/{id}` | `postalCode`, `arrondissement`, `location` (« Lyon 2e »), `latitude` / `longitude` **approximatives** (décalage fixe de 100 à 300 m) | tout le monde |
+| `listings/{id}/private/address` | `address`, `addressDetails`, `placeId`, `postalCode`, `latitude` / `longitude` exactes | l'annonceur seulement |
+
+- Les anciennes annonces qui ont encore `address` dans le document public sont nettoyées au prochain enregistrement.
+- Suppression d'une annonce : l'adresse privée est supprimée d'abord.
+
+### Clé Google Maps
+
+1. Google Cloud Console, projet `m2gdp-g3-log-3963b` : activer **Maps JavaScript API** et **Places API (New)** (compte de facturation requis).
+2. Identifiants → Créer une clé API → restrictions :
+   - Sites web : `http://localhost:4200/*`, `http://127.0.0.1:4200/*`, `https://m2gdp-g3-log-3963b.web.app/*`, `https://m2gdp-g3-log-3963b.firebaseapp.com/*`
+   - API : Maps JavaScript API, Places API (New)
+3. Mettre la clé dans `googleMapsApiKey` de `public/src/environments/environment.ts` (fichier non versionné, ne jamais committer).
+4. Optionnel : un Map ID (Google Maps Platform → Map management) dans `googleMapsMapId`. Vide = `DEMO_MAP_ID`.
 
 ## Validation
 
@@ -61,3 +84,5 @@ En local, les photos sont stockées dans le R2 simulé par Wrangler : leurs URL 
 ## Règles Firestore
 
 `listings` : création uniquement avec `ownerId == uid` ; modification et suppression par le propriétaire uniquement, sans changer `ownerId`.
+
+`listings/{id}/private/{doc}` : lecture et écriture par le propriétaire de l'annonce uniquement.
