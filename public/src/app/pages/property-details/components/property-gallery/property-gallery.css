@@ -224,7 +224,7 @@ img {
 
     color: var(--bl-heading);
 
-    font-size: 12px;
+    font-size: var(--bl-fs-small);
     font-weight: 800;
   }
 

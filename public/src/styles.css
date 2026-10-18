@@ -29,6 +29,15 @@
   --bl-text-muted: #70768f;     /* texte secondaire (ville, détails, dates, mentions) */
   --bl-bg-accent: #ece8fe;      /* fond violet clair (badges, encadrés, icônes) */
   --bl-bg-footer: #e7e8fd;      /* fond du bloc de bas de page */
+
+  /* Tailles de texte (police Montserrat) */
+  --bl-fs-title: 27px;          /* titre de page */
+  --bl-fs-section: 22px;        /* intertitres (Présentation, Ce que le logement propose) */
+  --bl-fs-subtitle: 21px;       /* sous-titre (Proposé par …) */
+  --bl-fs-price: 30px;          /* prix */
+  --bl-fs-price-unit: 15px;     /* « / mois » */
+  --bl-fs-body: 14px;           /* texte courant, boutons */
+  --bl-fs-small: 12px;          /* petits textes, mentions, libellés */
 }
 
 
@@ -40,6 +49,7 @@
   color-scheme: light;
 
   --font-sans:
+    'Montserrat',
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',

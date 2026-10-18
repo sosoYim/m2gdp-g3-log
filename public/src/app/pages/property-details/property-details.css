@@ -32,7 +32,7 @@
   color: var(--bl-primary);
 
   font-family: inherit;
-  font-size: 13px;
+  font-size: var(--bl-fs-body);
   font-weight: 700;
 
   cursor: pointer;
@@ -53,7 +53,7 @@
 
   color: var(--bl-heading);
 
-  font-size: 28px;
+  font-size: var(--bl-fs-title);
   font-weight: 800;
   line-height: 1.2;
 }
@@ -71,7 +71,7 @@
 
   color: var(--bl-heading);
 
-  font-size: 13px;
+  font-size: var(--bl-fs-body);
 }
 
 .rating {
@@ -210,7 +210,7 @@
 
   color: var(--bl-heading);
 
-  font-size: 18px;
+  font-size: var(--bl-fs-subtitle);
   font-weight: 800;
 }
 
@@ -219,7 +219,7 @@
 
   color: var(--bl-text-muted);
 
-  font-size: 12px;
+  font-size: var(--bl-fs-small);
 }
 
 
@@ -243,7 +243,7 @@
 
   color: var(--bl-primary);
 
-  font-size: 11px;
+  font-size: var(--bl-fs-small);
   font-weight: 700;
 
   white-space: nowrap;
@@ -274,7 +274,7 @@
 
   color: var(--bl-text);
 
-  font-size: 15px;
+  font-size: var(--bl-fs-section);
   font-weight: 800;
 }
 
@@ -288,7 +288,7 @@
 
   color: var(--bl-text);
 
-  font-size: 12px;
+  font-size: var(--bl-fs-body);
   line-height: 1.55;
   white-space: pre-line;
 }
@@ -327,7 +327,7 @@
 .equipment-label {
   color: var(--bl-text);
 
-  font-size: 13px;
+  font-size: var(--bl-fs-body);
 }
 
 
@@ -362,14 +362,14 @@
 .price strong {
   color: var(--bl-text);
 
-  font-size: 28px;
+  font-size: var(--bl-fs-price);
   font-weight: 800;
 }
 
 .price span {
   color: var(--bl-text-muted);
 
-  font-size: 13px;
+  font-size: var(--bl-fs-price-unit);
 }
 
 .minimum-stay {
@@ -377,7 +377,7 @@
 
   color: var(--bl-text-muted);
 
-  font-size: 10px;
+  font-size: var(--bl-fs-small);
 }
 
 
@@ -415,14 +415,14 @@
 
   color: var(--bl-text-muted);
 
-  font-size: 9px;
+  font-size: var(--bl-fs-small);
   font-weight: 700;
 }
 
 .booking-date span {
   color: var(--bl-text);
 
-  font-size: 11px;
+  font-size: var(--bl-fs-body);
 }
 
 
@@ -442,7 +442,7 @@
   color: #ffffff;
 
   font-family: inherit;
-  font-size: 12px;
+  font-size: var(--bl-fs-body);
   font-weight: 700;
 
   cursor: pointer;
@@ -490,7 +490,7 @@
 
   color: #ffffff;
 
-  font-size: 10px;
+  font-size: var(--bl-fs-small);
   font-weight: 700;
 }
 
@@ -499,7 +499,7 @@
 
   color: var(--bl-primary);
 
-  font-size: 9px;
+  font-size: var(--bl-fs-small);
   line-height: 1.55;
 }
 
@@ -516,7 +516,7 @@
 
   color: var(--bl-text-muted);
 
-  font-size: 9px;
+  font-size: var(--bl-fs-small);
 }
 
 
@@ -605,11 +605,6 @@
 
   .photo-favorite {
     display: block;
-  }
-
-
-  .property-heading h1 {
-    font-size: 23px;
   }
 
 
