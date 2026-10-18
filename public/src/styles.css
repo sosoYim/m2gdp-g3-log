@@ -9,6 +9,9 @@
 /* Leaflet */
 @import 'leaflet/dist/leaflet.css';
 
+/* Formulaire « Déposer une annonce » (classes lf-) */
+@import './app/pages/host-listing-form/listing-form-fields.css';
+
 
 /* =========================
    VARIABLES GLOBALES

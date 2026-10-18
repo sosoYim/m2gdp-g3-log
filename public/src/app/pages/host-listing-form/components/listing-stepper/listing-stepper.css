@@ -1,0 +1,144 @@
+.stepper {
+  display: grid;
+
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+}
+
+
+.step {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 10px;
+}
+
+
+/* Trait vers l'étape suivante */
+.step:not(:last-child)::after {
+  content: '';
+
+  position: absolute;
+
+  top: 13px;
+  left: calc(50% + 14px);
+
+  width: calc(100% - 28px);
+  height: 1.5px;
+
+  background: #e4e6ef;
+}
+
+
+.step-done:not(:last-child)::after {
+  background: #7134f5;
+}
+
+
+.step-circle {
+  position: relative;
+  z-index: 1;
+
+  width: 26px;
+  height: 26px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1.5px solid transparent;
+  border-radius: 50%;
+
+  background: #f1f2f6;
+
+  color: #171925;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+.step-circle:disabled {
+  cursor: default;
+}
+
+
+.step-done .step-circle {
+  background: #7134f5;
+}
+
+
+.step-current .step-circle {
+  border-color: #7134f5;
+
+  background: #ffffff;
+
+  color: #7134f5;
+}
+
+
+.step-circle svg {
+  width: 15px;
+  height: 15px;
+
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+.step-label {
+  color: #424556;
+
+  font-size: 11px;
+
+  text-align: center;
+}
+
+
+.step-done .step-label {
+  color: #171925;
+
+  font-weight: 700;
+}
+
+
+.step-current .step-label {
+  color: #7134f5;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+  .step {
+    gap: 6px;
+  }
+
+
+  .step-label {
+    font-size: 9px;
+
+    line-height: 1.2;
+  }
+
+}

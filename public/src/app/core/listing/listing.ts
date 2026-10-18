@@ -8,6 +8,7 @@ import {
   getDocs,
   query,
   serverTimestamp,
+  setDoc,
   updateDoc,
   where
 } from 'firebase/firestore';
@@ -61,10 +62,322 @@ export interface ListingDocument {
 }
 
 
+/*
+ * =========================================
+ * FORMULAIRE « DÉPOSER UNE ANNONCE »
+ * =========================================
+ */
+
+export type PropertyType =
+  | 'studio'
+  | 'apartment'
+  | 'room';
+
+
+/*
+ * Accord du propriétaire pour sous-louer.
+ * '' = pas encore répondu.
+ */
+export type OwnerConsent =
+  | 'yes'
+  | 'no'
+  | 'owner'
+  | '';
+
+
+export interface ListingPhoto {
+
+  /*
+   * Clé R2 (pour la suppression)
+   */
+  key: string;
+
+  url: string;
+
+}
+
+
+export interface ListingForm {
+
+  title: string;
+
+  propertyType: PropertyType;
+
+  address: string;
+
+  surface: number | null;
+
+  rooms: number | null;
+
+  floor: number | null;
+
+  furnished: boolean;
+
+  description: string;
+
+  photos: ListingPhoto[];
+
+  amenities: string[];
+
+  nonSmoking: boolean;
+
+  petsAllowed: boolean;
+
+  ownerConsent: OwnerConsent;
+
+  price: number | null;
+
+  chargesIncluded: boolean;
+
+  minStayMonths: number;
+
+  availableFrom: string;
+
+  availableTo: string;
+
+}
+
+
+export interface ListingFormDocument {
+
+  id: string;
+
+  form: ListingForm;
+
+  status: ListingDocument['status'];
+
+  ownerId: string;
+
+  ownerName: string;
+
+}
+
+
+export function createEmptyListingForm(): ListingForm {
+
+  return {
+    title: '',
+    propertyType: 'studio',
+    address: '',
+    surface: null,
+    rooms: null,
+    floor: null,
+    furnished: true,
+    description: '',
+    photos: [],
+    amenities: [],
+    nonSmoking: true,
+    petsAllowed: false,
+    ownerConsent: '',
+    price: null,
+    chargesIncluded: true,
+    minStayMonths: 1,
+    availableFrom: '',
+    availableTo: ''
+  };
+
+}
+
+
+/*
+ * Centre approximatif de chaque arrondissement :
+ * utilisé pour la carte tant que l'adresse
+ * n'est pas géocodée (Google Places).
+ */
+const ARRONDISSEMENT_CENTERS: Record<number, [number, number]> = {
+  1: [45.7676, 4.8344],
+  2: [45.7485, 4.8270],
+  3: [45.7597, 4.8606],
+  4: [45.7793, 4.8272],
+  5: [45.7580, 4.8100],
+  6: [45.7720, 4.8520],
+  7: [45.7334, 4.8402],
+  8: [45.7342, 4.8696],
+  9: [45.7740, 4.8050]
+};
+
+const LYON_CENTER: [number, number] = [45.7578, 4.832];
+
+
+/*
+ * Arrondissement déduit du code postal
+ * (69001 → 1). null si hors Lyon.
+ */
+export function getArrondissement(
+  address: string
+): number | null {
+
+  const match =
+    /\b6900([1-9])\b/.exec(address);
+
+  return match ? Number(match[1]) : null;
+
+}
+
+
+/*
+ * Ligne « Meublé · 22 m² · 1 pièce »
+ */
+export function getListingDetails(
+  form: ListingForm
+): string {
+
+  const parts =
+    [form.furnished ? 'Meublé' : 'Non meublé'];
+
+
+  if (form.surface) {
+    parts.push(`${form.surface} m²`);
+  }
+
+
+  if (form.rooms) {
+    parts.push(`${form.rooms} ${form.rooms > 1 ? 'pièces' : 'pièce'}`);
+  }
+
+
+  return parts.join(' · ');
+
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
 export class Listing {
+
+
+  /*
+   * =========================================
+   * CHARGER UNE ANNONCE POUR LE FORMULAIRE
+   * =========================================
+   */
+  async getListingForm(
+    listingId: string
+  ): Promise<ListingFormDocument | null> {
+
+    const snapshot =
+      await getDoc(
+        doc(firestore, 'listings', listingId)
+      );
+
+
+    if (!snapshot.exists()) {
+      return null;
+    }
+
+
+    const data =
+      snapshot.data();
+
+    const empty =
+      createEmptyListingForm();
+
+
+    /*
+     * Les champs absents (anciennes annonces)
+     * gardent leur valeur par défaut.
+     */
+    const form =
+      { ...empty } as ListingForm;
+
+    for (const key of Object.keys(empty) as (keyof ListingForm)[]) {
+
+      if (data[key] !== undefined && data[key] !== null) {
+        (form as unknown as Record<string, unknown>)[key] = data[key];
+      }
+
+    }
+
+
+    /*
+     * Anciennes annonces : une seule image.
+     */
+    if (form.photos.length === 0 && data['image']) {
+      form.photos = [{ key: '', url: data['image'] }];
+    }
+
+
+    return {
+      id: snapshot.id,
+      form,
+      status: data['status'] === 'published' || data['status'] === 'inactive'
+        ? data['status']
+        : 'draft',
+      ownerId: data['ownerId'] ?? '',
+      ownerName: data['ownerName'] ?? ''
+    };
+
+  }
+
+
+  /*
+   * =========================================
+   * ENREGISTRER LE FORMULAIRE
+   * =========================================
+   *
+   * Crée l'annonce si listingId est vide.
+   * Remplit aussi les champs lus par les
+   * autres pages (location, details, image,
+   * latitude, longitude).
+   * Retourne l'ID de l'annonce.
+   */
+  async saveListingForm(
+    listingId: string,
+    form: ListingForm,
+    owner: { id: string; name: string },
+    status: ListingDocument['status']
+  ): Promise<string> {
+
+    const listingRef =
+      listingId
+        ? doc(firestore, 'listings', listingId)
+        : doc(collection(firestore, 'listings'));
+
+
+    const arrondissement =
+      getArrondissement(form.address);
+
+    const [latitude, longitude] =
+      arrondissement
+        ? ARRONDISSEMENT_CENTERS[arrondissement]
+        : LYON_CENTER;
+
+
+    await setDoc(
+      listingRef,
+      {
+        ...form,
+
+        title: form.title.trim(),
+        description: form.description.trim(),
+
+        location: arrondissement ? `Lyon ${arrondissement}${arrondissement === 1 ? 'er' : 'e'}` : 'Lyon',
+        details: getListingDetails(form),
+        image: form.photos[0]?.url ?? '',
+        price: form.price ?? 0,
+        latitude,
+        longitude,
+
+        status,
+        ownerId: owner.id,
+        ownerName: owner.name,
+        verified: true,
+        highlighted: false,
+
+        ...(listingId ? {} : { rating: 0, createdAt: serverTimestamp() }),
+        updatedAt: serverTimestamp()
+      },
+      {
+        merge: true
+      }
+    );
+
+
+    return listingRef.id;
+
+  }
+
 
 
   /*

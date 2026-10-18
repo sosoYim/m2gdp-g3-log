@@ -1,0 +1,178 @@
+<!-- =========================
+     BANDEAU D'INFORMATION
+========================== -->
+
+<div class="review-banner">
+
+  <span class="info-icon">i</span>
+
+  <p>
+    Voici votre annonce telle que les étudiants la verront. Vérifiez-la avant de la publier.
+  </p>
+
+  <button
+    type="button"
+    (click)="edit.emit()"
+  >
+    Modifier
+  </button>
+
+</div>
+
+
+<!-- =========================
+     TITRE
+========================== -->
+
+<div class="review-heading">
+
+  <h2>
+    {{ form.title || 'Sans titre' }}
+  </h2>
+
+  <span>
+    {{ areaLabel }}
+  </span>
+
+</div>
+
+
+<!-- =========================
+     GALERIE
+========================== -->
+
+<div class="gallery">
+
+  @if (form.photos[0]) {
+    <img class="gallery-main" [src]="form.photos[0].url" alt="Photo principale" />
+  } @else {
+    <div class="gallery-main gallery-empty"></div>
+  }
+
+
+  @for (url of thumbnails; track $index) {
+
+    @if (url) {
+      <img [src]="url" alt="" />
+    } @else {
+      <div class="gallery-empty"></div>
+    }
+
+  }
+
+</div>
+
+
+<!-- =========================
+     DÉTAILS + LOYER
+========================== -->
+
+<div class="review-body">
+
+  <div class="review-details">
+
+    <div class="owner-row">
+
+      <h3>
+        Proposé par {{ ownerName }}
+      </h3>
+
+      <span class="verified-badge">
+        ✓ PROFIL VÉRIFIÉ
+      </span>
+
+    </div>
+
+    <p class="summary">
+      {{ summary }}
+    </p>
+
+
+    @if (form.description) {
+
+      <h3 class="block-title">Présentation</h3>
+
+      <p class="description">
+        {{ form.description }}
+      </p>
+
+    }
+
+
+    @if (form.amenities.length) {
+
+      <h3 class="block-title">Ce que le logement propose</h3>
+
+      <ul class="amenities">
+        @for (amenity of form.amenities; track amenity) {
+          <li>{{ amenityLabel(amenity) }}</li>
+        }
+      </ul>
+
+    }
+
+
+    <p class="rules">
+      {{ rulesLine }}
+    </p>
+
+  </div>
+
+
+  <!-- LOYER -->
+
+  <aside class="price-card">
+
+    <p class="price">
+      @if (form.price) {
+        <strong>{{ form.price }} €</strong>/ mois
+        @if (form.chargesIncluded) {
+          · charges comprises
+        }
+      } @else {
+        Loyer à définir
+      }
+    </p>
+
+    <p class="min-stay">
+      Séjour minimum : {{ form.minStayMonths }} mois
+    </p>
+
+
+    <div class="dates">
+
+      <div>
+        <span>DISPONIBLE DU</span>
+        <strong>{{ formatDate(form.availableFrom, true) || '—' }}</strong>
+      </div>
+
+      <div>
+        <span>AU</span>
+        <strong>{{ formatDate(form.availableTo, true) || '—' }}</strong>
+      </div>
+
+    </div>
+
+
+    <!-- Bouton inactif : aperçu uniquement -->
+    <button
+      type="button"
+      class="contact-btn"
+      disabled
+    >
+      Écrire à {{ ownerName }}
+    </button>
+
+
+    <div class="payment-note">
+
+      Le loyer est réglé directement entre vous et {{ ownerName }},
+      selon les modalités convenues ensemble.
+
+      <strong>Aucun paiement sur BailLyon.</strong>
+
+    </div>
+
+  </aside>
+
+</div>

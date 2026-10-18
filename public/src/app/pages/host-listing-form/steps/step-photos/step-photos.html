@@ -1,0 +1,137 @@
+<h2 class="lf-step-title">
+  Photos
+</h2>
+
+<p class="lf-step-subtitle">
+  Ajoutez au moins {{ minPhotos }} photos lumineuses<span class="desktop-only"> de votre logement</span>.
+</p>
+
+
+<input
+  #fileInput
+  type="file"
+  accept="image/jpeg,image/png"
+  multiple
+  hidden
+  (change)="onFileInput($event)"
+/>
+
+
+<!-- =========================
+     ZONE DE DÉPÔT
+========================== -->
+
+<div
+  class="dropzone"
+  [class.dropzone-active]="dragOver()"
+  (dragover)="onDragOver($event)"
+  (dragleave)="dragOver.set(false)"
+  (drop)="onDrop($event)"
+>
+
+  <span class="dropzone-icon">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 16V4M6 10l6-6 6 6M5 20h14"></path>
+    </svg>
+  </span>
+
+  <strong class="desktop-only">Glissez-déposez vos photos ici</strong>
+  <strong class="mobile-only">Ajoutez vos photos</strong>
+
+  <span class="mobile-only">Depuis votre galerie ou l'appareil photo</span>
+  <span>Formats JPG ou PNG</span>
+
+  <button
+    type="button"
+    class="browse-btn"
+    (click)="fileInput.click()"
+  >
+    <span class="desktop-only">Parcourir mes fichiers</span>
+    <span class="mobile-only">Choisir des photos</span>
+  </button>
+
+</div>
+
+
+@if (error()) {
+
+  <div class="lf-errors">
+    <p>{{ error() }}</p>
+  </div>
+
+}
+
+
+<!-- =========================
+     VOS PHOTOS
+========================== -->
+
+<h3 class="photos-title">
+  Vos photos ({{ form.photos.length }} / {{ minPhotos }})
+</h3>
+
+
+<div
+  class="photos-grid"
+  cdkDropList
+  cdkDropListOrientation="mixed"
+  (cdkDropListDropped)="reorder($event)"
+>
+
+  @for (photo of form.photos; track photo.url; let i = $index) {
+
+    <div
+      class="photo-tile"
+      cdkDrag
+      [cdkDragStartDelay]="{ touch: 300, mouse: 0 }"
+    >
+
+      <img [src]="photo.url" alt="" />
+
+      <button
+        type="button"
+        class="photo-remove"
+        aria-label="Supprimer la photo"
+        (click)="removePhoto(i)"
+      >
+        ×
+      </button>
+
+      @if (i === 0) {
+        <span class="photo-main">PHOTO PRINCIPALE</span>
+      }
+
+    </div>
+
+  }
+
+
+  @for (n of uploadingSlots; track $index) {
+
+    <div class="photo-tile photo-uploading">
+      Envoi...
+    </div>
+
+  }
+
+
+  @for (slot of addSlots; track $index) {
+
+    <button
+      type="button"
+      class="photo-tile photo-add"
+      (click)="fileInput.click()"
+    >
+      <span aria-hidden="true">+</span>
+      Ajouter
+    </button>
+
+  }
+
+</div>
+
+
+<p class="photos-hint">
+  <span class="desktop-only">Faites glisser les photos pour changer leur ordre.</span>
+  <span class="mobile-only">Maintenez une photo et faites-la glisser pour changer l'ordre.</span>
+</p>

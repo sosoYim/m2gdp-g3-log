@@ -1,0 +1,225 @@
+<app-user-navbar />
+
+
+<main class="account-page">
+
+  <div class="account-layout">
+
+
+    <!-- =========================
+         MENU DU COMPTE
+    ========================== -->
+
+    <app-host-sidebar
+      active="listings"
+      [pendingCount]="pendingCount()"
+    />
+
+
+    <!-- =========================
+         CONTENU PRINCIPAL
+    ========================== -->
+
+    <section class="account-content">
+
+      <a
+        routerLink="/host/dashboard"
+        class="back-link"
+      >
+        ← Tableau de bord
+      </a>
+
+
+      <div class="page-header">
+
+        <h1>
+          Déposer une annonce
+        </h1>
+
+        <span class="autosave">
+          {{ saveMessage() }}
+        </span>
+
+      </div>
+
+
+      @if (loading()) {
+
+        <div class="state-box">
+          Chargement...
+        </div>
+
+      }
+
+      @else if (loadError()) {
+
+        <div class="state-box state-box-error">
+          {{ loadError() }}
+        </div>
+
+      }
+
+      @else {
+
+        <app-listing-stepper
+          [current]="step()"
+          [maxReached]="maxReached()"
+          (stepSelect)="goTo($event)"
+        />
+
+
+        <!-- =========================
+             ÉTAPES 1 À 4
+        ========================== -->
+
+        @if (step() < 4) {
+
+          <div class="form-layout">
+
+            <div class="form-card">
+
+              @switch (step()) {
+                @case (0) { <app-step-housing [form]="form" /> }
+                @case (1) { <app-step-photos [form]="form" /> }
+                @case (2) { <app-step-amenities [form]="form" /> }
+                @case (3) { <app-step-pricing [form]="form" /> }
+              }
+
+              <div class="actions-desktop">
+                <ng-container *ngTemplateOutlet="actions" />
+              </div>
+
+            </div>
+
+
+            <div class="form-aside">
+
+              <app-listing-preview [form]="form" />
+
+              <div class="tip">
+                <strong>Conseil</strong>
+                <p>{{ tips[step()] }}</p>
+              </div>
+
+            </div>
+
+
+            <div class="actions-mobile">
+              <ng-container *ngTemplateOutlet="actions" />
+            </div>
+
+          </div>
+
+        }
+
+
+        <!-- =========================
+             ÉTAPE 5 : APERÇU
+        ========================== -->
+
+        @else {
+
+          <div class="review-layout">
+
+            <app-step-review
+              [form]="form"
+              [ownerName]="ownerName()"
+              (edit)="goTo(0)"
+            />
+
+            <div class="review-actions">
+              <ng-container *ngTemplateOutlet="actions" />
+            </div>
+
+          </div>
+
+        }
+
+      }
+
+    </section>
+
+  </div>
+
+
+  <app-contact-section />
+
+</main>
+
+
+<app-footer />
+
+
+<!-- =========================
+     BOUTONS (desktop et mobile)
+========================== -->
+
+<ng-template #actions>
+
+  @if (errors().length) {
+
+    <div
+      class="lf-errors"
+      role="alert"
+    >
+      @for (error of errors(); track error) {
+        <p>{{ error }}</p>
+      }
+    </div>
+
+  }
+
+
+  <div class="actions">
+
+    @if (step() > 0) {
+
+      <button
+        type="button"
+        class="btn-secondary"
+        [disabled]="saving()"
+        (click)="previous()"
+      >
+        Précédent
+      </button>
+
+    }
+
+
+    <button
+      type="button"
+      class="btn-link"
+      [disabled]="saving()"
+      (click)="saveDraft()"
+    >
+      Enregistrer le brouillon
+    </button>
+
+
+    @if (step() < 4) {
+
+      <button
+        type="button"
+        class="btn-primary"
+        [disabled]="saving()"
+        (click)="next()"
+      >
+        Continuer
+      </button>
+
+    } @else {
+
+      <button
+        type="button"
+        class="btn-primary"
+        [disabled]="saving()"
+        (click)="publish()"
+      >
+        Publier l’annonce
+      </button>
+
+    }
+
+  </div>
+
+</ng-template>

@@ -1,0 +1,140 @@
+/* =========================================================
+   ÉQUIPEMENTS
+   ========================================================= */
+
+.amenities-grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 12px;
+}
+
+
+.amenity {
+  min-height: 52px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 0 14px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #e4e6ef;
+  border-radius: 6px;
+
+  background: #ffffff;
+
+  color: #424556;
+
+  font-size: 13px;
+
+  cursor: pointer;
+}
+
+
+.amenity-selected {
+  border: 1.5px solid #7134f5;
+
+  background: #f6f3ff;
+
+  color: #171925;
+
+  font-weight: 700;
+}
+
+
+.amenity input {
+  flex-shrink: 0;
+
+  width: 18px;
+  height: 18px;
+
+  margin: 0;
+
+  accent-color: #7134f5;
+}
+
+
+/* =========================================================
+   ACCORD DU PROPRIÉTAIRE
+   ========================================================= */
+
+.consent {
+  margin: 24px 0 0;
+  padding: 20px 0 0;
+
+  border: none;
+  border-top: 1px solid #e4e6ef;
+}
+
+
+.consent-question {
+  padding: 0;
+
+  color: #171925;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+.required {
+  color: #7134f5;
+}
+
+
+.consent-hint {
+  margin: 4px 0 14px;
+
+  color: #424556;
+
+  font-size: 11px;
+}
+
+
+.consent-chip {
+  height: 40px;
+}
+
+
+.consent-chip input {
+  width: 14px;
+  height: 14px;
+
+  margin: 0;
+
+  accent-color: #ffffff;
+}
+
+
+.consent-warning {
+  margin: 12px 0 0;
+
+  color: #c43b3b;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+  .amenities-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 10px;
+  }
+
+
+  .amenity {
+    padding: 8px 12px;
+  }
+
+}

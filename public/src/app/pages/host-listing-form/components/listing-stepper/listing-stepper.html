@@ -1,0 +1,38 @@
+<ol class="stepper">
+
+  @for (label of steps; track label; let i = $index) {
+
+    <li
+      class="step"
+      [class.step-done]="i < current"
+      [class.step-current]="i === current"
+    >
+
+      <button
+        type="button"
+        class="step-circle"
+        [disabled]="i > maxReached || i === current"
+        [attr.aria-current]="i === current ? 'step' : null"
+        [attr.aria-label]="'Étape ' + (i + 1) + ' : ' + label"
+        (click)="stepSelect.emit(i)"
+      >
+
+        @if (i < current) {
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 12.5l4.5 4.5L19 7.5"></path>
+          </svg>
+        } @else {
+          {{ i + 1 }}
+        }
+
+      </button>
+
+      <span class="step-label">
+        {{ label }}
+      </span>
+
+    </li>
+
+  }
+
+</ol>
