@@ -26,3 +26,5 @@ playwright-report/
 
 # Local Firebase configuration
 /src/environments/environment.ts
+# Session Playwright (jetons de connexion)
+tests/.auth/
