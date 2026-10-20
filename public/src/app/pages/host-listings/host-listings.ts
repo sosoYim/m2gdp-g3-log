@@ -197,15 +197,6 @@ export class HostListings implements OnInit {
   }
 
 
-  get pendingCount(): number {
-
-    return this.requests().filter(
-      r => r.status === 'pending'
-    ).length;
-
-  }
-
-
   getPendingCountForListing(
     listingId: string
   ): number {

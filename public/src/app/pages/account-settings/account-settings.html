@@ -7,10 +7,14 @@
 
 
     <!-- =========================
-         MENU DU COMPTE PARTAGÉ
+         MENU DU COMPTE (selon le rôle)
     ========================== -->
 
-    <app-account-sidebar active="settings" />
+    @if (isHost) {
+      <app-host-sidebar active="settings" />
+    } @else {
+      <app-account-sidebar active="settings" />
+    }
 
 
     <!-- =========================

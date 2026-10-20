@@ -22,7 +22,6 @@ import { Footer } from '../landing/components/footer/footer';
 import { Auth } from '../../core/auth/auth';
 import { GoogleMaps } from '../../core/maps/google-maps';
 import { Profile } from '../../core/profile/profile';
-import { Booking } from '../../core/booking/booking';
 import {
   Listing,
   ListingDocument,
@@ -128,10 +127,6 @@ export class HostListingForm implements OnInit {
     signal(0);
 
 
-  pendingCount =
-    signal(0);
-
-
   ownerName =
     signal('');
 
@@ -155,7 +150,6 @@ export class HostListingForm implements OnInit {
     private readonly authService: Auth,
     private readonly profileService: Profile,
     private readonly listingService: Listing,
-    private readonly bookingService: Booking,
     private readonly maps: GoogleMaps,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
@@ -192,22 +186,16 @@ export class HostListingForm implements OnInit {
         params.get('id') ?? '';
 
 
-      const [profile, existing, requests] =
+      const [profile, existing] =
         await Promise.all([
           this.profileService.getProfile(user.uid),
-          listingId ? this.listingService.getListingForm(listingId, true) : null,
-          this.bookingService.getRequestsForOwner(user.uid)
+          listingId ? this.listingService.getListingForm(listingId, true) : null
         ]);
 
 
       this.ownerName.set(
         profile?.firstName || user.email?.split('@')[0] || 'Annonceur'
       );
-
-      this.pendingCount.set(
-        requests.filter(r => r.status === 'pending').length
-      );
-
 
       /*
        * Modification d'une annonce existante

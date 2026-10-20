@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 
 import { UserNavbar } from '../../shared/components/user-navbar/user-navbar';
 import { AccountSidebar } from '../../shared/components/account-sidebar/account-sidebar';
+import { HostSidebar } from '../../shared/components/host-sidebar/host-sidebar';
 
 import { ContactSection } from '../landing/components/contact-section/contact-section';
 import { Footer } from '../landing/components/footer/footer';
@@ -28,6 +29,7 @@ import { Profile } from '../../core/profile/profile';
     FormsModule,
     UserNavbar,
     AccountSidebar,
+    HostSidebar,
     ContactSection,
     Footer
   ],
@@ -59,6 +61,17 @@ export class AccountSettings implements OnInit {
 
   errorMessage =
     signal('');
+
+
+  /*
+   * Menu latéral selon le rôle
+   * (Je viens / J'accueille)
+   */
+  get isHost(): boolean {
+
+    return this.profileService.currentRole() === 'host';
+
+  }
 
 
   constructor(

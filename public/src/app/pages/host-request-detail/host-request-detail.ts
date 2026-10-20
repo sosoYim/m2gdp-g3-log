@@ -95,9 +95,6 @@ export class HostRequestDetail implements OnInit {
   requesterName =
     signal('Demandeur');
 
-  pendingCount =
-    signal(0);
-
   /*
    * Modale ouverte (accepter / refuser)
    */
@@ -504,7 +501,8 @@ export class HostRequestDetail implements OnInit {
 
   private updatePendingCount(): void {
 
-    this.pendingCount.set(
+    this.bookingService.setPendingCount(
+      this.userId,
       this.ownerRequests.filter(r => r.status === 'pending').length
     );
 

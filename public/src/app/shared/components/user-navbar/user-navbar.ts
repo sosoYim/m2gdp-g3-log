@@ -15,6 +15,7 @@ import {
 import { Unsubscribe } from 'firebase/auth';
 
 import { Auth } from '../../../core/auth/auth';
+import { Booking } from '../../../core/booking/booking';
 
 import {
   Profile,
@@ -60,6 +61,7 @@ export class UserNavbar
   constructor(
     private readonly authService: Auth,
     private readonly profileService: Profile,
+    private readonly bookingService: Booking,
     private readonly router: Router
   ) {}
 
@@ -446,6 +448,8 @@ export class UserNavbar
     try {
 
       await this.authService.logout();
+
+      this.bookingService.clearPendingCount();
 
 
       this.closeUserMenu();

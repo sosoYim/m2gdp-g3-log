@@ -190,13 +190,6 @@ export class HostRequests implements OnInit {
   }
 
 
-  get pendingCount(): number {
-
-    return this.countFor('pending');
-
-  }
-
-
   /*
    * Demandes de l'onglet actif,
    * les plus récentes d'abord

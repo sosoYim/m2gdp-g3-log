@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 import {
   addDoc,
@@ -98,10 +98,102 @@ export interface BookingRequest {
 }
 
 
+/*
+ * Nombre de demandes en attente (badge du menu
+ * annonceur), mémorisé dans le navigateur pour
+ * l'afficher dès l'ouverture de chaque page.
+ */
+const PENDING_STORAGE_KEY = 'baillyon.pendingCount';
+
+interface StoredPendingCount {
+  uid: string;
+  count: number;
+}
+
+function readStoredPendingCount(): StoredPendingCount | null {
+
+  try {
+
+    const value =
+      JSON.parse(localStorage.getItem(PENDING_STORAGE_KEY) ?? 'null');
+
+    return typeof value?.uid === 'string' && typeof value?.count === 'number'
+      ? value
+      : null;
+
+  } catch {
+
+    return null;
+
+  }
+
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
 export class Booking {
+
+
+  /*
+   * Partagé par tous les menus annonceur :
+   * pas de retour à 0 entre deux pages.
+   */
+  readonly pendingCount =
+    signal(readStoredPendingCount()?.count ?? 0);
+
+
+  setPendingCount(
+    uid: string,
+    count: number
+  ): void {
+
+    this.pendingCount.set(count);
+
+    try {
+      localStorage.setItem(PENDING_STORAGE_KEY, JSON.stringify({ uid, count }));
+    } catch {}
+
+  }
+
+
+  /*
+   * Déconnexion : le prochain compte connecté
+   * ne voit pas le nombre de l'ancien.
+   */
+  clearPendingCount(): void {
+
+    this.pendingCount.set(0);
+
+    try {
+      localStorage.removeItem(PENDING_STORAGE_KEY);
+    } catch {}
+
+  }
+
+
+  async refreshPendingCount(
+    uid: string
+  ): Promise<void> {
+
+    /*
+     * Autre compte que celui mémorisé :
+     * on n'affiche pas son ancien nombre.
+     */
+    if (readStoredPendingCount()?.uid !== uid) {
+      this.pendingCount.set(0);
+    }
+
+    const requests =
+      await this.getRequestsForOwner(uid);
+
+    this.setPendingCount(
+      uid,
+      requests.filter(r => r.status === 'pending').length
+    );
+
+  }
 
 
   /*
