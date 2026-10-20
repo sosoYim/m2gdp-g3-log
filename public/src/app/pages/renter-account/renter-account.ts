@@ -9,6 +9,7 @@ import { RouterLink } from '@angular/router';
 
 import { UserNavbar } from '../../shared/components/user-navbar/user-navbar';
 import { AccountSidebar } from '../../shared/components/account-sidebar/account-sidebar';
+import { EmptyState } from '../../shared/components/empty-state/empty-state';
 
 import { ContactSection } from '../landing/components/contact-section/contact-section';
 import { Footer } from '../landing/components/footer/footer';
@@ -52,6 +53,7 @@ interface FavoriteListing {
     RouterLink,
     UserNavbar,
     AccountSidebar,
+    EmptyState,
     ContactSection,
     Footer
   ],

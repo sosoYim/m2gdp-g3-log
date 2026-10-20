@@ -1,0 +1,182 @@
+/* =========================================================
+   PAGE 404
+   ========================================================= */
+
+.not-found-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 110px 24px 110px;
+
+  border-bottom: 1px solid #e4e6ef;
+
+  background: #ffffff;
+
+  text-align: center;
+}
+
+
+.error-code {
+  margin: 0 0 40px;
+
+  color: var(--bl-bg-accent);
+
+  font-size: 150px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+
+.not-found-page h1 {
+  margin: 0 0 14px;
+
+  color: var(--bl-text);
+
+  font-size: 32px;
+  font-weight: 800;
+}
+
+
+.error-text {
+  margin: 0 0 30px;
+
+  color: var(--bl-text-muted);
+
+  font-size: var(--bl-fs-body);
+}
+
+
+.error-actions {
+  display: flex;
+  justify-content: center;
+
+  gap: 16px;
+}
+
+
+.btn-primary,
+.btn-outline {
+  height: 48px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 42px;
+
+  border: 1px solid var(--bl-primary);
+  border-radius: 7px;
+
+  font-size: var(--bl-fs-body);
+  font-weight: 700;
+
+  text-decoration: none;
+}
+
+
+.btn-primary {
+  background: var(--bl-primary);
+
+  color: #ffffff;
+}
+
+
+.btn-primary:hover {
+  border-color: var(--bl-primary-hover);
+
+  background: var(--bl-primary-hover);
+}
+
+
+.btn-outline {
+  padding: 0 16px;
+
+  background: #ffffff;
+
+  color: var(--bl-primary);
+}
+
+
+.btn-outline:hover {
+  background: var(--bl-bg-accent);
+}
+
+
+.help {
+  margin: 64px 0 0;
+
+  color: var(--bl-text-muted);
+
+  font-size: 13px;
+}
+
+
+.help a {
+  color: var(--bl-primary);
+
+  font-weight: 700;
+
+  text-decoration: none;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+  .not-found-page {
+    padding: 72px 20px 60px;
+  }
+
+
+  .error-code {
+    margin-bottom: 30px;
+
+    font-size: 110px;
+  }
+
+
+  .not-found-page h1 {
+    max-width: 280px;
+
+    font-size: 22px;
+  }
+
+
+  .error-text {
+    max-width: 280px;
+
+    color: var(--bl-text);
+
+    font-size: 13px;
+  }
+
+
+  .error-actions {
+    width: 100%;
+
+    flex-direction: column;
+
+    gap: 12px;
+  }
+
+
+  .btn-primary,
+  .btn-outline {
+    width: 100%;
+    height: 52px;
+  }
+
+
+  .help {
+    margin-top: 44px;
+
+    color: var(--bl-text);
+
+    font-size: var(--bl-fs-body);
+  }
+
+}

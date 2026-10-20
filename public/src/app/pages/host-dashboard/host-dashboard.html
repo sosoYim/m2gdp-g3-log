@@ -66,20 +66,48 @@
             </h1>
 
             <p>
-              Voici l'activité de vos annonces.
+              @if (hasListings) {
+                Voici l'activité de vos annonces.
+              } @else {
+                Bienvenue dans votre espace annonceur.
+              }
             </p>
 
           </div>
 
 
-          <a
-            routerLink="/host/listings/new"
-            class="new-listing-btn"
-          >
-            + Déposer une annonce
-          </a>
+          @if (hasListings) {
+
+            <a
+              routerLink="/host/listings/new"
+              class="new-listing-btn"
+            >
+              + Déposer une annonce
+            </a>
+
+          }
 
         </div>
+
+
+        <!-- =========================
+             AUCUNE ANNONCE : PREMIERS PAS
+        ========================== -->
+
+        @if (!hasListings) {
+
+          <app-host-onboarding />
+
+
+          <div class="section-header">
+            <h2>
+              Demandes reçues
+            </h2>
+          </div>
+
+          <app-empty-requests />
+
+        } @else {
 
 
         <!-- =========================
@@ -136,17 +164,11 @@
 
         @if (recentRequests.length === 0) {
 
-          <div class="state-box">
-
-            <strong>
-              Aucune demande reçue pour le moment.
-            </strong>
-
-            <p>
-              Vos demandes de location apparaîtront ici dès qu'un demandeur vous contactera.
-            </p>
-
-          </div>
+          <app-empty-requests
+            [message]="onlineCount > 0
+              ? 'Aucune demande pour l’instant. Elles apparaîtront ici dès qu’un étudiant vous contactera.'
+              : 'Aucune demande pour l’instant. Elles apparaîtront ici dès que votre annonce sera en ligne.'"
+          />
 
         }
 
@@ -252,135 +274,108 @@
         </div>
 
 
-        @if (listings().length === 0) {
+        <div class="listings-list">
 
-          <div class="state-box">
+          @for (
+            listing of listings().slice(0, 3);
+            track listing.id
+          ) {
 
-            <strong>
-              Vous n'avez pas encore d'annonces.
-            </strong>
-
-            <p>
-              Déposez votre première annonce pour commencer à recevoir des demandes.
-            </p>
-
-            <a
-              routerLink="/host/listings/new"
-              class="new-listing-btn"
-            >
-              + Déposer une annonce
-            </a>
-
-          </div>
-
-        }
-
-        @else {
-
-          <div class="listings-list">
-
-            @for (
-              listing of listings().slice(0, 3);
-              track listing.id
-            ) {
-
-              <article class="listing-row">
+            <article class="listing-row">
 
 
-                <!-- IMAGE -->
+              <!-- IMAGE -->
 
-                <img
-                  [src]="listing.image"
-                  [alt]="listing.title"
-                  class="listing-image"
-                />
-
-
-                <!-- INFOS -->
-
-                <div class="listing-info">
-
-                  <span
-                    class="listing-status-badge"
-                    [class]="getStatusClass(listing.status)"
-                  >
-                    {{ getStatusLabel(listing.status) }}
-                  </span>
+              <img
+                [src]="listing.image"
+                [alt]="listing.title"
+                class="listing-image"
+              />
 
 
-                  <h3>
-                    {{ listing.title }}
-                  </h3>
+              <!-- INFOS -->
+
+              <div class="listing-info">
+
+                <span
+                  class="listing-status-badge"
+                  [class]="getStatusClass(listing.status)"
+                >
+                  {{ getStatusLabel(listing.status) }}
+                </span>
 
 
-                  <p class="listing-details">
-                    {{ listing.location }}
-                    @if (listing.details) {
-                      · {{ listing.details }}
-                    }
-                  </p>
+                <h3>
+                  {{ listing.title }}
+                </h3>
 
 
-                  <p class="listing-availability">
-                    @if (listing.availableFrom && listing.availableTo) {
-                      Disponible du {{ formatDate(listing.availableFrom) }}
-                      au {{ formatDate(listing.availableTo) }}
-                    }
-                  </p>
+                <p class="listing-details">
+                  {{ listing.location }}
+                  @if (listing.details) {
+                    · {{ listing.details }}
+                  }
+                </p>
 
 
-                  <div class="listing-price-row">
+                <p class="listing-availability">
+                  @if (listing.availableFrom && listing.availableTo) {
+                    Disponible du {{ formatDate(listing.availableFrom) }}
+                    au {{ formatDate(listing.availableTo) }}
+                  }
+                </p>
 
-                    <strong>
-                      {{ listing.price }} €<small>/ mois</small>
-                    </strong>
 
-                    @if (getPendingCountForListing(listing.id) > 0) {
+                <div class="listing-price-row">
 
-                      <a
-                        routerLink="/host/requests"
-                        class="pending-requests-link"
-                      >
-                        {{ getPendingCountForListing(listing.id) }}
-                        {{ getPendingCountForListing(listing.id) > 1 ? 'demandes' : 'demande' }}
-                        en attente →
-                      </a>
+                  <strong>
+                    {{ listing.price }} €<small>/ mois</small>
+                  </strong>
 
-                    }
+                  @if (getPendingCountForListing(listing.id) > 0) {
 
-                  </div>
+                    <a
+                      routerLink="/host/requests"
+                      class="pending-requests-link"
+                    >
+                      {{ getPendingCountForListing(listing.id) }}
+                      {{ getPendingCountForListing(listing.id) > 1 ? 'demandes' : 'demande' }}
+                      en attente →
+                    </a>
+
+                  }
 
                 </div>
 
+              </div>
 
-                <!-- ACTIONS -->
 
-                <div class="listing-actions">
+              <!-- ACTIONS -->
 
-                  <a
-                    routerLink="/host/listings/edit"
-                    [queryParams]="{ id: listing.id }"
-                    class="action-btn"
-                  >
-                    Modifier
-                  </a>
+              <div class="listing-actions">
 
-                  <button
-                    type="button"
-                    class="pause-btn"
-                  >
-                    Mettre en pause
-                  </button>
+                <a
+                  routerLink="/host/listings/edit"
+                  [queryParams]="{ id: listing.id }"
+                  class="action-btn"
+                >
+                  Modifier
+                </a>
 
-                </div>
+                <button
+                  type="button"
+                  class="pause-btn"
+                >
+                  Mettre en pause
+                </button>
 
-              </article>
+              </div>
 
-            }
+            </article>
 
-          </div>
+          }
 
-        }
+        </div>
 
 
         <!-- =========================
@@ -406,6 +401,7 @@
 
         </div>
 
+        }
 
       }
 

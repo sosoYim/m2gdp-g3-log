@@ -20,6 +20,9 @@ import { Profile, getDisplayName } from '../../core/profile/profile';
 import { Listing, ListingDocument } from '../../core/listing/listing';
 import { Booking, BookingRequest } from '../../core/booking/booking';
 
+import { HostOnboarding } from './components/host-onboarding/host-onboarding';
+import { EmptyRequests } from './components/empty-requests/empty-requests';
+
 
 interface RequesterInfo {
   name: string;
@@ -36,6 +39,8 @@ interface RequesterInfo {
     RouterLink,
     UserNavbar,
     HostSidebar,
+    HostOnboarding,
+    EmptyRequests,
     ContactSection,
     Footer
   ],
@@ -289,6 +294,17 @@ export class HostDashboard implements OnInit {
    * COMPTEURS
    * =========================================
    */
+
+  /*
+   * Aucune annonce (même brouillon) :
+   * écran « premiers pas »
+   */
+  get hasListings(): boolean {
+
+    return this.listings().length > 0;
+
+  }
+
 
   get onlineCount(): number {
 

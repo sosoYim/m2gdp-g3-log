@@ -1,0 +1,72 @@
+<!-- =========================
+     PREMIÈRE ANNONCE
+========================== -->
+
+<section class="welcome-card">
+
+  <div class="welcome-icon">
+    <!-- Maison + clé -->
+    <svg viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M4 14.5 16 5l12 9.5" />
+      <path d="M7 12.5V26a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V12.5" />
+      <circle cx="13" cy="20" r="2.6" />
+      <path d="M15.6 20H21v2.5M19 20v2" />
+    </svg>
+  </div>
+
+
+  <div class="welcome-content">
+
+    <h2>
+      Proposez votre logement pendant votre absence
+    </h2>
+
+    <p class="welcome-text">
+      Déposez votre première annonce en quelques étapes : un étudiant pourra
+      s’y installer le temps d’un stage, d’un échange ou de quelques mois.
+    </p>
+
+    <a
+      routerLink="/host/listings/new"
+      class="welcome-btn"
+    >
+      <span aria-hidden="true">+</span>
+      Déposer ma première annonce
+    </a>
+
+    <p class="welcome-note">
+      Le loyer est réglé directement entre vous et le locataire.
+      <strong>Aucun paiement sur BailLyon.</strong>
+    </p>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     COMMENT ÇA SE PASSE ?
+========================== -->
+
+<h2 class="steps-title">
+  Comment ça se passe ?
+</h2>
+
+<ol class="steps">
+
+  @for (step of steps; track step.title; let i = $index) {
+
+    <li class="step">
+
+      <div class="step-head">
+        <span class="step-number">{{ i + 1 }}</span>
+        <strong>{{ step.title }}</strong>
+      </div>
+
+      <p>{{ step.text }}</p>
+
+    </li>
+
+  }
+
+</ol>

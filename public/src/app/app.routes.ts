@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 
 import { Landing } from './pages/landing/landing';
 
+import { NotFound } from './pages/not-found/not-found';
+
 import { AuthCallback } from './pages/auth-callback/auth-callback';
 
 import { CompleteProfile } from './pages/complete-profile/complete-profile';
@@ -156,6 +158,14 @@ export const routes: Routes = [
     path: 'host/listings/published',
     component: HostListingPublished,
     canActivate: [authGuard]
+  },
+
+  /*
+   * Toute autre URL : page 404 (toujours en dernier)
+   */
+  {
+    path: '**',
+    component: NotFound
   }
 
 ];
