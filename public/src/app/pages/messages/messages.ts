@@ -146,8 +146,13 @@ export class Messages implements OnInit, OnDestroy {
 
   /*
    * Menu latéral selon le rôle
+   * (Je viens / J'accueille)
    */
-  isHost = false;
+  get isHost(): boolean {
+
+    return this.profileService.currentRole() === 'host';
+
+  }
 
 
   conversations: Conversation[] = [];
@@ -197,14 +202,6 @@ export class Messages implements OnInit, OnDestroy {
 
     this.currentUserId =
       user.uid;
-
-
-    this.profileService.getProfile(user.uid)
-      .then(profile => {
-        this.isHost = profile?.role === 'host';
-        this.cdr.detectChanges();
-      })
-      .catch(() => undefined);
 
 
     /*

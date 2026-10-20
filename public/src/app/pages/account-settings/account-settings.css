@@ -348,92 +348,6 @@
 
 
 /* =========================================================
-   RÔLE
-   ========================================================= */
-
-.role-content {
-  display: flex;
-
-  align-items: center;
-
-  gap: 30px;
-}
-
-
-.role-switch {
-  width: 230px;
-
-  flex-shrink: 0;
-
-  display: grid;
-
-  grid-template-columns:
-    1fr
-    1fr;
-
-  gap: 2px;
-
-  padding: 3px;
-
-  border-radius: 999px;
-
-  background: #eee9ff;
-}
-
-
-.role-button {
-  height: 35px;
-
-  border: none;
-
-  border-radius: 999px;
-
-  background: transparent;
-
-  color: #7134f5;
-
-  font-family: inherit;
-
-  font-size: 10px;
-  font-weight: 700;
-
-  cursor: pointer;
-}
-
-
-.role-active {
-  background: #7134f5;
-
-  color: #ffffff;
-}
-
-
-.role-description {
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 4px;
-}
-
-
-.role-description strong {
-  color: #242630;
-
-  font-size: 10px;
-}
-
-
-.role-description p {
-  margin: 0;
-
-  color: #82869a;
-
-  font-size: 9px;
-}
-
-
-/* =========================================================
    NOTIFICATIONS
    ========================================================= */
 
@@ -614,13 +528,6 @@
   }
 
 
-  .role-content {
-    align-items: flex-start;
-
-    flex-direction: column;
-
-    gap: 16px;
-  }
 
 }
 
@@ -700,11 +607,6 @@
   }
 
 
-  .role-switch {
-    width: 100%;
-
-    box-sizing: border-box;
-  }
 
 
   .account-actions {

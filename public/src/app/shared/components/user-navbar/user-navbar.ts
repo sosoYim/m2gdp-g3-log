@@ -44,8 +44,6 @@ export class UserNavbar
 
   mobileMenuOpen = signal(false);
 
-  role = signal<UserRole>('guest');
-
   switchingRole = signal(false);
 
 
@@ -82,8 +80,6 @@ export class UserNavbar
             this.email.set('');
 
             this.fullName.set('');
-
-            this.role.set('guest');
 
             return;
           }
@@ -150,13 +146,10 @@ export class UserNavbar
             /*
              * Rôle actuel
              */
-            if (profile?.role) {
-
-              this.role.set(
-                profile.role
-              );
-
-            }
+            this.profileService.setCurrentRole(
+              user.uid,
+              profile?.role ?? 'guest'
+            );
 
           } catch (error) {
 
@@ -222,7 +215,7 @@ export class UserNavbar
    */
   get currentRole(): UserRole {
 
-    return this.role();
+    return this.profileService.currentRole();
 
   }
 
@@ -261,7 +254,7 @@ export class UserNavbar
      * l'espace correspondant.
      */
     if (
-      this.role() === newRole
+      this.currentRole === newRole
     ) {
 
       if (newRole === 'guest') {
@@ -298,13 +291,6 @@ export class UserNavbar
         newRole
       );
 
-
-      /*
-       * Mise à jour visuelle
-       */
-      this.role.set(
-        newRole
-      );
 
 
       /*
