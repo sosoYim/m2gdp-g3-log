@@ -27,6 +27,7 @@ import { AccountSettings } from './pages/account-settings/account-settings';
 import { HostDashboard } from './pages/host-dashboard/host-dashboard';
 
 import { HostRequests } from './pages/host-requests/host-requests';
+import { HostRequestDetail } from './pages/host-request-detail/host-request-detail';
 import { HostListings } from './pages/host-listings/host-listings';
 
 import { HostListingForm } from './pages/host-listing-form/host-listing-form';
@@ -130,6 +131,12 @@ export const routes: Routes = [
   {
     path: 'host/requests',
     component: HostRequests,
+    canActivate: [authGuard]
+  },
+
+  {
+    path: 'host/requests/:id',
+    component: HostRequestDetail,
     canActivate: [authGuard]
   },
 

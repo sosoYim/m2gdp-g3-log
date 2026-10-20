@@ -9,8 +9,6 @@ import { NgTemplateOutlet } from '@angular/common';
 
 import { RouterLink } from '@angular/router';
 
-import { Timestamp } from 'firebase/firestore';
-
 import { UserNavbar } from '../../shared/components/user-navbar/user-navbar';
 import { HostSidebar } from '../../shared/components/host-sidebar/host-sidebar';
 
@@ -23,8 +21,17 @@ import { Profile, getDisplayName } from '../../core/profile/profile';
 import {
   Booking,
   BookingRequest,
-  BookingStatus
+  BookingStatus,
+  REJECTION_REASON_LABELS
 } from '../../core/booking/booking';
+
+import {
+  STATUS_LABELS,
+  getDateRange,
+  requestsOverlap,
+  toMillis,
+  withDe
+} from './request-utils';
 
 
 /*
@@ -32,13 +39,6 @@ import {
  * sous « Traitées récemment »
  */
 const RECENT_PROCESSED_COUNT = 3;
-
-
-const STATUS_LABELS: Record<BookingStatus, string> = {
-  pending: 'EN ATTENTE',
-  accepted: 'ACCEPTÉE',
-  rejected: 'REFUSÉE'
-};
 
 
 /*
@@ -242,12 +242,7 @@ export class HostRequests implements OnInit {
 
       for (const b of pending) {
 
-        if (
-          a !== b
-          && a.listingId === b.listingId
-          && a.arrivalDate < b.departureDate
-          && b.arrivalDate < a.departureDate
-        ) {
+        if (requestsOverlap(a, b)) {
           overlapping.add(a);
           overlapping.add(b);
         }
@@ -264,7 +259,7 @@ export class HostRequests implements OnInit {
 
     const names =
       [...new Set([...overlapping].map(r => this.getFirstName(r)))]
-        .map(name => (/^[aeiouyàâéèêëîïôöùûü]/i.test(name) ? `d'${name}` : `de ${name}`));
+        .map(withDe);
 
     const list =
       names.length > 1
@@ -328,39 +323,26 @@ export class HostRequests implements OnInit {
   }
 
 
-  /*
-   * « 1er mai – 1er nov. 2026 »
-   */
-  getDateRange(
-    request: BookingRequest
-  ): string {
-
-    const from =
-      parseDate(request.arrivalDate);
-
-    const to =
-      parseDate(request.departureDate);
-
-    if (!from || !to) {
-      return '';
-    }
-
-
-    const sameYear =
-      from.getFullYear() === to.getFullYear();
-
-
-    return `${formatDay(from, 'long', !sameYear)} – ${formatDay(to, 'short', true)}`;
-
-  }
+  readonly getDateRange =
+    getDateRange;
 
 
   /*
-   * « reçue hier », « refusée il y a 3 jours »
+   * « reçue hier », « refusée il y a 3 jours »,
+   * « déjà réservé » (motif de refus)
    */
   getTimeLabel(
     request: BookingRequest
   ): string {
+
+    /*
+     * Refusée avec motif : « dates indisponibles »
+     */
+    if (request.status === 'rejected' && request.rejectionReason) {
+      const label = REJECTION_REASON_LABELS[request.rejectionReason];
+      return label.charAt(0).toLowerCase() + label.slice(1);
+    }
+
 
     const verb =
       request.status === 'pending'
@@ -390,45 +372,5 @@ export class HostRequests implements OnInit {
     return `${verb} il y a ${days} jours`;
 
   }
-
-}
-
-
-function toMillis(
-  timestamp: Timestamp | null
-): number {
-
-  return timestamp?.toMillis() ?? 0;
-
-}
-
-
-function parseDate(
-  value: string
-): Date | null {
-
-  const [year, month, day] =
-    (value ?? '').split('-').map(Number);
-
-  return year && month && day
-    ? new Date(year, month - 1, day)
-    : null;
-
-}
-
-
-function formatDay(
-  date: Date,
-  month: 'long' | 'short',
-  withYear: boolean
-): string {
-
-  const day =
-    date.getDate() === 1 ? '1er' : String(date.getDate());
-
-  const monthLabel =
-    new Intl.DateTimeFormat('fr-FR', { month }).format(date);
-
-  return `${day} ${monthLabel}${withYear ? ` ${date.getFullYear()}` : ''}`;
 
 }

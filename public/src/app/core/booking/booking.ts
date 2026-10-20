@@ -22,6 +22,22 @@ export type BookingStatus =
   | 'rejected';
 
 
+/*
+ * Motif de refus choisi par l'annonceur
+ */
+export type RejectionReason =
+  | 'dates_unavailable'
+  | 'already_booked'
+  | 'other';
+
+
+export const REJECTION_REASON_LABELS: Record<RejectionReason, string> = {
+  dates_unavailable: 'Dates indisponibles',
+  already_booked: 'Déjà réservé',
+  other: 'Autre raison'
+};
+
+
 export interface CreateBookingRequest {
 
   listingId: string;
@@ -69,6 +85,11 @@ export interface BookingRequest {
   message: string;
 
   status: BookingStatus;
+
+  /*
+   * '' si non refusée ou sans motif
+   */
+  rejectionReason: RejectionReason | '';
 
   createdAt: Timestamp | null;
 
@@ -224,6 +245,11 @@ export class Booking {
                 data['status']
               ),
 
+
+            rejectionReason:
+
+              this.normalizeReason(data['rejectionReason']),
+
             createdAt:
               data['createdAt'] instanceof Timestamp
                 ? data['createdAt']
@@ -335,6 +361,11 @@ export class Booking {
                 data['status']
               ),
 
+
+            rejectionReason:
+
+              this.normalizeReason(data['rejectionReason']),
+
             createdAt:
               data['createdAt'] instanceof Timestamp
                 ? data['createdAt']
@@ -434,6 +465,11 @@ export class Booking {
           data['status']
         ),
 
+
+      rejectionReason:
+
+        this.normalizeReason(data['rejectionReason']),
+
       createdAt:
         data['createdAt'] instanceof Timestamp
           ? data['createdAt']
@@ -456,7 +492,8 @@ export class Booking {
    */
   async updateRequestStatus(
     requestId: string,
-    status: BookingStatus
+    status: BookingStatus,
+    rejectionReason: RejectionReason | '' = ''
   ): Promise<void> {
 
     const requestRef =
@@ -471,6 +508,7 @@ export class Booking {
       requestRef,
       {
         status,
+        ...(status === 'rejected' && rejectionReason ? { rejectionReason } : {}),
         updatedAt: serverTimestamp()
       }
     );
@@ -512,6 +550,19 @@ export class Booking {
    * NORMALISATION DU STATUT
    * =========================================
    */
+  private normalizeReason(
+    reason: unknown
+  ): RejectionReason | '' {
+
+    return reason === 'dates_unavailable'
+      || reason === 'already_booked'
+      || reason === 'other'
+      ? reason
+      : '';
+
+  }
+
+
   private normalizeStatus(
     status: unknown
   ): BookingStatus {

@@ -209,14 +209,14 @@
 
     @if (processed) {
 
-      <a routerLink="/messages" class="detail-link">
+      <a [routerLink]="['/host/requests', request.id]" class="detail-link">
         <span class="intro-desktop">Voir le détail</span>
         <span class="mobile-only">Détail →</span>
       </a>
 
     } @else {
 
-      <a routerLink="/messages" class="view-btn">
+      <a [routerLink]="['/host/requests', request.id]" class="view-btn">
         Voir la demande
       </a>
 

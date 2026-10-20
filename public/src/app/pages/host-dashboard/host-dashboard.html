@@ -214,7 +214,7 @@
                   </span>
 
                   <a
-                    routerLink="/messages"
+                    [routerLink]="['/host/requests', request.id]"
                     class="action-btn"
                   >
                     Voir la demande
