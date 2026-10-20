@@ -55,6 +55,20 @@ export interface ListingDocument {
 
   availableTo: string;
 
+  /*
+   * Champs utilisés par les filtres de recherche.
+   * null / '' = inconnu (anciennes annonces).
+   */
+  surface: number | null;
+
+  propertyType: PropertyType | '';
+
+  furnished: boolean | null;
+
+  amenities: string[];
+
+  minStayMonths: number;
+
   status:
     | 'published'
     | 'draft'
@@ -336,6 +350,43 @@ export function getListingDetails(
 
 
   return parts.join(' · ');
+
+}
+
+
+/*
+ * Surface : champ du formulaire, sinon lue dans
+ * « Meublé · 22 m² · 1 pièce » (anciennes annonces).
+ */
+function getSurface(
+  data: Record<string, any>
+): number | null {
+
+  if (typeof data['surface'] === 'number' && data['surface'] > 0) {
+    return data['surface'];
+  }
+
+  const match =
+    /(\d+(?:[.,]\d+)?)\s*m²/.exec(data['details'] ?? '');
+
+  return match ? Number(match[1].replace(',', '.')) : null;
+
+}
+
+
+function getFurnishedFromDetails(
+  details: unknown
+): boolean | null {
+
+  if (typeof details !== 'string' || !details) {
+    return null;
+  }
+
+  if (/non meublé/i.test(details)) {
+    return false;
+  }
+
+  return /meublé/i.test(details) ? true : null;
 
 }
 
@@ -648,6 +699,21 @@ export class Listing {
       availableTo:
         data['availableTo'] ?? '',
 
+      surface:
+        getSurface(data),
+
+      propertyType:
+        ['studio', 'apartment', 'room'].includes(data['propertyType']) ? data['propertyType'] : '',
+
+      furnished:
+        typeof data['furnished'] === 'boolean' ? data['furnished'] : getFurnishedFromDetails(data['details']),
+
+      amenities:
+        Array.isArray(data['amenities']) ? data['amenities'] : [],
+
+      minStayMonths:
+        typeof data['minStayMonths'] === 'number' ? data['minStayMonths'] : 1,
+
       status:
         data['status'] === 'draft'
           ? 'draft'
@@ -753,6 +819,21 @@ export class Listing {
 
           availableTo:
             data['availableTo'] ?? '',
+
+          surface:
+            getSurface(data),
+
+          propertyType:
+            ['studio', 'apartment', 'room'].includes(data['propertyType']) ? data['propertyType'] : '',
+
+          furnished:
+            typeof data['furnished'] === 'boolean' ? data['furnished'] : getFurnishedFromDetails(data['details']),
+
+          amenities:
+            Array.isArray(data['amenities']) ? data['amenities'] : [],
+
+          minStayMonths:
+            typeof data['minStayMonths'] === 'number' ? data['minStayMonths'] : 1,
 
           status:
             data['status'] === 'draft'
@@ -863,6 +944,21 @@ export class Listing {
 
           availableTo:
             data['availableTo'] ?? '',
+
+          surface:
+            getSurface(data),
+
+          propertyType:
+            ['studio', 'apartment', 'room'].includes(data['propertyType']) ? data['propertyType'] : '',
+
+          furnished:
+            typeof data['furnished'] === 'boolean' ? data['furnished'] : getFurnishedFromDetails(data['details']),
+
+          amenities:
+            Array.isArray(data['amenities']) ? data['amenities'] : [],
+
+          minStayMonths:
+            typeof data['minStayMonths'] === 'number' ? data['minStayMonths'] : 1,
 
           status:
             data['status'] === 'draft'

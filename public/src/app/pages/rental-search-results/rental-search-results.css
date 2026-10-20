@@ -231,72 +231,38 @@
    FILTRES
 ========================= */
 
-.filters {
-  display: flex;
-  align-items: center;
-
-  flex-wrap: wrap;
-
-  gap: 10px;
-
+.no-results {
   margin-bottom: 14px;
+  padding: 20px;
+
+  border: 1px solid #e4e6ef;
+  border-radius: 8px;
+
+  color: var(--bl-text-muted);
+
+  font-size: var(--bl-fs-body);
 }
 
 
-.filter-button {
-  min-height: 44px;
+.no-results p {
+  margin: 0 0 8px;
+}
 
-  display: flex;
-  align-items: center;
 
-  gap: 8px;
+.no-results button {
+  padding: 0;
 
-  padding: 0 15px;
+  border: none;
 
-  border: 1px solid #cfd1df;
-  border-radius: 9px;
+  background: none;
 
-  background: #ffffff;
-
-  color: #4a4e68;
+  color: var(--bl-primary);
 
   font-family: inherit;
-  font-size: 13px;
+  font-size: var(--bl-fs-body);
+  font-weight: 700;
 
   cursor: pointer;
-
-  transition:
-    border-color 0.2s ease,
-    background 0.2s ease;
-}
-
-
-.filter-button:hover {
-  border-color: #7134f5;
-
-  background: #faf8ff;
-}
-
-
-.filter-button svg {
-  width: 19px;
-  height: 19px;
-
-  fill: none;
-
-  stroke: #303866;
-  stroke-width: 1.7;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-
-.chevron {
-  margin-left: 2px;
-
-  color: #73788d;
-
-  font-size: 12px;
 }
 
 
@@ -754,15 +720,6 @@
 
   .results-left h1 {
     font-size: 21px;
-  }
-
-
-  .filter-button {
-    flex: 1;
-
-    min-width: 145px;
-
-    justify-content: center;
   }
 
 
