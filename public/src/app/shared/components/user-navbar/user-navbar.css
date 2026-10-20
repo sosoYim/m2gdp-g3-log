@@ -228,7 +228,7 @@
 
   border-radius: 50%;
 
-  background: #7134f5;
+  background: var(--bl-primary);
 
   border: 1px solid #ffffff;
 }

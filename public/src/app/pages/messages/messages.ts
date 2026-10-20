@@ -29,7 +29,8 @@ import { Booking, BookingStatus } from '../../core/booking/booking';
 import {
   Messaging,
   RealtimeConversation,
-  RealtimeMessage
+  RealtimeMessage,
+  isConversationUnread
 } from '../../core/messaging/messaging';
 
 
@@ -642,9 +643,7 @@ export class Messages implements OnInit, OnDestroy {
      * personne, plus récent que ma dernière lecture.
      */
     const unread =
-      !!conversation.lastSenderId
-      && conversation.lastSenderId !== this.currentUserId
-      && conversation.lastMessageAt > (conversation.readBy[this.currentUserId] ?? 0);
+      isConversationUnread(conversation, this.currentUserId);
 
 
     const previewPrefix =

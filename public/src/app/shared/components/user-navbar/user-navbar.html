@@ -86,10 +86,10 @@
            MESSAGES
       ========================== -->
 
-      <button
-        type="button"
+      <a
+        routerLink="/messages"
         class="message-button"
-        aria-label="Messages"
+        [attr.aria-label]="hasUnread ? 'Messages (non lus)' : 'Messages'"
       >
 
         <svg
@@ -116,11 +116,13 @@
         </svg>
 
 
-        <span
-          class="notification-dot"
-        ></span>
+        @if (hasUnread) {
+          <span
+            class="notification-dot"
+          ></span>
+        }
 
-      </button>
+      </a>
 
 
       <!-- =========================

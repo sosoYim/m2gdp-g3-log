@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 import {
   equalTo,
@@ -90,10 +90,129 @@ export interface RealtimeMessage {
 }
 
 
+/*
+ * Messages non lus (point violet de la barre
+ * du haut), mémorisé dans le navigateur pour
+ * l'afficher dès l'ouverture de chaque page.
+ */
+const UNREAD_STORAGE_KEY = 'baillyon.hasUnread';
+
+function readStoredUnread(): { uid: string; unread: boolean } | null {
+
+  try {
+
+    const value =
+      JSON.parse(localStorage.getItem(UNREAD_STORAGE_KEY) ?? 'null');
+
+    return typeof value?.uid === 'string' && typeof value?.unread === 'boolean'
+      ? value
+      : null;
+
+  } catch {
+
+    return null;
+
+  }
+
+}
+
+
+export function isConversationUnread(
+  conversation: RealtimeConversation,
+  userId: string
+): boolean {
+
+  return !!conversation.lastSenderId
+    && conversation.lastSenderId !== userId
+    && conversation.lastMessageAt > (conversation.readBy[userId] ?? 0);
+
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
 export class Messaging {
+
+
+  /*
+   * Partagé par toutes les barres du haut :
+   * une seule écoute en temps réel par compte.
+   */
+  readonly hasUnread =
+    signal(readStoredUnread()?.unread ?? false);
+
+
+  private unreadUserId = '';
+
+  private stopUnread: (() => void) | null = null;
+
+
+  watchUnread(
+    userId: string
+  ): void {
+
+    if (this.unreadUserId === userId) {
+      return;
+    }
+
+
+    this.stopWatchingUnread();
+
+    this.unreadUserId = userId;
+
+
+    /*
+     * Autre compte que celui mémorisé :
+     * on n'affiche pas son ancien état.
+     */
+    if (readStoredUnread()?.uid !== userId) {
+      this.hasUnread.set(false);
+    }
+
+
+    this.stopUnread =
+      this.observeConversations(userId, conversations => {
+
+        const unread =
+          conversations.some(c => isConversationUnread(c, userId));
+
+        this.hasUnread.set(unread);
+
+        try {
+          localStorage.setItem(UNREAD_STORAGE_KEY, JSON.stringify({ uid: userId, unread }));
+        } catch {}
+
+      });
+
+  }
+
+
+  /*
+   * Déconnexion
+   */
+  stopWatchingUnread(): void {
+
+    this.stopUnread?.();
+
+    this.stopUnread = null;
+
+    this.unreadUserId = '';
+
+  }
+
+
+  clearUnread(): void {
+
+    this.stopWatchingUnread();
+
+    this.hasUnread.set(false);
+
+    try {
+      localStorage.removeItem(UNREAD_STORAGE_KEY);
+    } catch {}
+
+  }
 
 
   /*
@@ -304,6 +423,14 @@ export class Messaging {
 
 
     const emit = () => {
+
+      /*
+       * Attendre les deux écoutes (demandeur
+       * et annonceur) : pas de liste partielle.
+       */
+      if (byRole.size < 2) {
+        return;
+      }
 
       const merged =
         new Map<string, RealtimeConversation>();

@@ -16,6 +16,7 @@ import { Unsubscribe } from 'firebase/auth';
 
 import { Auth } from '../../../core/auth/auth';
 import { Booking } from '../../../core/booking/booking';
+import { Messaging } from '../../../core/messaging/messaging';
 
 import {
   Profile,
@@ -62,8 +63,19 @@ export class UserNavbar
     private readonly authService: Auth,
     private readonly profileService: Profile,
     private readonly bookingService: Booking,
+    private readonly messagingService: Messaging,
     private readonly router: Router
   ) {}
+
+
+  /*
+   * Point violet sur l'icône Messages
+   */
+  get hasUnread(): boolean {
+
+    return this.messagingService.hasUnread();
+
+  }
 
 
   ngOnInit(): void {
@@ -85,6 +97,15 @@ export class UserNavbar
 
             return;
           }
+
+
+          /*
+           * Messages non lus (écoute partagée,
+           * lancée une seule fois par compte)
+           */
+          this.messagingService.watchUnread(
+            user.uid
+          );
 
 
           /*
@@ -450,6 +471,8 @@ export class UserNavbar
       await this.authService.logout();
 
       this.bookingService.clearPendingCount();
+
+      this.messagingService.clearUnread();
 
 
       this.closeUserMenu();
