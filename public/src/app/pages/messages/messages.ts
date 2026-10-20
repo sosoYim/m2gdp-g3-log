@@ -1,24 +1,30 @@
 import {
   ChangeDetectorRef,
   Component,
+  ElementRef,
   OnDestroy,
-  OnInit
+  OnInit,
+  ViewChild
 } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 
 import {
   ActivatedRoute,
-  Router
+  RouterLink
 } from '@angular/router';
 
 import { UserNavbar } from '../../shared/components/user-navbar/user-navbar';
 import { AccountSidebar } from '../../shared/components/account-sidebar/account-sidebar';
+import { HostSidebar } from '../../shared/components/host-sidebar/host-sidebar';
 
 import { ContactSection } from '../landing/components/contact-section/contact-section';
 import { Footer } from '../landing/components/footer/footer';
 
 import { Auth } from '../../core/auth/auth';
+import { Profile, getDisplayName } from '../../core/profile/profile';
+import { Listing } from '../../core/listing/listing';
+import { Booking, BookingStatus } from '../../core/booking/booking';
 
 import {
   Messaging,
@@ -40,13 +46,30 @@ interface ChatMessage {
 }
 
 
+/*
+ * Messages regroupés par jour
+ * (« Aujourd'hui », « Hier », « lundi 12 octobre »)
+ */
+interface MessageGroup {
+  label: string;
+
+  messages: ChatMessage[];
+}
+
+
 interface Conversation {
   id: string;
 
-  bookingRequestId: string;
-
   listingId: string;
 
+  /*
+   * L'utilisateur connecté est l'annonceur
+   */
+  isOwner: boolean;
+
+  /*
+   * Nom de l'interlocuteur
+   */
   name: string;
 
   initial: string;
@@ -61,6 +84,24 @@ interface Conversation {
 }
 
 
+/*
+ * Demande liée à la conversation
+ * (même ID) : statut + photo de l'annonce
+ */
+interface RequestSummary {
+  status: BookingStatus;
+
+  image: string;
+}
+
+
+const STATUS_LABELS: Record<BookingStatus, string> = {
+  pending: 'EN ATTENTE',
+  accepted: 'ACCEPTÉE',
+  rejected: 'REFUSÉE'
+};
+
+
 @Component({
   selector: 'app-messages',
 
@@ -68,8 +109,10 @@ interface Conversation {
 
   imports: [
     FormsModule,
+    RouterLink,
     UserNavbar,
     AccountSidebar,
+    HostSidebar,
     ContactSection,
     Footer
   ],
@@ -79,68 +122,62 @@ interface Conversation {
 })
 export class Messages implements OnInit, OnDestroy {
 
+  @ViewChild('chatBody')
+  chatBody?: ElementRef<HTMLElement>;
+
+
   searchTerm = '';
 
   selectedConversationId = '';
 
   messageText = '';
 
+  sending = false;
+
+  sendError = '';
+
+  loading = true;
+
+
+  /*
+   * Mobile : liste OU conversation
+   */
+  mobileChatOpen = false;
+
+  /*
+   * Menu latéral selon le rôle
+   */
+  isHost = false;
+
 
   conversations: Conversation[] = [];
 
-  messages: ChatMessage[] = [];
+  messageGroups: MessageGroup[] = [];
 
 
-  /*
-   * Utilisé lorsque l'utilisateur
-   * ne possède encore aucune conversation.
-   *
-   * Cela évite une erreur dans le template.
-   */
-  private readonly emptyConversation: Conversation = {
+  private realtimeConversations: RealtimeConversation[] = [];
 
-    id: '',
+  private requesterNames =
+    new Map<string, string>();
 
-    bookingRequestId: '',
+  private requestSummaries =
+    new Map<string, RequestSummary>();
 
-    listingId: '',
-
-    name: 'Conversation',
-
-    initial: '?',
-
-    listingTitle: '',
-
-    preview: '',
-
-    time: '',
-
-    unread: false
-
-  };
-
-
-  /*
-   * Fonctions permettant d'arrêter
-   * les listeners Firebase.
-   */
   private unsubscribeConversations:
     (() => void) | null = null;
 
   private unsubscribeMessages:
     (() => void) | null = null;
 
-
-  /*
-   * UID de l'utilisateur connecté.
-   */
   private currentUserId = '';
 
 
   constructor(
-    private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly authService: Auth,
+    private readonly profileService: Profile,
+    private readonly listingService: Listing,
+    private readonly bookingService: Booking,
     private readonly messagingService: Messaging,
     private readonly cdr: ChangeDetectorRef
   ) {}
@@ -148,15 +185,12 @@ export class Messages implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
 
-    /*
-     * On attend la restauration
-     * de Firebase Auth.
-     */
     const user =
       await this.authService.waitForAuthState();
 
-
     if (!user) {
+      this.loading = false;
+      this.cdr.detectChanges();
       return;
     }
 
@@ -165,23 +199,29 @@ export class Messages implements OnInit, OnDestroy {
       user.uid;
 
 
+    this.profileService.getProfile(user.uid)
+      .then(profile => {
+        this.isHost = profile?.role === 'host';
+        this.cdr.detectChanges();
+      })
+      .catch(() => undefined);
+
+
     /*
-     * Si on arrive depuis :
-     *
-     * /booking-confirmation
-     *
-     * on reçoit :
-     *
-     * /messages?conversationId=...
+     * /messages?conversationId=... (depuis
+     * une demande) : conversation ouverte.
      */
     const requestedConversationId =
-      this.route.snapshot.queryParamMap.get(
-        'conversationId'
-      ) ?? '';
+      this.route.snapshot.queryParamMap.get('conversationId') ?? '';
+
+    if (requestedConversationId) {
+      this.mobileChatOpen = true;
+    }
 
 
     /*
-     * Écoute en temps réel des conversations.
+     * Écoute temps réel des conversations
+     * (comme demandeur et comme annonceur)
      */
     this.unsubscribeConversations =
       this.messagingService.observeConversations(
@@ -189,27 +229,20 @@ export class Messages implements OnInit, OnDestroy {
 
         realtimeConversations => {
 
-          this.conversations =
-            realtimeConversations.map(
-              conversation =>
-                this.mapConversation(
-                  conversation
-                )
-            );
+          this.loading = false;
+
+          this.realtimeConversations = realtimeConversations;
+
+          this.refreshConversations();
+
+          void this.loadMissingDetails();
 
 
-          /*
-           * Aucune conversation.
-           */
-          if (
-            this.conversations.length === 0
-          ) {
+          if (!this.conversations.length) {
 
-            this.selectedConversationId =
-              '';
+            this.selectedConversationId = '';
 
-            this.messages =
-              [];
+            this.messageGroups = [];
 
             this.stopMessagesListener();
 
@@ -220,60 +253,29 @@ export class Messages implements OnInit, OnDestroy {
           }
 
 
-          /*
-           * Priorité à la conversation
-           * demandée dans l'URL.
-           */
-          const requestedExists =
-            requestedConversationId &&
-            this.conversations.some(
-              conversation =>
-                conversation.id ===
-                requestedConversationId
-            );
+          const exists = (id: string) =>
+            !!id && this.conversations.some(c => c.id === id);
 
 
-          if (requestedExists) {
+          if (!this.selectedConversationId && exists(requestedConversationId)) {
 
-            this.activateConversation(
-              requestedConversationId
-            );
+            this.activateConversation(requestedConversationId);
 
-            return;
+          } else if (!exists(this.selectedConversationId)) {
 
-          }
+            this.activateConversation(this.conversations[0].id);
 
+          } else {
 
-          /*
-           * Si la conversation actuellement
-           * sélectionnée existe toujours,
-           * on la conserve.
-           */
-          const currentExists =
-            this.selectedConversationId &&
-            this.conversations.some(
-              conversation =>
-                conversation.id ===
-                this.selectedConversationId
-            );
-
-
-          if (currentExists) {
+            /*
+             * Nouveau message dans la conversation
+             * ouverte : elle reste lue.
+             */
+            this.markSelectedAsRead();
 
             this.cdr.detectChanges();
 
-            return;
-
           }
-
-
-          /*
-           * Sinon on ouvre automatiquement
-           * la conversation la plus récente.
-           */
-          this.activateConversation(
-            this.conversations[0].id
-          );
 
         }
       );
@@ -283,17 +285,9 @@ export class Messages implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
 
-    if (
-      this.unsubscribeConversations
-    ) {
+    this.unsubscribeConversations?.();
 
-      this.unsubscribeConversations();
-
-      this.unsubscribeConversations =
-        null;
-
-    }
-
+    this.unsubscribeConversations = null;
 
     this.stopMessagesListener();
 
@@ -302,72 +296,56 @@ export class Messages implements OnInit, OnDestroy {
 
   /*
    * =========================================
-   * RECHERCHE
+   * LISTE DES CONVERSATIONS
    * =========================================
    */
 
   get filteredConversations(): Conversation[] {
 
     const search =
-      this.searchTerm
-        .trim()
-        .toLowerCase();
-
+      this.searchTerm.trim().toLowerCase();
 
     if (!search) {
-
       return this.conversations;
-
     }
 
-
-    return this.conversations.filter(
-      conversation =>
-
-        conversation.name
-          .toLowerCase()
-          .includes(search)
-
-        ||
-
-        conversation.listingTitle
-          .toLowerCase()
-          .includes(search)
+    return this.conversations.filter(conversation =>
+      conversation.name.toLowerCase().includes(search)
+      || conversation.listingTitle.toLowerCase().includes(search)
     );
 
   }
 
 
-  /*
-   * =========================================
-   * CONVERSATION SÉLECTIONNÉE
-   * =========================================
-   */
+  get selectedConversation(): Conversation | null {
 
-  get selectedConversation(): Conversation {
-
-    return (
-      this.conversations.find(
-        conversation =>
-          conversation.id ===
-          this.selectedConversationId
-      )
-
-      ??
-
-      this.conversations[0]
-
-      ??
-
-      this.emptyConversation
-    );
+    return this.conversations.find(
+      conversation => conversation.id === this.selectedConversationId
+    ) ?? null;
 
   }
 
 
-  get hasConversations(): boolean {
+  get selectedSummary(): RequestSummary | null {
 
-    return this.conversations.length > 0;
+    return this.requestSummaries.get(this.selectedConversationId) ?? null;
+
+  }
+
+
+  get selectedStatusLabel(): string {
+
+    const summary =
+      this.selectedSummary;
+
+    return summary ? STATUS_LABELS[summary.status] : '';
+
+  }
+
+
+  get unreadCount(): number {
+
+    return this.conversations.filter(c => c.unread).length;
 
   }
 
@@ -376,26 +354,123 @@ export class Messages implements OnInit, OnDestroy {
     conversation: Conversation
   ): void {
 
-    this.activateConversation(
-      conversation.id
-    );
+    this.mobileChatOpen = true;
+
+    this.activateConversation(conversation.id);
+
+    this.markSelectedAsRead();
+
+  }
 
 
-    /*
-     * Pour le moment, unread reste local.
-     *
-     * On pourra ajouter plus tard un vrai
-     * système de messages lus/non lus.
-     */
-    conversation.unread =
-      false;
+  backToList(): void {
+
+    this.mobileChatOpen = false;
+
+  }
+
+
+  private refreshConversations(): void {
+
+    this.conversations =
+      this.realtimeConversations.map(conversation =>
+        this.mapConversation(conversation)
+      );
+
+  }
+
+
+  /*
+   * Noms des demandeurs (profil public) et
+   * résumé des demandes, chargés une fois.
+   */
+  private async loadMissingDetails(): Promise<void> {
+
+    const tasks: Promise<void>[] = [];
+
+
+    for (const conversation of this.realtimeConversations) {
+
+      const requesterId =
+        conversation.requesterId;
+
+      if (
+        conversation.ownerId === this.currentUserId
+        && requesterId
+        && !this.requesterNames.has(requesterId)
+      ) {
+
+        this.requesterNames.set(requesterId, '');
+
+        tasks.push(
+          this.profileService.getPublicProfile(requesterId)
+            .then(profile => {
+              if (profile?.firstName) {
+                this.requesterNames.set(requesterId, getDisplayName(profile));
+              }
+            })
+            .catch(() => undefined)
+        );
+
+      }
+
+
+      if (!this.requestSummaries.has(conversation.id)) {
+
+        this.requestSummaries.set(conversation.id, { status: 'pending', image: '' });
+
+        tasks.push(this.loadSummary(conversation));
+
+      }
+
+    }
+
+
+    if (!tasks.length) {
+      return;
+    }
+
+
+    await Promise.all(tasks);
+
+    this.refreshConversations();
+
+    this.cdr.detectChanges();
+
+  }
+
+
+  private async loadSummary(
+    conversation: RealtimeConversation
+  ): Promise<void> {
+
+    try {
+
+      const [request, listing] =
+        await Promise.all([
+          this.bookingService.getRequestById(conversation.bookingRequestId || conversation.id),
+          conversation.listingId
+            ? this.listingService.getListingById(conversation.listingId)
+            : null
+        ]);
+
+      this.requestSummaries.set(conversation.id, {
+        status: request?.status ?? 'pending',
+        image: listing?.image ?? ''
+      });
+
+    } catch (err) {
+
+      console.error('Erreur résumé conversation :', err);
+
+    }
 
   }
 
 
   /*
    * =========================================
-   * ACTIVER UNE CONVERSATION
+   * CONVERSATION OUVERTE
    * =========================================
    */
 
@@ -408,67 +483,42 @@ export class Messages implements OnInit, OnDestroy {
     }
 
 
-    /*
-     * Si on écoute déjà exactement
-     * cette conversation, inutile
-     * de recréer le listener.
-     */
     if (
-      this.selectedConversationId ===
-        conversationId
-      &&
-      this.unsubscribeMessages
+      this.selectedConversationId === conversationId
+      && this.unsubscribeMessages
     ) {
-
       this.cdr.detectChanges();
-
       return;
-
     }
 
 
-    this.selectedConversationId =
-      conversationId;
+    this.selectedConversationId = conversationId;
 
+    this.sendError = '';
 
-    /*
-     * Arrêt de l'ancienne conversation.
-     */
     this.stopMessagesListener();
 
-
-    /*
-     * Évite d'afficher pendant quelques
-     * millisecondes les messages
-     * de l'ancienne conversation.
-     */
-    this.messages =
-      [];
+    this.messageGroups = [];
 
 
-    /*
-     * Écoute temps réel des vrais messages.
-     */
     this.unsubscribeMessages =
       this.messagingService.observeMessages(
         conversationId,
 
         realtimeMessages => {
 
-          this.messages =
-            realtimeMessages.map(
-              message =>
-                this.mapMessage(
-                  message
-                )
-            );
-
+          this.messageGroups =
+            this.groupByDay(realtimeMessages);
 
           this.cdr.detectChanges();
+
+          this.scrollToBottom();
 
         }
       );
 
+
+    this.markSelectedAsRead();
 
     this.cdr.detectChanges();
 
@@ -477,16 +527,44 @@ export class Messages implements OnInit, OnDestroy {
 
   private stopMessagesListener(): void {
 
-    if (
-      this.unsubscribeMessages
-    ) {
+    this.unsubscribeMessages?.();
 
-      this.unsubscribeMessages();
+    this.unsubscribeMessages = null;
 
-      this.unsubscribeMessages =
-        null;
+  }
 
+
+  private markSelectedAsRead(): void {
+
+    const conversation =
+      this.selectedConversation;
+
+    if (!conversation?.unread || !this.isChatVisible) {
+      return;
     }
+
+
+    conversation.unread = false;
+
+    this.messagingService
+      .markAsRead(conversation.id, this.currentUserId)
+      .catch(err => console.error('Erreur lecture conversation :', err));
+
+  }
+
+
+  private scrollToBottom(): void {
+
+    setTimeout(() => {
+
+      const element =
+        this.chatBody?.nativeElement;
+
+      if (element) {
+        element.scrollTop = element.scrollHeight;
+      }
+
+    });
 
   }
 
@@ -502,25 +580,21 @@ export class Messages implements OnInit, OnDestroy {
     const text =
       this.messageText.trim();
 
-
-    if (!text) {
+    if (!text || this.sending || !this.currentUserId || !this.selectedConversationId) {
       return;
     }
 
 
-    if (
-      !this.currentUserId ||
-      !this.selectedConversationId
-    ) {
-      return;
-    }
+    this.sending = true;
+
+    this.sendError = '';
 
 
     try {
 
       /*
-       * Écriture réelle dans
-       * Firebase Realtime Database.
+       * Le listener temps réel affiche
+       * le message (chez les deux personnes).
        */
       await this.messagingService.sendMessage(
         this.selectedConversationId,
@@ -528,54 +602,21 @@ export class Messages implements OnInit, OnDestroy {
         text
       );
 
-
-      /*
-       * On ne push PAS manuellement
-       * dans this.messages.
-       *
-       * Le listener Firebase reçoit
-       * automatiquement le nouveau message.
-       */
-      this.messageText =
-        '';
-
-
-      this.cdr.detectChanges();
-
+      this.messageText = '';
 
     } catch (error) {
 
-      console.error(
-        'Erreur envoi message :',
-        error
-      );
+      console.error('Erreur envoi message :', error);
+
+      this.sendError = 'Message non envoyé. Réessayez.';
+
+    } finally {
+
+      this.sending = false;
+
+      this.cdr.detectChanges();
 
     }
-
-  }
-
-
-  /*
-   * =========================================
-   * OUVRIR LE LOGEMENT
-   * =========================================
-   */
-
-  async openListing(): Promise<void> {
-
-    const listingId =
-      this.selectedConversation.listingId;
-
-
-    if (!listingId) {
-      return;
-    }
-
-
-    await this.router.navigate([
-      '/property-details',
-      listingId
-    ]);
 
   }
 
@@ -590,87 +631,100 @@ export class Messages implements OnInit, OnDestroy {
     conversation: RealtimeConversation
   ): Conversation {
 
-    const ownerName =
-      conversation.ownerName ||
-      'Annonceur';
+    const isOwner =
+      conversation.ownerId === this.currentUserId;
+
+    const name =
+      isOwner
+        ? this.requesterNames.get(conversation.requesterId) || 'Demandeur'
+        : conversation.ownerName || 'Annonceur';
+
+
+    /*
+     * Non lu : dernier message de l'autre
+     * personne, plus récent que ma dernière lecture.
+     */
+    const unread =
+      !!conversation.lastSenderId
+      && conversation.lastSenderId !== this.currentUserId
+      && conversation.lastMessageAt > (conversation.readBy[this.currentUserId] ?? 0);
+
+
+    const previewPrefix =
+      conversation.lastSenderId === this.currentUserId ? 'Vous : ' : '';
 
 
     return {
-
-      id:
-        conversation.id,
-
-      bookingRequestId:
-        conversation.bookingRequestId,
-
-      listingId:
-        conversation.listingId,
-
-      name:
-        ownerName,
-
-      initial:
-        ownerName
-          .charAt(0)
-          .toUpperCase() || '?',
-
-      listingTitle:
-        conversation.listingTitle ||
-        'Logement BailLyon',
-
-      preview:
-        conversation.lastMessage ||
-        'Nouvelle conversation',
-
-      time:
-        this.formatConversationTime(
-          conversation.lastMessageAt ||
-          conversation.updatedAt
-        ),
-
-      unread:
-        false
-
-    };
-
-  }
-
-
-  private mapMessage(
-    message: RealtimeMessage
-  ): ChatMessage {
-
-    return {
-
-      id:
-        message.id,
-
-      text:
-        message.text,
-
-      sender:
-        message.senderId ===
-        this.currentUserId
-          ? 'me'
-          : 'other',
-
-      time:
-        this.formatMessageTime(
-          message.createdAt
-        )
-
+      id: conversation.id,
+      listingId: conversation.listingId,
+      isOwner,
+      name,
+      initial: name.charAt(0).toUpperCase() || '?',
+      listingTitle: conversation.listingTitle || 'Logement BailLyon',
+      preview: conversation.lastMessage
+        ? previewPrefix + conversation.lastMessage
+        : 'Nouvelle conversation',
+      time: this.formatConversationTime(conversation.lastMessageAt || conversation.updatedAt),
+      unread
     };
 
   }
 
 
   /*
+   * Desktop : conversation toujours visible ;
+   * mobile : seulement quand elle est ouverte.
+   */
+  private get isChatVisible(): boolean {
+
+    return this.mobileChatOpen || window.innerWidth > 760;
+
+  }
+
+
+  private groupByDay(
+    messages: RealtimeMessage[]
+  ): MessageGroup[] {
+
+    const groups: MessageGroup[] = [];
+
+
+    for (const message of messages) {
+
+      const label =
+        this.formatDayLabel(message.createdAt || Date.now());
+
+      let group =
+        groups[groups.length - 1];
+
+      if (!group || group.label !== label) {
+        group = { label, messages: [] };
+        groups.push(group);
+      }
+
+
+      group.messages.push({
+        id: message.id,
+        text: message.text,
+        sender: message.senderId === this.currentUserId ? 'me' : 'other',
+        time: this.formatTime(message.createdAt)
+      });
+
+    }
+
+
+    return groups;
+
+  }
+
+
+  /*
    * =========================================
-   * FORMATAGE DES HEURES
+   * FORMATAGE DES DATES
    * =========================================
    */
 
-  private formatMessageTime(
+  private formatTime(
     timestamp: number
   ): string {
 
@@ -678,23 +732,46 @@ export class Messages implements OnInit, OnDestroy {
       return '';
     }
 
-
-    return new Intl.DateTimeFormat(
-      'fr-FR',
-      {
-        hour:
-          '2-digit',
-
-        minute:
-          '2-digit'
-      }
-    ).format(
-      new Date(timestamp)
-    );
+    return new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit' })
+      .format(new Date(timestamp));
 
   }
 
 
+  private formatDayLabel(
+    timestamp: number
+  ): string {
+
+    const date = new Date(timestamp);
+
+    const today = new Date();
+
+    const yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
+
+
+    if (date.toDateString() === today.toDateString()) {
+      return 'Aujourd\'hui';
+    }
+
+    if (date.toDateString() === yesterday.toDateString()) {
+      return 'Hier';
+    }
+
+
+    return new Intl.DateTimeFormat('fr-FR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      ...(date.getFullYear() !== today.getFullYear() ? { year: 'numeric' } : {})
+    }).format(date);
+
+  }
+
+
+  /*
+   * Liste : heure si aujourd'hui,
+   * « Hier », sinon date courte.
+   */
   private formatConversationTime(
     timestamp: number
   ): string {
@@ -704,49 +781,20 @@ export class Messages implements OnInit, OnDestroy {
     }
 
 
-    const date =
-      new Date(timestamp);
+    const label =
+      this.formatDayLabel(timestamp);
 
-    const today =
-      new Date();
+    if (label === 'Aujourd\'hui') {
+      return this.formatTime(timestamp);
+    }
 
-
-    const sameDay =
-      date.getFullYear() ===
-        today.getFullYear()
-
-      &&
-
-      date.getMonth() ===
-        today.getMonth()
-
-      &&
-
-      date.getDate() ===
-        today.getDate();
-
-
-    if (sameDay) {
-
-      return this.formatMessageTime(
-        timestamp
-      );
-
+    if (label === 'Hier') {
+      return label;
     }
 
 
-    return new Intl.DateTimeFormat(
-      'fr-FR',
-      {
-        day:
-          '2-digit',
-
-        month:
-          '2-digit'
-      }
-    ).format(
-      date
-    );
+    return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' })
+      .format(new Date(timestamp));
 
   }
 
