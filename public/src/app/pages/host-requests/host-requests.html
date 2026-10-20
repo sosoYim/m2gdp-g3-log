@@ -1,0 +1,227 @@
+<app-user-navbar />
+
+
+<main class="account-page">
+
+  <div class="account-layout">
+
+
+    <!-- =========================
+         MENU DU COMPTE
+    ========================== -->
+
+    <app-host-sidebar
+      active="requests"
+      [pendingCount]="pendingCount"
+    />
+
+
+    <!-- =========================
+         CONTENU PRINCIPAL
+    ========================== -->
+
+    <section class="account-content">
+
+      <h1>
+        Demandes reçues
+      </h1>
+
+      <p class="intro">
+        Acceptez ou refusez les demandes de séjour<span class="intro-desktop"> pour vos annonces</span>.
+      </p>
+
+
+      @if (loading()) {
+
+        <div class="state-box">
+          Chargement des demandes...
+        </div>
+
+      }
+
+      @else if (error()) {
+
+        <div class="state-box state-box-error">
+          {{ error() }}
+        </div>
+
+      }
+
+      @else {
+
+
+        <!-- ONGLETS -->
+
+        <div class="tabs" role="tablist">
+
+          @for (tab of tabs; track tab.value) {
+
+            <button
+              type="button"
+              role="tab"
+              class="tab"
+              [class.tab-active]="activeTab() === tab.value"
+              [attr.aria-selected]="activeTab() === tab.value"
+              (click)="activeTab.set(tab.value)"
+            >
+              {{ tab.label }} ({{ countFor(tab.value) }})
+            </button>
+
+          }
+
+        </div>
+
+
+        <!-- LISTE DE L'ONGLET -->
+
+        @if (visibleRequests.length) {
+
+          <div class="request-list">
+
+            @for (request of visibleRequests; track request.id) {
+              <ng-container *ngTemplateOutlet="requestRow; context: { $implicit: request, processed: activeTab() !== 'pending' }" />
+            }
+
+          </div>
+
+        } @else {
+
+          <div class="state-box">
+            Aucune demande dans cette catégorie.
+          </div>
+
+        }
+
+
+        @if (activeTab() === 'pending') {
+
+
+          <!-- TRAITÉES RÉCEMMENT -->
+
+          @if (recentProcessed.length) {
+
+            <h2>
+              Traitées récemment
+            </h2>
+
+            <div class="request-list request-list-processed">
+
+              @for (request of recentProcessed; track request.id) {
+                <ng-container *ngTemplateOutlet="requestRow; context: { $implicit: request, processed: true }" />
+              }
+
+            </div>
+
+          }
+
+
+          <p class="note">
+            <span class="intro-desktop">Les demandes sans réponse restent en attente. </span>{{ overlapMessage }}
+          </p>
+
+        }
+
+
+        <!-- PAIEMENT -->
+
+        <div class="payment-info">
+
+          <span class="payment-icon">i</span>
+
+          <p>
+            Le loyer est réglé directement entre les utilisateurs.
+            <strong>Aucun paiement sur BailLyon.</strong>
+          </p>
+
+        </div>
+
+      }
+
+    </section>
+
+  </div>
+
+
+  <app-contact-section />
+
+</main>
+
+
+<app-footer />
+
+
+
+<!-- =========================
+     LIGNE DE DEMANDE
+========================= -->
+
+<ng-template #requestRow let-request let-processed="processed">
+
+  <article class="request-row" [class.request-row-processed]="processed">
+
+
+    <!-- DEMANDEUR -->
+
+    <div class="requester">
+
+      <span class="avatar">
+        {{ getInitial(request) }}
+      </span>
+
+      <div>
+
+        <p class="requester-name">
+          {{ getRequesterName(request) }}
+        </p>
+
+        <p class="verified">
+          ✓ Profil vérifié
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <!-- ANNONCE + DATES -->
+
+    <div class="request-info">
+
+      <p class="listing-title">
+        {{ getListingTitle(request) }}
+      </p>
+
+      <p class="request-dates">
+        {{ getDateRange(request) }} · {{ getTimeLabel(request) }}
+      </p>
+
+    </div>
+
+
+    <!-- STATUT -->
+
+    <span class="status-badge" [class]="'status-' + request.status">
+      {{ getStatusLabel(request) }}
+    </span>
+
+
+    <!-- ACTION -->
+
+    @if (processed) {
+
+      <a routerLink="/messages" class="detail-link">
+        <span class="intro-desktop">Voir le détail</span>
+        <span class="mobile-only">Détail →</span>
+      </a>
+
+    } @else {
+
+      <a routerLink="/messages" class="view-btn">
+        Voir la demande
+      </a>
+
+    }
+
+  </article>
+
+</ng-template>

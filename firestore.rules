@@ -23,6 +23,33 @@ service cloud.firestore {
 
     /*
      * =========================================
+     * PROFIL PUBLIC
+     * =========================================
+     *
+     * Prénom + initiale du nom, lisibles par
+     * tout utilisateur connecté (ex. l'annonceur
+     * voit le nom du demandeur). Pas d'e-mail.
+     */
+    match /publicProfiles/{userId} {
+
+      allow read:
+        if request.auth != null;
+
+      allow create, update:
+        if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly(['firstName', 'lastInitial', 'updatedAt'])
+        && request.resource.data.firstName is string
+        && request.resource.data.lastInitial is string
+        && request.resource.data.lastInitial.size() <= 1;
+
+      allow delete:
+        if false;
+    }
+
+
+    /*
+     * =========================================
      * FAVORIS D'UN UTILISATEUR
      * =========================================
      */

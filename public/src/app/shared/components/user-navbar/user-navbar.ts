@@ -119,6 +119,17 @@ export class UserNavbar
 
 
             /*
+             * Profil public (nom visible par
+             * les annonceurs) : créé s'il manque.
+             */
+            if (profile) {
+              this.profileService
+                .ensurePublicProfile(user.uid, profile)
+                .catch(err => console.error('Erreur profil public :', err));
+            }
+
+
+            /*
              * Initiale du prénom
              */
             if (profile?.firstName) {

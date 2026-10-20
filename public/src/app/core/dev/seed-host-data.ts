@@ -124,8 +124,12 @@ export async function seedHostData(): Promise<void> {
 
 
   const requests = [
+    /*
+     * Dates qui se chevauchent : une seule
+     * peut être acceptée (message sur /host/requests)
+     */
     { arrivalDate: '2026-05-01', departureDate: '2026-11-01' },
-    { arrivalDate: '2026-09-01', departureDate: '2026-12-31' }
+    { arrivalDate: '2026-05-01', departureDate: '2026-07-31' }
   ];
 
 

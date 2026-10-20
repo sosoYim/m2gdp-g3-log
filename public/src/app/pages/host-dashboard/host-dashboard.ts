@@ -16,7 +16,7 @@ import { ContactSection } from '../landing/components/contact-section/contact-se
 import { Footer } from '../landing/components/footer/footer';
 
 import { Auth } from '../../core/auth/auth';
-import { Profile } from '../../core/profile/profile';
+import { Profile, getDisplayName } from '../../core/profile/profile';
 import { Listing, ListingDocument } from '../../core/listing/listing';
 import { Booking, BookingRequest } from '../../core/booking/booking';
 
@@ -241,26 +241,24 @@ export class HostDashboard implements OnInit {
 
           try {
 
+            /*
+             * Profil public : l'annonceur ne
+             * peut pas lire users/{uid}.
+             */
             const profile =
-              await this.profileService.getProfile(uid);
+              await this.profileService.getPublicProfile(uid);
 
 
-            if (!profile) {
+            if (!profile?.firstName) {
               return;
             }
-
-
-            const lastName =
-              profile.lastName?.charAt(0).toUpperCase() ?? '';
 
 
             this.requesterMap.set(
               uid,
               {
                 name:
-                  lastName
-                    ? `${profile.firstName} ${lastName}.`
-                    : profile.firstName,
+                  getDisplayName(profile),
 
                 initial:
                   profile.firstName
