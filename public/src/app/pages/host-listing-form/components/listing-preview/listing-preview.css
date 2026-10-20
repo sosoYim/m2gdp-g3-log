@@ -88,7 +88,7 @@
   height: 26px;
 
   fill: none;
-  stroke: #7134f5;
+  stroke: var(--bl-primary);
   stroke-width: 1.4;
 }
 
@@ -103,7 +103,7 @@
 
   background: #eee9ff;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-size: 9px;
   font-weight: 800;
@@ -168,7 +168,7 @@
     height: 26px;
 
     fill: none;
-    stroke: #7134f5;
+    stroke: var(--bl-primary);
     stroke-width: 1.6;
   }
 
@@ -181,7 +181,7 @@
   .preview-see {
     display: inline;
 
-    color: #7134f5;
+    color: var(--bl-primary);
 
     font-size: 13px;
     font-weight: 700;

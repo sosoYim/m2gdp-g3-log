@@ -91,7 +91,7 @@ textarea.lf-input {
 .lf-input:focus {
   outline: none;
 
-  border-color: #7134f5;
+  border-color: var(--bl-primary);
 
   box-shadow: 0 0 0 3px rgba(113, 52, 245, 0.12);
 }
@@ -212,9 +212,9 @@ textarea.lf-input {
 
 
 .lf-chip-active {
-  border-color: #7134f5;
+  border-color: var(--bl-primary);
 
-  background: #7134f5;
+  background: var(--bl-primary);
 
   color: #ffffff;
 }
@@ -283,7 +283,7 @@ textarea.lf-input {
 
 
 .lf-switch:checked {
-  background: #7134f5;
+  background: var(--bl-primary);
 }
 
 

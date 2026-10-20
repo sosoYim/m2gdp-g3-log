@@ -30,7 +30,7 @@
 
   margin-bottom: 24px;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-size: 12px;
   font-weight: 700;
@@ -59,7 +59,7 @@
 
 
 .back-link:hover {
-  color: #6026dc;
+  color: var(--bl-primary-hover);
 }
 
 
@@ -331,7 +331,7 @@ textarea {
 
 
 textarea:focus {
-  border-color: #7134f5;
+  border-color: var(--bl-primary);
 }
 
 
@@ -458,7 +458,7 @@ textarea:focus {
 
   border-radius: 6px;
 
-  background: #7134f5;
+  background: var(--bl-primary);
 
   color: #ffffff;
 
@@ -476,7 +476,7 @@ textarea:focus {
 
 
 .send-button:hover {
-  background: #6026dc;
+  background: var(--bl-primary-hover);
 }
 
 

@@ -62,11 +62,11 @@
 }
 
 .slogan-blue {
-  color: #16229c;
+  color: var(--bl-secondary);
 }
 
 .slogan-purple {
-  color: #7034f4;
+  color: var(--bl-primary);
 }
 
 
@@ -167,7 +167,7 @@
 }
 
 .footer-links a:hover {
-  color: #7134f5;
+  color: var(--bl-primary);
 }
 
 

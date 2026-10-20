@@ -370,7 +370,7 @@
 
   background: #eee8ff;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-size: 10px;
   font-weight: 800;
@@ -433,25 +433,25 @@
 
 
 .primary-button {
-  border: 1px solid #7134f5;
+  border: 1px solid var(--bl-primary);
 
-  background: #7134f5;
+  background: var(--bl-primary);
 
   color: #ffffff;
 }
 
 
 .primary-button:hover {
-  background: #6026dc;
+  background: var(--bl-primary-hover);
 }
 
 
 .secondary-button {
-  border: 1px solid #7134f5;
+  border: 1px solid var(--bl-primary);
 
   background: #ffffff;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 }
 
 

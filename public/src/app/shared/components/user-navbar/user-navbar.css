@@ -82,7 +82,7 @@
 
 
 .navbar-links a:hover {
-  color: #7134f5;
+  color: var(--bl-primary);
 }
 
 

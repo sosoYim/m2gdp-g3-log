@@ -63,7 +63,7 @@
   border: none;
   border-radius: 8px;
 
-  background-color: #7134f5;
+  background-color: var(--bl-primary);
 
   color: #ffffff;
 

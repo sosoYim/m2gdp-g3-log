@@ -112,14 +112,14 @@
 .menu-item:hover {
   background: #f6f3ff;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 }
 
 
 .menu-item-active {
   background: #eee9ff;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-weight: 700;
 }

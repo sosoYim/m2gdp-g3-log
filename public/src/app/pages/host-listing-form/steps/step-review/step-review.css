@@ -28,7 +28,7 @@
 
   border-radius: 50%;
 
-  background: #7134f5;
+  background: var(--bl-primary);
 
   color: #ffffff;
 
@@ -169,7 +169,7 @@
 
   background: #eee9ff;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-size: 9px;
   font-weight: 800;
@@ -229,7 +229,7 @@
 
   margin-right: 8px;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 }
 
 

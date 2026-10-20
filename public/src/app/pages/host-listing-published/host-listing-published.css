@@ -180,7 +180,7 @@ h1 {
 
   border-radius: 50%;
 
-  background: #7134f5;
+  background: var(--bl-primary);
 
   color: #ffffff;
 
@@ -234,16 +234,16 @@ h1 {
 
 
 .btn-primary {
-  background: #7134f5;
+  background: var(--bl-primary);
 
   color: #ffffff;
 }
 
 
 .btn-secondary {
-  border: 1px solid #7134f5;
+  border: 1px solid var(--bl-primary);
 
-  color: #7134f5;
+  color: var(--bl-primary);
 }
 
 
@@ -257,7 +257,7 @@ h1 {
 
 
 .reminder a {
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-weight: 700;
 

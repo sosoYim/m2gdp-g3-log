@@ -25,7 +25,7 @@
 
 
 .dropzone-active {
-  border-color: #7134f5;
+  border-color: var(--bl-primary);
 
   background: #eee9ff;
 }
@@ -59,7 +59,7 @@
   height: 22px;
 
   fill: none;
-  stroke: #7134f5;
+  stroke: var(--bl-primary);
   stroke-width: 1.8;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -72,12 +72,12 @@
   margin-top: 10px;
   padding: 0 18px;
 
-  border: 1px solid #7134f5;
+  border: 1px solid var(--bl-primary);
   border-radius: 6px;
 
   background: #ffffff;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-family: inherit;
   font-size: 13px;
@@ -177,7 +177,7 @@
 
   background: #ffffff;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-size: 9px;
   font-weight: 800;
@@ -197,7 +197,7 @@
 
   background: #ffffff;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-family: inherit;
   font-size: 11px;

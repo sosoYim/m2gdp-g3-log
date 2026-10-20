@@ -75,7 +75,7 @@
   padding: 7px;
 
   background: white;
-  color: #7134f5;
+  color: var(--bl-primary);
 
   border: none;
   border-radius: 8px;

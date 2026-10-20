@@ -218,7 +218,7 @@
     50%
     0;
 
-  background: #7134f5;
+  background: var(--bl-primary);
 
   box-shadow:
     0 4px 12px

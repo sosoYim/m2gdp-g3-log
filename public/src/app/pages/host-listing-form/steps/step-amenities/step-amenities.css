@@ -37,7 +37,7 @@
 
 
 .amenity-selected {
-  border: 1.5px solid #7134f5;
+  border: 1.5px solid var(--bl-primary);
 
   background: #f6f3ff;
 
@@ -55,7 +55,7 @@
 
   margin: 0;
 
-  accent-color: #7134f5;
+  accent-color: var(--bl-primary);
 }
 
 
@@ -83,7 +83,7 @@
 
 
 .required {
-  color: #7134f5;
+  color: var(--bl-primary);
 }
 
 

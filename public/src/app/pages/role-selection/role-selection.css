@@ -28,7 +28,7 @@
 .welcome {
   margin: 0 0 8px;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-size: 13px;
   font-weight: 700;
@@ -102,7 +102,7 @@
 }
 
 .role-card.selected {
-  border-color: #7134f5;
+  border-color: var(--bl-primary);
 }
 
 
@@ -125,7 +125,7 @@
 
   border-radius: 50%;
 
-  background: #7134f5;
+  background: var(--bl-primary);
 
   color: #ffffff;
 
@@ -219,7 +219,7 @@
   border: none;
   border-radius: 7px;
 
-  background: #7134f5;
+  background: var(--bl-primary);
 
   color: #ffffff;
 
@@ -235,7 +235,7 @@
 }
 
 .continue-button:hover {
-  background: #6026dc;
+  background: var(--bl-primary-hover);
 
   transform: translateY(-1px);
 }

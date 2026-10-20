@@ -38,7 +38,7 @@
 
 
 .step-done:not(:last-child)::after {
-  background: #7134f5;
+  background: var(--bl-primary);
 }
 
 
@@ -76,16 +76,16 @@
 
 
 .step-done .step-circle {
-  background: #7134f5;
+  background: var(--bl-primary);
 }
 
 
 .step-current .step-circle {
-  border-color: #7134f5;
+  border-color: var(--bl-primary);
 
   background: #ffffff;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 }
 
 
@@ -118,7 +118,7 @@
 
 
 .step-current .step-label {
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-weight: 700;
 }

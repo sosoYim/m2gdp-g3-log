@@ -87,7 +87,7 @@
 
   border-radius: 7px;
 
-  background: #7134f5;
+  background: var(--bl-primary);
 
   color: #ffffff;
 
@@ -146,7 +146,7 @@
 
 
 .stat-number {
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-size: 36px;
 
@@ -192,7 +192,7 @@
 
 
 .see-all-link {
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-size: 11px;
 
@@ -370,7 +370,7 @@
 
 
 .verified-label {
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-size: 10px;
 
@@ -456,13 +456,13 @@
 
   padding: 0 16px;
 
-  border: 1px solid #7134f5;
+  border: 1px solid var(--bl-primary);
 
   border-radius: 6px;
 
   background: #ffffff;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-family: inherit;
 
@@ -637,7 +637,7 @@
 
 
 .pending-requests-link {
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-size: 11px;
 
@@ -701,7 +701,7 @@
 
 
 .pause-btn:hover {
-  color: #7134f5;
+  color: var(--bl-primary);
 }
 
 
@@ -740,7 +740,7 @@
 
   border-radius: 50%;
 
-  background: #7134f5;
+  background: var(--bl-primary);
 
   color: #ffffff;
 
@@ -955,7 +955,7 @@
 
 
   .pause-btn {
-    border: 1px solid #7134f5;
+    border: 1px solid var(--bl-primary);
   }
 
 }

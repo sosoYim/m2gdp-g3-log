@@ -24,7 +24,7 @@
 .eyebrow {
   margin: 0 0 8px;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-size: 12px;
   font-weight: 700;
@@ -84,7 +84,7 @@ h1 {
 }
 
 .form-field input:focus {
-  border-color: #7134f5;
+  border-color: var(--bl-primary);
 
   box-shadow:
     0 0 0 2px rgba(113, 52, 245, 0.08);
@@ -105,7 +105,7 @@ button {
   border: none;
   border-radius: 8px;
 
-  background: #7134f5;
+  background: var(--bl-primary);
 
   color: #ffffff;
 
@@ -116,7 +116,7 @@ button {
 }
 
 button:hover {
-  background: #6026dc;
+  background: var(--bl-primary-hover);
 }
 
 button:disabled {
