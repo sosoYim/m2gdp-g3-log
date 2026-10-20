@@ -1,0 +1,122 @@
+<h2 class="lf-step-title">
+  Équipements
+</h2>
+
+<p class="lf-step-subtitle">
+  Sélectionnez ce que votre logement propose.
+</p>
+
+
+<!-- =========================
+     ÉQUIPEMENTS
+========================== -->
+
+<div class="amenities-grid">
+
+  @for (amenity of amenities; track amenity.value) {
+
+    <label
+      class="amenity"
+      [class.amenity-selected]="isSelected(amenity.value)"
+    >
+
+      <input
+        type="checkbox"
+        [checked]="isSelected(amenity.value)"
+        (change)="toggleAmenity(amenity.value)"
+      />
+
+      <span>{{ amenity.label }}</span>
+
+    </label>
+
+  }
+
+</div>
+
+
+<!-- =========================
+     RÈGLES DU LOGEMENT
+========================== -->
+
+<h3 class="lf-section-title">
+  Règles du logement
+</h3>
+
+
+<label class="lf-toggle-row">
+
+  <span>Logement non-fumeur</span>
+
+  <input
+    type="checkbox"
+    class="lf-switch"
+    [(ngModel)]="form.nonSmoking"
+  />
+
+</label>
+
+
+<label class="lf-toggle-row">
+
+  <span>Animaux acceptés</span>
+
+  <input
+    type="checkbox"
+    class="lf-switch"
+    [(ngModel)]="form.petsAllowed"
+  />
+
+</label>
+
+
+<!-- =========================
+     ACCORD DU PROPRIÉTAIRE
+========================== -->
+
+<fieldset class="consent">
+
+  <legend class="consent-question">
+    Confirmez-vous avoir eu l'accord du propriétaire pour sous-louer le logement ?
+    <span class="required">*</span>
+  </legend>
+
+  <p class="consent-hint">
+    Si vous êtes locataire, la sous-location nécessite l'accord écrit de votre propriétaire.
+  </p>
+
+
+  <div class="lf-chips">
+
+    @for (option of consentOptions; track option.value) {
+
+      <label
+        class="lf-chip consent-chip"
+        [class.lf-chip-active]="form.ownerConsent === option.value"
+      >
+
+        <input
+          type="radio"
+          name="owner-consent"
+          [value]="option.value"
+          [(ngModel)]="form.ownerConsent"
+        />
+
+        {{ option.label }}
+
+      </label>
+
+    }
+
+  </div>
+
+
+  @if (form.ownerConsent === 'no') {
+
+    <p class="consent-warning">
+      Sans l'accord du propriétaire, l'annonce ne pourra pas être publiée.
+    </p>
+
+  }
+
+</fieldset>

@@ -5,8 +5,40 @@
     <title>Sublyon</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+      /*
+       * Écrans très étroits (< 360px) : la page est mise en page
+       * sur 360px puis réduite à l'échelle par le navigateur,
+       * au lieu de casser la mise en page. Au-dessus : responsive normal.
+       */
+      (function () {
+        var MIN_WIDTH = 360;
+        var meta = document.querySelector('meta[name="viewport"]');
+        var landscape = window.matchMedia('(orientation: landscape)');
+
+        function fit() {
+          // iOS garde screen.width en portrait : on choisit selon l'orientation
+          var small = Math.min(screen.width, screen.height);
+          var large = Math.max(screen.width, screen.height);
+          var deviceWidth = landscape.matches ? large : small;
+
+          meta.setAttribute(
+            'content',
+            deviceWidth < MIN_WIDTH
+              ? 'width=' + MIN_WIDTH + ', initial-scale=' + (deviceWidth / MIN_WIDTH).toFixed(4)
+              : 'width=device-width, initial-scale=1'
+          );
+        }
+
+        fit();
+        landscape.addEventListener('change', fit);
+      })();
+    </script>
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" />
   </head>
   <body>
     <app-root></app-root>

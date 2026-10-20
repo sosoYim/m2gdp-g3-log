@@ -14,11 +14,15 @@ import {
 import { Unsubscribe } from 'firebase/auth';
 
 import { Auth } from '../../../core/auth/auth';
+import { Booking } from '../../../core/booking/booking';
+import { Messaging } from '../../../core/messaging/messaging';
 
 import {
   Profile,
   UserRole
 } from '../../../core/profile/profile';
+
+import { MobileMenu } from '../mobile-menu/mobile-menu';
 
 
 @Component({
@@ -27,7 +31,8 @@ import {
   standalone: true,
 
   imports: [
-    RouterLink
+    RouterLink,
+    MobileMenu
   ],
 
   templateUrl: './user-navbar.html',
@@ -38,7 +43,7 @@ export class UserNavbar
 
   userMenuOpen = signal(false);
 
-  role = signal<UserRole>('guest');
+  mobileMenuOpen = signal(false);
 
   switchingRole = signal(false);
 
@@ -47,6 +52,8 @@ export class UserNavbar
 
   private email = signal('');
 
+  private fullName = signal('');
+
 
   private unsubscribeAuth?: Unsubscribe;
 
@@ -54,8 +61,20 @@ export class UserNavbar
   constructor(
     private readonly authService: Auth,
     private readonly profileService: Profile,
+    private readonly bookingService: Booking,
+    private readonly messagingService: Messaging,
     private readonly router: Router
   ) {}
+
+
+  /*
+   * Point violet sur l'icône Messages
+   */
+  get hasUnread(): boolean {
+
+    return this.messagingService.hasUnread();
+
+  }
 
 
   ngOnInit(): void {
@@ -73,10 +92,19 @@ export class UserNavbar
 
             this.email.set('');
 
-            this.role.set('guest');
+            this.fullName.set('');
 
             return;
           }
+
+
+          /*
+           * Messages non lus (écoute partagée,
+           * lancée une seule fois par compte)
+           */
+          this.messagingService.watchUnread(
+            user.uid
+          );
 
 
           /*
@@ -109,6 +137,17 @@ export class UserNavbar
 
 
             /*
+             * Profil public (nom visible par
+             * les annonceurs) : créé s'il manque.
+             */
+            if (profile) {
+              this.profileService
+                .ensurePublicProfile(user.uid, profile)
+                .catch(err => console.error('Erreur profil public :', err));
+            }
+
+
+            /*
              * Initiale du prénom
              */
             if (profile?.firstName) {
@@ -118,19 +157,21 @@ export class UserNavbar
                   .charAt(0)
                   .toUpperCase();
 
+
+              this.fullName.set(
+                `${profile.firstName} ${profile.lastName}`.trim()
+              );
+
             }
 
 
             /*
              * Rôle actuel
              */
-            if (profile?.role) {
-
-              this.role.set(
-                profile.role
-              );
-
-            }
+            this.profileService.setCurrentRole(
+              user.uid,
+              profile?.role ?? 'guest'
+            );
 
           } catch (error) {
 
@@ -156,6 +197,8 @@ export class UserNavbar
 
     this.unsubscribeAuth?.();
 
+    this.setBodyScrollLocked(false);
+
   }
 
 
@@ -180,11 +223,21 @@ export class UserNavbar
 
 
   /*
+   * Nom complet affiché dans le menu mobile
+   */
+  get userFullName(): string {
+
+    return this.fullName();
+
+  }
+
+
+  /*
    * Rôle actuellement sélectionné
    */
   get currentRole(): UserRole {
 
-    return this.role();
+    return this.profileService.currentRole();
 
   }
 
@@ -199,6 +252,9 @@ export class UserNavbar
     if (this.switchingRole()) {
       return;
     }
+
+
+    this.closeMobileMenu();
 
 
     const user =
@@ -220,13 +276,21 @@ export class UserNavbar
      * l'espace correspondant.
      */
     if (
-      this.role() === newRole
+      this.currentRole === newRole
     ) {
 
       if (newRole === 'guest') {
 
         await this.router.navigate([
           '/rental-search-results'
+        ]);
+
+      }
+
+      if (newRole === 'host') {
+
+        await this.router.navigate([
+          '/host/dashboard'
         ]);
 
       }
@@ -250,13 +314,6 @@ export class UserNavbar
       );
 
 
-      /*
-       * Mise à jour visuelle
-       */
-      this.role.set(
-        newRole
-      );
-
 
       /*
        * DEMANDEUR
@@ -274,17 +331,11 @@ export class UserNavbar
 
       /*
        * ANNONCEUR
-       *
-       * L'espace annonceur n'est pas encore
-       * développé par l'équipe UX.
-       *
-       * On revient temporairement sur
-       * la sélection du rôle.
        */
       if (newRole === 'host') {
 
         await this.router.navigate([
-          '/role-selection'
+          '/host/dashboard'
         ]);
 
       }
@@ -332,6 +383,72 @@ export class UserNavbar
 
 
   /*
+   * =========================================
+   * MENU MOBILE
+   * =========================================
+   */
+
+  toggleMobileMenu(): void {
+
+    if (this.mobileMenuOpen()) {
+
+      this.closeMobileMenu();
+
+      return;
+
+    }
+
+
+    this.mobileMenuOpen.set(true);
+
+    this.setBodyScrollLocked(true);
+
+  }
+
+
+  closeMobileMenu(): void {
+
+    this.mobileMenuOpen.set(false);
+
+    this.setBodyScrollLocked(false);
+
+  }
+
+
+  /*
+   * Bloque le défilement de la page
+   * derrière le menu ouvert.
+   */
+  private setBodyScrollLocked(
+    locked: boolean
+  ): void {
+
+    document.body.style.overflow =
+      locked ? 'hidden' : '';
+
+  }
+
+
+  /*
+   * Passage en affichage desktop :
+   * on ferme le menu mobile.
+   */
+  @HostListener('window:resize')
+  onWindowResize(): void {
+
+    if (
+      this.mobileMenuOpen() &&
+      window.innerWidth > 760
+    ) {
+
+      this.closeMobileMenu();
+
+    }
+
+  }
+
+
+  /*
    * Déconnexion
    */
   async logout(): Promise<void> {
@@ -340,8 +457,14 @@ export class UserNavbar
 
       await this.authService.logout();
 
+      this.bookingService.clearPendingCount();
+
+      this.messagingService.clearUnread();
+
 
       this.closeUserMenu();
+
+      this.closeMobileMenu();
 
 
       await this.router.navigate([

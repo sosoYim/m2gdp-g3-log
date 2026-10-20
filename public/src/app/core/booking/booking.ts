@@ -1,12 +1,15 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 import {
   addDoc,
   collection,
+  doc,
+  getDoc,
   getDocs,
   query,
   serverTimestamp,
   Timestamp,
+  updateDoc,
   where
 } from 'firebase/firestore';
 
@@ -17,6 +20,22 @@ export type BookingStatus =
   | 'pending'
   | 'accepted'
   | 'rejected';
+
+
+/*
+ * Motif de refus choisi par l'annonceur
+ */
+export type RejectionReason =
+  | 'dates_unavailable'
+  | 'already_booked'
+  | 'other';
+
+
+export const REJECTION_REASON_LABELS: Record<RejectionReason, string> = {
+  dates_unavailable: 'Dates indisponibles',
+  already_booked: 'Déjà réservé',
+  other: 'Autre raison'
+};
 
 
 export interface CreateBookingRequest {
@@ -67,9 +86,46 @@ export interface BookingRequest {
 
   status: BookingStatus;
 
+  /*
+   * '' si non refusée ou sans motif
+   */
+  rejectionReason: RejectionReason | '';
+
   createdAt: Timestamp | null;
 
   updatedAt: Timestamp | null;
+
+}
+
+
+/*
+ * Nombre de demandes en attente (badge du menu
+ * annonceur), mémorisé dans le navigateur pour
+ * l'afficher dès l'ouverture de chaque page.
+ */
+const PENDING_STORAGE_KEY = 'baillyon.pendingCount';
+
+interface StoredPendingCount {
+  uid: string;
+  count: number;
+}
+
+function readStoredPendingCount(): StoredPendingCount | null {
+
+  try {
+
+    const value =
+      JSON.parse(localStorage.getItem(PENDING_STORAGE_KEY) ?? 'null');
+
+    return typeof value?.uid === 'string' && typeof value?.count === 'number'
+      ? value
+      : null;
+
+  } catch {
+
+    return null;
+
+  }
 
 }
 
@@ -78,6 +134,66 @@ export interface BookingRequest {
   providedIn: 'root'
 })
 export class Booking {
+
+
+  /*
+   * Partagé par tous les menus annonceur :
+   * pas de retour à 0 entre deux pages.
+   */
+  readonly pendingCount =
+    signal(readStoredPendingCount()?.count ?? 0);
+
+
+  setPendingCount(
+    uid: string,
+    count: number
+  ): void {
+
+    this.pendingCount.set(count);
+
+    try {
+      localStorage.setItem(PENDING_STORAGE_KEY, JSON.stringify({ uid, count }));
+    } catch {}
+
+  }
+
+
+  /*
+   * Déconnexion : le prochain compte connecté
+   * ne voit pas le nombre de l'ancien.
+   */
+  clearPendingCount(): void {
+
+    this.pendingCount.set(0);
+
+    try {
+      localStorage.removeItem(PENDING_STORAGE_KEY);
+    } catch {}
+
+  }
+
+
+  async refreshPendingCount(
+    uid: string
+  ): Promise<void> {
+
+    /*
+     * Autre compte que celui mémorisé :
+     * on n'affiche pas son ancien nombre.
+     */
+    if (readStoredPendingCount()?.uid !== uid) {
+      this.pendingCount.set(0);
+    }
+
+    const requests =
+      await this.getRequestsForOwner(uid);
+
+    this.setPendingCount(
+      uid,
+      requests.filter(r => r.status === 'pending').length
+    );
+
+  }
 
 
   /*
@@ -221,6 +337,11 @@ export class Booking {
                 data['status']
               ),
 
+
+            rejectionReason:
+
+              this.normalizeReason(data['rejectionReason']),
+
             createdAt:
               data['createdAt'] instanceof Timestamp
                 ? data['createdAt']
@@ -262,6 +383,233 @@ export class Booking {
 
   /*
    * =========================================
+   * DEMANDES REÇUES PAR L'ANNONCEUR
+   * =========================================
+   */
+  async getRequestsForOwner(
+    ownerId: string
+  ): Promise<BookingRequest[]> {
+
+    const bookingRequestsRef =
+      collection(
+        firestore,
+        'bookingRequests'
+      );
+
+
+    const ownerQuery =
+      query(
+        bookingRequestsRef,
+        where(
+          'ownerId',
+          '==',
+          ownerId
+        )
+      );
+
+
+    const snapshot =
+      await getDocs(
+        ownerQuery
+      );
+
+
+    const requests =
+      snapshot.docs.map(
+        documentSnapshot => {
+
+          const data =
+            documentSnapshot.data();
+
+
+          return {
+
+            id:
+              documentSnapshot.id,
+
+            listingId:
+              data['listingId'] ?? '',
+
+            requesterId:
+              data['requesterId'] ?? '',
+
+            ownerId:
+              data['ownerId'] ?? '',
+
+            ownerName:
+              data['ownerName'] ?? '',
+
+            arrivalDate:
+              data['arrivalDate'] ?? '',
+
+            departureDate:
+              data['departureDate'] ?? '',
+
+            message:
+              data['message'] ?? '',
+
+            status:
+              this.normalizeStatus(
+                data['status']
+              ),
+
+
+            rejectionReason:
+
+              this.normalizeReason(data['rejectionReason']),
+
+            createdAt:
+              data['createdAt'] instanceof Timestamp
+                ? data['createdAt']
+                : null,
+
+            updatedAt:
+              data['updatedAt'] instanceof Timestamp
+                ? data['updatedAt']
+                : null
+
+          } satisfies BookingRequest;
+
+        }
+      );
+
+
+    requests.sort(
+      (a, b) => {
+
+        const dateA =
+          a.createdAt?.toMillis() ?? 0;
+
+        const dateB =
+          b.createdAt?.toMillis() ?? 0;
+
+        return dateB - dateA;
+
+      }
+    );
+
+
+    return requests;
+
+  }
+
+
+  /*
+   * =========================================
+   * RÉCUPÉRER UNE DEMANDE PAR SON ID
+   * =========================================
+   */
+  async getRequestById(
+    requestId: string
+  ): Promise<BookingRequest | null> {
+
+    const requestRef =
+      doc(
+        firestore,
+        'bookingRequests',
+        requestId
+      );
+
+
+    const snapshot =
+      await getDoc(
+        requestRef
+      );
+
+
+    if (!snapshot.exists()) {
+      return null;
+    }
+
+
+    const data =
+      snapshot.data();
+
+
+    return {
+
+      id:
+        snapshot.id,
+
+      listingId:
+        data['listingId'] ?? '',
+
+      requesterId:
+        data['requesterId'] ?? '',
+
+      ownerId:
+        data['ownerId'] ?? '',
+
+      ownerName:
+        data['ownerName'] ?? '',
+
+      arrivalDate:
+        data['arrivalDate'] ?? '',
+
+      departureDate:
+        data['departureDate'] ?? '',
+
+      message:
+        data['message'] ?? '',
+
+      status:
+        this.normalizeStatus(
+          data['status']
+        ),
+
+
+      rejectionReason:
+
+        this.normalizeReason(data['rejectionReason']),
+
+      createdAt:
+        data['createdAt'] instanceof Timestamp
+          ? data['createdAt']
+          : null,
+
+      updatedAt:
+        data['updatedAt'] instanceof Timestamp
+          ? data['updatedAt']
+          : null
+
+    } satisfies BookingRequest;
+
+  }
+
+
+  /*
+   * =========================================
+   * METTRE À JOUR LE STATUT D'UNE DEMANDE
+   * =========================================
+   */
+  async updateRequestStatus(
+    requestId: string,
+    status: BookingStatus,
+    rejectionReason: RejectionReason | '' = ''
+  ): Promise<void> {
+
+    const requestRef =
+      doc(
+        firestore,
+        'bookingRequests',
+        requestId
+      );
+
+
+    await updateDoc(
+      requestRef,
+      {
+        status,
+        ...(status === 'rejected' && rejectionReason ? { rejectionReason } : {}),
+        updatedAt: serverTimestamp()
+      }
+    );
+
+  }
+
+
+  /*
+   * =========================================
    * ANTI-DOUBLON
    * =========================================
    */
@@ -294,6 +642,19 @@ export class Booking {
    * NORMALISATION DU STATUT
    * =========================================
    */
+  private normalizeReason(
+    reason: unknown
+  ): RejectionReason | '' {
+
+    return reason === 'dates_unavailable'
+      || reason === 'already_booked'
+      || reason === 'other'
+      ? reason
+      : '';
+
+  }
+
+
   private normalizeStatus(
     status: unknown
   ): BookingStatus {

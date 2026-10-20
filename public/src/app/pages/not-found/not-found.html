@@ -1,0 +1,55 @@
+<app-navbar />
+
+
+<main class="not-found-page">
+
+  <p
+    class="error-code"
+    aria-hidden="true"
+  >
+    404
+  </p>
+
+
+  <h1>
+    Oups, cette page s’est envolée !
+  </h1>
+
+  <p class="error-text">
+    La page que vous cherchez n’existe pas ou a été déplacée.
+  </p>
+
+
+  <div class="error-actions">
+
+    <a
+      routerLink="/"
+      class="btn-primary"
+    >
+      Retour à l’accueil
+    </a>
+
+    <a
+      routerLink="/rental-search-results"
+      class="btn-outline"
+    >
+      Rechercher un logement
+    </a>
+
+  </div>
+
+
+  <p class="help">
+    Besoin d’aide ?
+    <a
+      routerLink="/"
+      fragment="contact"
+    >
+      Écrivez-nous
+    </a>
+  </p>
+
+</main>
+
+
+<app-footer />

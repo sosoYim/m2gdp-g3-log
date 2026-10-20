@@ -42,33 +42,10 @@
 }
 
 .footer-logo-image {
-  width: 34px;
-  height: 34px;
+  width: auto;
+  height: 36px;
 
   display: block;
-  object-fit: contain;
-}
-
-
-/* =========================================================
-   NOM BAILLYON
-   ========================================================= */
-
-.logo-name {
-  display: inline-flex;
-  align-items: center;
-
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.logo-bail {
-  color: #16229c;
-}
-
-.logo-lyon {
-  color: #7034f4;
 }
 
 
@@ -85,11 +62,11 @@
 }
 
 .slogan-blue {
-  color: #16229c;
+  color: var(--bl-secondary);
 }
 
 .slogan-purple {
-  color: #7034f4;
+  color: var(--bl-primary);
 }
 
 
@@ -190,7 +167,7 @@
 }
 
 .footer-links a:hover {
-  color: #7134f5;
+  color: var(--bl-primary);
 }
 
 
@@ -247,12 +224,7 @@
   }
 
   .footer-logo-image {
-    width: 32px;
-    height: 32px;
-  }
-
-  .logo-name {
-    font-size: 17px;
+    height: 31px;
   }
 
   .footer-slogan {
@@ -271,15 +243,23 @@
     margin: 26px 0 20px;
   }
 
+  /* Liens légaux au-dessus du copyright */
   .footer-bottom {
-    flex-direction: column;
+    flex-direction: column-reverse;
     align-items: flex-start;
 
     gap: 14px;
   }
 
   .footer-links {
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 14px;
+  }
+
+  .footer-links span {
+    display: none;
   }
 
 }

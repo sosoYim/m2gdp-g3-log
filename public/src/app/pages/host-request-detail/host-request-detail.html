@@ -1,0 +1,297 @@
+<app-user-navbar />
+
+
+<main class="account-page">
+
+  <div class="account-layout">
+
+
+    <!-- =========================
+         MENU DU COMPTE
+    ========================== -->
+
+    <app-host-sidebar
+      active="requests"
+    />
+
+
+    <!-- =========================
+         CONTENU PRINCIPAL
+    ========================== -->
+
+    <section class="account-content">
+
+      <a routerLink="/host/requests" class="back-link">
+        ← Toutes les demandes
+      </a>
+
+
+      @if (loading()) {
+
+        <div class="state-box">
+          Chargement de la demande...
+        </div>
+
+      }
+
+      @else if (error()) {
+
+        <div class="state-box state-box-error">
+          {{ error() }}
+        </div>
+
+      }
+
+      @else if (request(); as request) {
+
+
+        <!-- EN-TÊTE -->
+
+        <div class="page-title">
+
+          <h1>
+            Demande {{ withDe(firstName) }}
+          </h1>
+
+          <span class="status-badge" [class]="'status-' + request.status">
+            {{ statusLabel }}
+          </span>
+
+        </div>
+
+        <p class="received">
+          {{ receivedLabel }}
+        </p>
+
+
+        <div class="detail-layout">
+
+
+          <!-- COLONNE PRINCIPALE -->
+
+          <div class="detail-main">
+
+
+            <!-- DEMANDEUR -->
+
+            <section class="card card-requester">
+
+              <h2>Le demandeur</h2>
+
+              <div class="requester">
+
+                <span class="avatar">{{ initial }}</span>
+
+                <p class="requester-name">
+                  {{ requesterName() }}
+                </p>
+
+              </div>
+
+              <span class="verified-badge">✓ PROFIL VÉRIFIÉ</span>
+
+            </section>
+
+
+            <!-- SÉJOUR -->
+
+            <section class="card card-stay">
+
+              <h2>Séjour demandé</h2>
+
+              <dl class="stay-grid">
+
+                <div>
+                  <dt>Arrivée</dt>
+                  <dd>{{ formatDate(request.arrivalDate) }}</dd>
+                </div>
+
+                <div>
+                  <dt>Départ</dt>
+                  <dd>{{ formatDate(request.departureDate) }}</dd>
+                </div>
+
+                <div>
+                  <dt>Durée</dt>
+                  <dd>{{ duration }}</dd>
+                </div>
+
+                <div>
+                  <dt>Loyer mensuel</dt>
+                  <dd>{{ listing()?.price ?? '—' }} € / mois</dd>
+                </div>
+
+              </dl>
+
+              <p class="small-note">
+                Loyer affiché à titre d'exemple.
+              </p>
+
+            </section>
+
+
+            <!-- MESSAGE -->
+
+            <section class="card card-message">
+
+              <h2>Son message</h2>
+
+              <p class="message">
+                {{ request.message || 'Aucun message.' }}
+              </p>
+
+            </section>
+
+          </div>
+
+
+          <!-- COLONNE DE DROITE -->
+
+          <aside class="detail-side">
+
+
+            <!-- ANNONCE -->
+
+            @if (listing(); as listing) {
+
+              <section class="card listing-card">
+
+                @if (listing.image) {
+                  <img [src]="listing.image" [alt]="listing.title" />
+                }
+
+                <div class="listing-info">
+
+                  <h3>{{ listing.title }}</h3>
+
+                  <p class="area">{{ areaLabel }}</p>
+
+                  <p class="details">{{ listing.details }}</p>
+
+                  <a [routerLink]="['/property-details', listing.id]" class="listing-link">
+                    Voir l'annonce →
+                  </a>
+
+                </div>
+
+              </section>
+
+            }
+
+
+            <!-- RÉPONSE -->
+
+            <section class="card card-answer">
+
+              <h2>Votre réponse</h2>
+
+
+              @if (request.status === 'pending') {
+
+                <button
+                  type="button"
+                  class="btn-primary"
+                  [disabled]="saving() || acceptedOverlap"
+                  (click)="openModal('accept')"
+                >
+                  Accepter la demande
+                </button>
+
+                <button
+                  type="button"
+                  class="btn-outline"
+                  [disabled]="saving()"
+                  (click)="openModal('refuse')"
+                >
+                  Refuser
+                </button>
+
+                @if (acceptedOverlap) {
+                  <p class="answer-error">
+                    Une demande acceptée porte déjà sur des dates qui se chevauchent.
+                  </p>
+                }
+
+              } @else {
+
+                <p class="answer-done">
+                  {{ request.status === 'accepted' ? 'Vous avez accepté cette demande.' : 'Vous avez refusé cette demande.' }}
+                  @if (rejectionLabel) {
+                    <br />Motif : {{ rejectionLabel }}
+                  }
+                </p>
+
+              }
+
+
+              @if (actionError()) {
+                <p class="answer-error">{{ actionError() }}</p>
+              }
+
+
+              <a
+                routerLink="/messages"
+                [queryParams]="{ conversationId: request.id }"
+                class="messages-link"
+              >
+                Répondre dans la messagerie
+              </a>
+
+
+              <div class="info-box">
+
+                <span class="info-icon">i</span>
+
+                <div>
+
+                  @if (request.status === 'pending') {
+                    <p>{{ acceptNote }}</p>
+                  }
+
+                  <p>
+                    Le loyer est réglé directement entre vous.
+                    <br/><strong>Aucun paiement sur BailLyon.</strong>
+                  </p>
+
+                </div>
+
+              </div>
+
+            </section>
+
+          </aside>
+
+        </div>
+
+
+        <!-- MODALE ACCEPTER / REFUSER -->
+
+        @if (modal(); as mode) {
+
+          <app-answer-modal
+            [mode]="mode"
+            [firstName]="firstName"
+            [ofFirstName]="withDe(firstName)"
+            [listingTitle]="listing()?.title ?? ''"
+            [dateRange]="dateRange"
+            [price]="listing()?.price ?? null"
+            [saving]="saving()"
+            (confirmed)="onConfirm($event)"
+            (closed)="closeModal()"
+          />
+
+        }
+
+      }
+
+    </section>
+
+  </div>
+
+
+  <app-contact-section />
+
+</main>
+
+
+<app-footer />

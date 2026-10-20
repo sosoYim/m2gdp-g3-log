@@ -1,0 +1,343 @@
+/* =========================================================
+   FORMULAIRE « DÉPOSER UNE ANNONCE » — STYLES PARTAGÉS
+   =========================================================
+   Importé dans src/styles.css : classes préfixées « lf- »
+   utilisées par toutes les étapes.
+   ========================================================= */
+
+.lf-step-title {
+  margin: 0 0 4px;
+
+  color: #171925;
+
+  font-size: 18px;
+  font-weight: 800;
+}
+
+
+.lf-step-subtitle {
+  margin: 0 0 18px;
+
+  color: #424556;
+
+  font-size: 12px;
+}
+
+
+.lf-section-title {
+  margin: 24px 0 12px;
+
+  color: #171925;
+
+  font-size: 15px;
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   CHAMPS
+   ========================================================= */
+
+.lf-field {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin-bottom: 18px;
+}
+
+
+.lf-label {
+  color: #171925;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+.lf-input {
+  width: 100%;
+  height: 42px;
+
+  box-sizing: border-box;
+
+  padding: 0 12px;
+
+  border: 1px solid #dfe2ec;
+  border-radius: 6px;
+
+  background: #ffffff;
+
+  color: #171925;
+
+  font-family: inherit;
+  font-size: 13px;
+}
+
+
+textarea.lf-input {
+  height: auto;
+  min-height: 92px;
+
+  padding: 10px 12px;
+
+  line-height: 1.5;
+
+  resize: vertical;
+}
+
+
+.lf-input:focus {
+  outline: none;
+
+  border-color: var(--bl-primary);
+
+  box-shadow: 0 0 0 3px rgba(113, 52, 245, 0.12);
+}
+
+
+.lf-counter {
+  margin-top: -4px;
+
+  align-self: flex-end;
+
+  color: #85899b;
+
+  font-size: 10px;
+}
+
+
+.lf-hint {
+  margin: -2px 0 0;
+
+  color: #424556;
+
+  font-size: 10px;
+}
+
+
+/* Champ avec icône ou unité */
+
+.lf-input-wrap {
+  position: relative;
+}
+
+
+.lf-input-wrap .lf-input {
+  padding-left: 36px;
+}
+
+
+.lf-input-wrap svg {
+  position: absolute;
+
+  top: 50%;
+  left: 12px;
+
+  width: 18px;
+  height: 18px;
+
+  transform: translateY(-50%);
+
+  fill: none;
+  stroke: #171925;
+  stroke-width: 1.6;
+}
+
+
+.lf-input-unit {
+  position: absolute;
+
+  top: 50%;
+  right: 12px;
+
+  transform: translateY(-50%);
+
+  color: #424556;
+
+  font-size: 12px;
+}
+
+
+.lf-input-wrap-unit .lf-input {
+  padding: 0 34px 0 12px;
+}
+
+
+.lf-grid-3 {
+  display: grid;
+
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 10px;
+}
+
+
+/* =========================================================
+   PASTILLES (CHOIX UNIQUE)
+   ========================================================= */
+
+.lf-chips {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 8px;
+}
+
+
+.lf-chip {
+  height: 36px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 0 16px;
+
+  border: 1px solid #dfe2ec;
+  border-radius: 999px;
+
+  background: #ffffff;
+
+  color: #171925;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+.lf-chip-active {
+  border-color: var(--bl-primary);
+
+  background: var(--bl-primary);
+
+  color: #ffffff;
+}
+
+
+/* =========================================================
+   INTERRUPTEUR
+   ========================================================= */
+
+.lf-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 14px;
+
+  color: #424556;
+
+  font-size: 13px;
+
+  cursor: pointer;
+}
+
+
+.lf-switch {
+  position: relative;
+
+  flex-shrink: 0;
+
+  width: 40px;
+  height: 22px;
+
+  margin: 0;
+
+  border-radius: 999px;
+
+  background: #e4e6ef;
+
+  appearance: none;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+
+.lf-switch::after {
+  content: '';
+
+  position: absolute;
+
+  top: 3px;
+  left: 3px;
+
+  width: 16px;
+  height: 16px;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  transition: transform 0.2s ease;
+}
+
+
+.lf-switch:checked {
+  background: var(--bl-primary);
+}
+
+
+.lf-switch:checked::after {
+  transform: translateX(18px);
+}
+
+
+/* =========================================================
+   MESSAGES
+   ========================================================= */
+
+.lf-errors {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+
+  border-radius: 6px;
+
+  background: #fff8f8;
+
+  color: #c43b3b;
+
+  font-size: 12px;
+}
+
+
+.lf-errors p {
+  margin: 0;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+  .lf-step-title {
+    display: none;
+  }
+
+
+  .lf-input {
+    height: 46px;
+
+    font-size: 14px;
+  }
+
+
+  /* Grille de 3 champs empilée sur mobile */
+  .lf-grid-stack {
+    grid-template-columns: 1fr;
+
+    gap: 0;
+  }
+
+}

@@ -142,7 +142,7 @@
 
   background: #eee8ff;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-size: 9px;
 
@@ -233,13 +233,13 @@
 
   padding: 0 18px;
 
-  border: 1px solid #7134f5;
+  border: 1px solid var(--bl-primary);
 
   border-radius: 6px;
 
   background: #ffffff;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-family: inherit;
 
@@ -259,7 +259,7 @@
 
 
 /* =========================================================
-   CHARGEMENT / VIDE / ERREUR
+   CHARGEMENT / ERREUR
    ========================================================= */
 
 .booking-state {
@@ -277,38 +277,12 @@
 }
 
 
-.booking-state strong {
-  display: block;
-
-  margin-bottom: 7px;
-
-  color: #171925;
-
-  font-size: 16px;
-}
-
-
-.booking-state p {
-  margin: 0 0 16px;
-}
-
-
 .booking-state-error {
   color: #c43b3b;
 
   background: #fff8f8;
 }
 
-
-.empty-booking-button {
-  display: inline-flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  text-decoration: none;
-}
 
 
 /* =========================================================
@@ -346,7 +320,7 @@
 
   border-radius: 50%;
 
-  background: #7134f5;
+  background: var(--bl-primary);
 
   color: #ffffff;
 
@@ -407,7 +381,7 @@
 
   background: transparent;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-family: inherit;
 
@@ -494,9 +468,9 @@
   width: 20px;
   height: 20px;
 
-  fill: #7134f5;
+  fill: var(--bl-primary);
 
-  stroke: #7134f5;
+  stroke: var(--bl-primary);
 
   stroke-width: 1.4;
 }
@@ -537,7 +511,7 @@
 
 
 .favorite-rating::first-letter {
-  color: #7134f5;
+  color: var(--bl-primary);
 }
 
 

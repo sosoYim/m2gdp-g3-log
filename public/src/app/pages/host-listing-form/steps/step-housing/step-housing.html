@@ -1,0 +1,183 @@
+<h2 class="lf-step-title">
+  Le logement
+</h2>
+
+<p class="lf-step-subtitle">
+  Décrivez votre logement en quelques mots.
+</p>
+
+
+<!-- TITRE -->
+
+<div class="lf-field">
+
+  <label
+    class="lf-label"
+    for="listing-title"
+  >
+    Titre de l'annonce
+  </label>
+
+  <input
+    id="listing-title"
+    class="lf-input"
+    maxlength="60"
+    placeholder="Ex. : Charmant studio-loft"
+    [(ngModel)]="form.title"
+  />
+
+  <span class="lf-counter">
+    {{ form.title.length }} / 60
+  </span>
+
+</div>
+
+
+<!-- TYPE -->
+
+<div class="lf-field">
+
+  <span class="lf-label">
+    Type de logement
+  </span>
+
+  <div class="lf-chips">
+
+    @for (type of propertyTypes; track type.value) {
+
+      <button
+        type="button"
+        class="lf-chip"
+        [class.lf-chip-active]="form.propertyType === type.value"
+        [attr.aria-pressed]="form.propertyType === type.value"
+        (click)="form.propertyType = type.value"
+      >
+        {{ type.label }}
+      </button>
+
+    }
+
+  </div>
+
+</div>
+
+
+<app-address-field [form]="form" />
+
+
+<!-- SURFACE / PIÈCES / ÉTAGE -->
+
+<div class="lf-grid-3">
+
+  <div class="lf-field">
+
+    <label
+      class="lf-label"
+      for="listing-surface"
+    >
+      Surface
+    </label>
+
+    <div class="lf-input-wrap-unit lf-input-wrap">
+
+      <input
+        id="listing-surface"
+        class="lf-input"
+        type="number"
+        min="1"
+        inputmode="numeric"
+        [(ngModel)]="form.surface"
+      />
+
+      <span class="lf-input-unit">m²</span>
+
+    </div>
+
+  </div>
+
+
+  <div class="lf-field">
+
+    <label
+      class="lf-label"
+      for="listing-rooms"
+    >
+      Pièces
+    </label>
+
+    <input
+      id="listing-rooms"
+      class="lf-input"
+      type="number"
+      min="1"
+      inputmode="numeric"
+      [(ngModel)]="form.rooms"
+    />
+
+  </div>
+
+
+  <div class="lf-field">
+
+    <label
+      class="lf-label"
+      for="listing-floor"
+    >
+      Étage
+    </label>
+
+    <input
+      id="listing-floor"
+      class="lf-input"
+      type="number"
+      min="0"
+      inputmode="numeric"
+      [(ngModel)]="form.floor"
+    />
+
+  </div>
+
+</div>
+
+
+<!-- MEUBLÉ -->
+
+<label class="lf-toggle-row">
+
+  <span>
+    Logement meublé
+  </span>
+
+  <input
+    type="checkbox"
+    class="lf-switch"
+    [(ngModel)]="form.furnished"
+  />
+
+</label>
+
+
+<!-- DESCRIPTION -->
+
+<div class="lf-field">
+
+  <label
+    class="lf-label"
+    for="listing-description"
+  >
+    Description
+  </label>
+
+  <textarea
+    id="listing-description"
+    class="lf-input"
+    rows="4"
+    maxlength="1000"
+    [(ngModel)]="form.description"
+  ></textarea>
+
+  <span class="lf-counter">
+    {{ form.description.length }} / 1000
+  </span>
+
+</div>

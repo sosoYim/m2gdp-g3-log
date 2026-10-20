@@ -45,7 +45,7 @@
 }
 
 .slogan-title span {
-  color: #7134f5;
+  color: var(--bl-primary);
 }
 
 
@@ -151,7 +151,7 @@
   line-height: 1;
   font-weight: 800;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 }
 
 
@@ -223,7 +223,7 @@
   border: none;
   border-radius: 8px;
 
-  background-color: #7134f5;
+  background-color: var(--bl-primary);
 
   color: #ffffff;
 

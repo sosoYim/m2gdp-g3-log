@@ -7,10 +7,14 @@
 
 
     <!-- =========================
-         MENU DU COMPTE PARTAGÉ
+         MENU DU COMPTE (selon le rôle)
     ========================== -->
 
-    <app-account-sidebar active="settings" />
+    @if (isHost) {
+      <app-host-sidebar active="settings" />
+    } @else {
+      <app-account-sidebar active="settings" />
+    }
 
 
     <!-- =========================
@@ -163,80 +167,6 @@
           }
 
         </button>
-
-      </section>
-
-
-      <!-- =========================
-           MON RÔLE
-      ========================== -->
-
-      <section class="settings-card role-card">
-
-        <h2>
-          Mon rôle
-        </h2>
-
-
-        <div class="role-content">
-
-
-          <div class="role-switch">
-
-
-            <!-- Je viens -->
-
-            <button
-              type="button"
-              class="role-button"
-              [class.role-active]="currentRole() === 'guest'"
-              (click)="selectRole('guest')"
-            >
-              Je viens
-            </button>
-
-
-            <!-- J'accueille -->
-
-            <button
-              type="button"
-              class="role-button"
-              [class.role-active]="currentRole() === 'host'"
-              (click)="selectRole('host')"
-            >
-              J’accueille
-            </button>
-
-          </div>
-
-
-          <div class="role-description">
-
-            @if (currentRole() === 'guest') {
-
-              <strong>
-                Rôle actuel : Je viens (demandeur)
-              </strong>
-
-              <p>
-                Passez à « J’accueille » pour proposer votre logement.
-              </p>
-
-            } @else {
-
-              <strong>
-                Rôle actuel : J’accueille (annonceur)
-              </strong>
-
-              <p>
-                Passez à « Je viens » pour rechercher un logement.
-              </p>
-
-            }
-
-          </div>
-
-        </div>
 
       </section>
 

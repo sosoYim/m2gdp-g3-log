@@ -23,6 +23,7 @@ import { Auth } from '../../core/auth/auth';
 import { Booking } from '../../core/booking/booking';
 import { Messaging } from '../../core/messaging/messaging';
 import { Listing } from '../../core/listing/listing';
+import { Profile } from '../../core/profile/profile';
 
 
 @Component({
@@ -65,6 +66,10 @@ export class BookingRequest implements OnInit {
 
   private readonly listingService = inject(
     Listing
+  );
+
+  private readonly profileService = inject(
+    Profile
   );
 
   private readonly cdr = inject(
@@ -456,6 +461,18 @@ export class BookingRequest implements OnInit {
        * 1. BOOKING REQUEST FIRESTORE
        * =========================================
        */
+      /*
+       * Profil public : l'annonceur doit voir
+       * le nom du demandeur dans ses demandes.
+       */
+      const profile =
+        await this.profileService.getProfile(user.uid);
+
+      if (profile) {
+        await this.profileService.ensurePublicProfile(user.uid, profile);
+      }
+
+
       const requestId =
         await this.bookingService.createRequest(
           {

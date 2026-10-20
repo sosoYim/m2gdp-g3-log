@@ -1,0 +1,129 @@
+<app-user-navbar />
+
+
+<main class="account-page">
+
+  <div class="account-layout">
+
+    <app-host-sidebar active="listings" />
+
+
+    <section class="account-content">
+
+      <img
+        src="/images/landing/plane-decoration.png"
+        alt=""
+        class="illustration"
+      />
+
+      <h1>
+        Votre annonce est en ligne !
+      </h1>
+
+      <p class="intro">
+        Les étudiants peuvent désormais découvrir votre logement
+        et vous envoyer une demande de séjour.
+      </p>
+
+
+      @if (listing(); as listing) {
+
+
+        <!-- =========================
+             CARTE ANNONCE
+        ========================== -->
+
+        <article class="listing-card">
+
+          @if (listing.image) {
+            <img [src]="listing.image" [alt]="listing.title" />
+          }
+
+          <div class="listing-info">
+
+            <span class="status-badge">EN LIGNE</span>
+
+            <h2>{{ listing.title }}</h2>
+
+            <p class="details">
+              {{ listing.location }} · {{ listing.details }}
+            </p>
+
+            <p class="dates">
+              Disponible du {{ formatDate(listing.availableFrom) }}
+              au {{ formatDate(listing.availableTo, true) }}
+            </p>
+
+            <p class="price">
+              {{ listing.price }} € / mois
+            </p>
+
+          </div>
+
+        </article>
+
+
+        <div class="info-box">
+
+          <span class="info-icon">i</span>
+
+          <p>
+            Vous recevrez les demandes par e-mail et dans « Demandes reçues ».<br />
+            Le loyer se règle directement entre vous et le locataire.
+            <strong>Aucun paiement sur BailLyon.</strong>
+          </p>
+
+        </div>
+
+
+        <div class="actions">
+
+          <a
+            class="btn-primary"
+            [routerLink]="['/property-details', listing.id]"
+          >
+            Voir mon annonce
+          </a>
+
+          <a
+            class="btn-secondary"
+            routerLink="/host/dashboard"
+          >
+            Tableau de bord
+          </a>
+
+        </div>
+
+
+        <p class="reminder">
+          Pensez à tenir vos
+          <a
+            routerLink="/host/listings/edit"
+            [queryParams]="{ id: listing.id, step: 4 }"
+          >disponibilités</a>
+          à jour pour recevoir des demandes adaptées.
+        </p>
+
+      }
+
+      @else if (!loading()) {
+
+        <div class="actions">
+          <a class="btn-secondary" routerLink="/host/listings">
+            Mes annonces
+          </a>
+        </div>
+
+      }
+
+    </section>
+
+  </div>
+
+
+  <app-contact-section />
+
+</main>
+
+
+<app-footer />

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 import {
   equalTo,
@@ -60,6 +60,18 @@ export interface RealtimeConversation {
 
   lastMessageAt: number;
 
+  /*
+   * Auteur du dernier message
+   * ('' pour les anciennes conversations)
+   */
+  lastSenderId: string;
+
+  /*
+   * Dernière lecture par utilisateur :
+   * { uid: timestamp }
+   */
+  readBy: Record<string, number>;
+
   updatedAt: number;
 
 }
@@ -78,10 +90,129 @@ export interface RealtimeMessage {
 }
 
 
+/*
+ * Messages non lus (point violet de la barre
+ * du haut), mémorisé dans le navigateur pour
+ * l'afficher dès l'ouverture de chaque page.
+ */
+const UNREAD_STORAGE_KEY = 'baillyon.hasUnread';
+
+function readStoredUnread(): { uid: string; unread: boolean } | null {
+
+  try {
+
+    const value =
+      JSON.parse(localStorage.getItem(UNREAD_STORAGE_KEY) ?? 'null');
+
+    return typeof value?.uid === 'string' && typeof value?.unread === 'boolean'
+      ? value
+      : null;
+
+  } catch {
+
+    return null;
+
+  }
+
+}
+
+
+export function isConversationUnread(
+  conversation: RealtimeConversation,
+  userId: string
+): boolean {
+
+  return !!conversation.lastSenderId
+    && conversation.lastSenderId !== userId
+    && conversation.lastMessageAt > (conversation.readBy[userId] ?? 0);
+
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
 export class Messaging {
+
+
+  /*
+   * Partagé par toutes les barres du haut :
+   * une seule écoute en temps réel par compte.
+   */
+  readonly hasUnread =
+    signal(readStoredUnread()?.unread ?? false);
+
+
+  private unreadUserId = '';
+
+  private stopUnread: (() => void) | null = null;
+
+
+  watchUnread(
+    userId: string
+  ): void {
+
+    if (this.unreadUserId === userId) {
+      return;
+    }
+
+
+    this.stopWatchingUnread();
+
+    this.unreadUserId = userId;
+
+
+    /*
+     * Autre compte que celui mémorisé :
+     * on n'affiche pas son ancien état.
+     */
+    if (readStoredUnread()?.uid !== userId) {
+      this.hasUnread.set(false);
+    }
+
+
+    this.stopUnread =
+      this.observeConversations(userId, conversations => {
+
+        const unread =
+          conversations.some(c => isConversationUnread(c, userId));
+
+        this.hasUnread.set(unread);
+
+        try {
+          localStorage.setItem(UNREAD_STORAGE_KEY, JSON.stringify({ uid: userId, unread }));
+        } catch {}
+
+      });
+
+  }
+
+
+  /*
+   * Déconnexion
+   */
+  stopWatchingUnread(): void {
+
+    this.stopUnread?.();
+
+    this.stopUnread = null;
+
+    this.unreadUserId = '';
+
+  }
+
+
+  clearUnread(): void {
+
+    this.stopWatchingUnread();
+
+    this.hasUnread.set(false);
+
+    try {
+      localStorage.removeItem(UNREAD_STORAGE_KEY);
+    } catch {}
+
+  }
 
 
   /*
@@ -251,6 +382,16 @@ export class Messaging {
         [`conversations/${conversationId}/lastMessageAt`]:
           serverTimestamp(),
 
+        [`conversations/${conversationId}/lastSenderId`]:
+          senderId,
+
+        /*
+         * L'expéditeur a forcément lu
+         * la conversation.
+         */
+        [`conversations/${conversationId}/readBy/${senderId}`]:
+          serverTimestamp(),
+
         [`conversations/${conversationId}/updatedAt`]:
           serverTimestamp()
 
@@ -262,126 +403,192 @@ export class Messaging {
 
   /*
    * =========================================
-   * CONVERSATIONS DU DEMANDEUR
+   * CONVERSATIONS DE L'UTILISATEUR
    * =========================================
+   *
+   * Deux écoutes temps réel : comme
+   * demandeur (requesterId) et comme
+   * annonceur (ownerId), fusionnées.
    */
   observeConversations(
-    requesterId: string,
+    userId: string,
     callback:
       (
         conversations: RealtimeConversation[]
       ) => void
   ): () => void {
 
-    const conversationsQuery =
-      query(
-        ref(
-          realtimeDatabase,
-          'conversations'
-        ),
+    const byRole =
+      new Map<'requesterId' | 'ownerId', RealtimeConversation[]>();
 
-        orderByChild(
-          'requesterId'
-        ),
 
-        equalTo(
-          requesterId
+    const emit = () => {
+
+      /*
+       * Attendre les deux écoutes (demandeur
+       * et annonceur) : pas de liste partielle.
+       */
+      if (byRole.size < 2) {
+        return;
+      }
+
+      const merged =
+        new Map<string, RealtimeConversation>();
+
+      for (const list of byRole.values()) {
+        for (const conversation of list) {
+          merged.set(conversation.id, conversation);
+        }
+      }
+
+
+      /*
+       * Plus récentes en premier.
+       */
+      callback(
+        [...merged.values()].sort(
+          (a, b) =>
+            (b.lastMessageAt || b.updatedAt) -
+            (a.lastMessageAt || a.updatedAt)
         )
       );
 
-
-    return onValue(
-      conversationsQuery,
-
-      snapshot => {
-
-        const conversations:
-          RealtimeConversation[] = [];
+    };
 
 
-        snapshot.forEach(
-          childSnapshot => {
+    const unsubscribers =
+      (['requesterId', 'ownerId'] as const).map(field =>
 
-            const data =
-              childSnapshot.val() ?? {};
+        onValue(
+          query(
+            ref(realtimeDatabase, 'conversations'),
+            orderByChild(field),
+            equalTo(userId)
+          ),
 
+          snapshot => {
 
-            conversations.push(
-              {
+            const conversations: RealtimeConversation[] = [];
 
-                id:
+            snapshot.forEach(childSnapshot => {
+
+              conversations.push(
+                this.mapConversation(
                   childSnapshot.key ?? '',
+                  childSnapshot.val() ?? {}
+                )
+              );
 
-                bookingRequestId:
-                  data['bookingRequestId'] ?? '',
+            });
 
-                requesterId:
-                  data['requesterId'] ?? '',
+            byRole.set(field, conversations);
 
-                /*
-                 * Les anciennes conversations
-                 * peuvent ne pas avoir ownerId.
-                 */
-                ownerId:
-                  data['ownerId'] ?? '',
+            emit();
 
-                listingId:
-                  data['listingId'] ?? '',
+          },
 
-                listingTitle:
-                  data['listingTitle'] ?? '',
+          error => {
 
-                ownerName:
-                  data['ownerName'] ?? '',
-
-                lastMessage:
-                  data['lastMessage'] ?? '',
-
-                lastMessageAt:
-                  typeof data['lastMessageAt'] === 'number'
-                    ? data['lastMessageAt']
-                    : 0,
-
-                updatedAt:
-                  typeof data['updatedAt'] === 'number'
-                    ? data['updatedAt']
-                    : 0
-
-              }
+            console.error(
+              `Erreur écoute conversations (${field}) :`,
+              error
             );
 
+            byRole.set(field, []);
+
+            emit();
+
           }
-        );
+        )
+
+      );
 
 
-        /*
-         * Plus récentes en premier.
-         */
-        conversations.sort(
-          (a, b) =>
-            b.lastMessageAt -
-            a.lastMessageAt
-        );
+    return () =>
+      unsubscribers.forEach(unsubscribe => unsubscribe());
+
+  }
 
 
-        callback(
-          conversations
-        );
+  /*
+   * =========================================
+   * MARQUER COMME LU
+   * =========================================
+   */
+  async markAsRead(
+    conversationId: string,
+    userId: string
+  ): Promise<void> {
 
-      },
-
-      error => {
-
-        console.error(
-          'Erreur écoute conversations :',
-          error
-        );
-
-
-        callback([]);
-
+    await update(
+      ref(realtimeDatabase, `conversations/${conversationId}/readBy`),
+      {
+        [userId]: serverTimestamp()
       }
     );
+
+  }
+
+
+  private mapConversation(
+    id: string,
+    data: Record<string, any>
+  ): RealtimeConversation {
+
+    const readBy: Record<string, number> = {};
+
+    for (const [uid, value] of Object.entries(data['readBy'] ?? {})) {
+      if (typeof value === 'number') {
+        readBy[uid] = value;
+      }
+    }
+
+
+    return {
+
+      id,
+
+      bookingRequestId:
+        data['bookingRequestId'] ?? '',
+
+      requesterId:
+        data['requesterId'] ?? '',
+
+      /*
+       * Les anciennes conversations
+       * peuvent ne pas avoir ownerId.
+       */
+      ownerId:
+        data['ownerId'] ?? '',
+
+      listingId:
+        data['listingId'] ?? '',
+
+      listingTitle:
+        data['listingTitle'] ?? '',
+
+      ownerName:
+        data['ownerName'] ?? '',
+
+      lastMessage:
+        data['lastMessage'] ?? '',
+
+      lastMessageAt:
+        typeof data['lastMessageAt'] === 'number'
+          ? data['lastMessageAt']
+          : 0,
+
+      lastSenderId:
+        data['lastSenderId'] ?? '',
+
+      readBy,
+
+      updatedAt:
+        typeof data['updatedAt'] === 'number'
+          ? data['updatedAt']
+          : 0
+
+    };
 
   }
 

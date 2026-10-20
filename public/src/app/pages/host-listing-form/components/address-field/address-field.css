@@ -1,0 +1,93 @@
+/* =========================
+   SUGGESTIONS
+========================= */
+
+.address-wrap {
+  position: relative;
+}
+
+
+.suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+
+  margin: 0;
+  padding: 6px 0;
+
+  list-style: none;
+
+  border: 1px solid #dfe2ec;
+  border-radius: 7px;
+
+  background: #ffffff;
+
+  box-shadow: 0 8px 24px rgba(25, 21, 79, 0.12);
+}
+
+
+.suggestions button {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+
+  padding: 8px 12px;
+
+  border: 0;
+
+  background: none;
+
+  font-family: inherit;
+  text-align: left;
+
+  cursor: pointer;
+}
+
+
+.suggestions button:hover,
+.suggestions button:focus-visible {
+  background: var(--bl-bg-accent);
+
+  outline: none;
+}
+
+
+.suggestions strong {
+  color: var(--bl-text);
+
+  font-size: var(--bl-fs-body);
+  font-weight: 600;
+}
+
+
+.suggestions span {
+  color: var(--bl-text-muted);
+
+  font-size: var(--bl-fs-small);
+}
+
+
+.address-error {
+  color: #d23b3b;
+}
+
+
+/* =========================
+   CARTE
+========================= */
+
+.address-map {
+  height: 180px;
+
+  margin-top: 4px;
+
+  overflow: hidden;
+
+  border: 1px solid #dfe2ec;
+  border-radius: 7px;
+}

@@ -7,10 +7,14 @@
 
 
     <!-- =========================
-         MENU DU COMPTE PARTAGÉ
+         MENU DU COMPTE (selon le rôle)
     ========================== -->
 
-    <app-account-sidebar active="messages" />
+    @if (isHost) {
+      <app-host-sidebar active="messages" />
+    } @else {
+      <app-account-sidebar active="messages" />
+    }
 
 
     <!-- =========================
@@ -21,14 +25,13 @@
 
       <h1>
         Messages
+        @if (unreadCount) {
+          <span class="unread-total">{{ unreadCount }}</span>
+        }
       </h1>
 
 
-      <!-- =========================
-           MESSAGERIE
-      ========================== -->
-
-      <div class="messenger">
+      <div class="messenger" [class.show-chat]="mobileChatOpen">
 
 
         <!-- =========================
@@ -42,23 +45,10 @@
 
           <div class="conversation-search">
 
-            <svg
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-
-              <circle
-                cx="11"
-                cy="11"
-                r="7"
-              ></circle>
-
-              <path
-                d="M20 20l-4-4"
-              ></path>
-
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="M20 20l-4-4"></path>
             </svg>
-
 
             <input
               type="text"
@@ -69,55 +59,34 @@
           </div>
 
 
-          <!-- Liste des conversations -->
+          <!-- Liste -->
 
           <div class="conversation-list">
 
-            @for (
-              conversation of filteredConversations;
-              track conversation.id
-            ) {
+            @for (conversation of filteredConversations; track conversation.id) {
 
               <button
                 type="button"
                 class="conversation-item"
-                [class.conversation-active]="
-                  conversation.id ===
-                  selectedConversationId
-                "
-                (click)="selectConversation(
-                  conversation
-                )"
+                [class.conversation-active]="conversation.id === selectedConversationId"
+                [class.conversation-is-unread]="conversation.unread"
+                (click)="selectConversation(conversation)"
               >
-
-                <!-- Avatar -->
 
                 <span class="conversation-avatar">
                   {{ conversation.initial }}
                 </span>
 
-
-                <!-- Informations -->
-
                 <span class="conversation-info">
 
                   <span class="conversation-top">
-
-                    <strong>
-                      {{ conversation.name }}
-                    </strong>
-
-                    <span>
-                      {{ conversation.time }}
-                    </span>
-
+                    <strong>{{ conversation.name }}</strong>
+                    <span>{{ conversation.time }}</span>
                   </span>
-
 
                   <span class="conversation-property">
                     {{ conversation.listingTitle }}
                   </span>
-
 
                   <span class="conversation-preview">
                     {{ conversation.preview }}
@@ -125,13 +94,8 @@
 
                 </span>
 
-
                 @if (conversation.unread) {
-
-                  <span
-                    class="conversation-unread"
-                  ></span>
-
+                  <span class="conversation-unread" aria-label="Non lu"></span>
                 }
 
               </button>
@@ -139,31 +103,17 @@
             }
 
 
-            <!-- Aucune conversation -->
+            @if (!loading && filteredConversations.length === 0) {
 
-            @if (filteredConversations.length === 0) {
-
-              <div
-                style="
-                  padding: 30px 18px;
-                  text-align: center;
-                  color: #85899b;
-                  font-size: 12px;
-                  line-height: 1.5;
-                "
-              >
+              <p class="empty-list">
 
                 @if (searchTerm.trim()) {
-
                   Aucune conversation trouvée.
-
                 } @else {
-
                   Aucune conversation pour le moment.
-
                 }
 
-              </div>
+              </p>
 
             }
 
@@ -173,156 +123,124 @@
 
 
         <!-- =========================
-             CHAT
+             CONVERSATION
         ========================== -->
 
-        @if (hasConversations) {
+        @if (selectedConversation; as conversation) {
 
           <section class="chat-panel">
 
 
-            <!-- =========================
-                 HEADER
-            ========================== -->
+            <!-- EN-TÊTE -->
 
             <header class="chat-header">
 
               <div class="chat-user">
 
-                <span class="chat-avatar">
-                  {{ selectedConversation.initial }}
-                </span>
+                <button
+                  type="button"
+                  class="back-button"
+                  aria-label="Retour aux conversations"
+                  (click)="backToList()"
+                >
+                  ←
+                </button>
 
+                <span class="chat-avatar">
+                  {{ conversation.initial }}
+                </span>
 
                 <div>
 
-                  <h2>
-                    {{ selectedConversation.name }}
-                  </h2>
+                  <h2>{{ conversation.name }}</h2>
 
                   <p>
-                    Propriétaire · ✓ Profil vérifié
+                    {{ conversation.isOwner ? 'Demandeur' : 'Propriétaire' }} · ✓ Profil vérifié
                   </p>
 
                 </div>
 
               </div>
 
-
-              <button
-                type="button"
-                class="listing-link"
-                (click)="openListing()"
-              >
-                Voir l’annonce →
-              </button>
+              @if (conversation.listingId) {
+                <a
+                  class="listing-link"
+                  [routerLink]="['/property-details', conversation.listingId]"
+                >
+                  Voir l’annonce →
+                </a>
+              }
 
             </header>
 
 
-            <!-- =========================
-                 RÉSUMÉ DU LOGEMENT
-            ========================== -->
+            <!-- DEMANDE LIÉE -->
 
             <div class="request-card">
 
-              <img
-                src="/images/rental/property-1/Umeus.png"
-                [alt]="selectedConversation.listingTitle"
-              />
-
+              @if (selectedSummary?.image) {
+                <img [src]="selectedSummary?.image" [alt]="conversation.listingTitle" />
+              }
 
               <div class="request-card-content">
 
-                <strong>
-                  {{ selectedConversation.listingTitle }}
-                </strong>
+                <strong>{{ conversation.listingTitle }}</strong>
 
-                <span>
-                  Demande envoyée
-                </span>
+                @if (conversation.isOwner) {
+                  <a [routerLink]="['/host/requests', conversation.id]">Demande reçue · voir</a>
+                } @else {
+                  <span>Demande envoyée</span>
+                }
 
               </div>
 
-
-              <span class="request-status">
-                EN ATTENTE
-              </span>
+              @if (selectedStatusLabel) {
+                <span class="request-status" [class]="'request-status status-' + selectedSummary?.status">
+                  {{ selectedStatusLabel }}
+                </span>
+              }
 
             </div>
 
 
-            <!-- =========================
-                 MESSAGES
-            ========================== -->
+            <!-- MESSAGES -->
 
-            <div class="chat-body">
+            <div class="chat-body" #chatBody>
 
-
-              @if (messages.length === 0) {
+              @if (messageGroups.length === 0) {
 
                 <p class="today-label">
                   Aucun message pour le moment.
                 </p>
 
-              } @else {
+              }
+
+
+              @for (group of messageGroups; track group.label) {
 
                 <p class="today-label">
-                  Aujourd’hui
+                  {{ group.label }}
                 </p>
 
 
-                @for (
-                  message of messages;
-                  track message.id
-                ) {
+                @for (message of group.messages; track message.id) {
 
                   <div
                     class="message-row"
-                    [class.message-row-me]="
-                      message.sender === 'me'
-                    "
+                    [class.message-row-me]="message.sender === 'me'"
                   >
-
-                    <!-- Bulle -->
 
                     <div
                       class="message-bubble"
-                      [class.message-me]="
-                        message.sender === 'me'
-                      "
-                      [class.message-other]="
-                        message.sender === 'other'
-                      "
-                    >
-
-                      {{ message.text }}
-
-                    </div>
-
-
-                    <!-- Heure -->
+                      [class.message-me]="message.sender === 'me'"
+                      [class.message-other]="message.sender === 'other'"
+                    >{{ message.text }}</div>
 
                     <span class="message-time">
-
-                      @if (
-                        message.sender === 'other'
-                      ) {
-
-                        {{ selectedConversation.name }} ·
-
+                      @if (message.sender === 'other') {
+                        {{ conversation.name }} ·
                       }
-
                       {{ message.time }}
-
-                      @if (
-                        message.sender === 'me'
-                      ) {
-
-                        · Envoyé
-
-                      }
-
                     </span>
 
                   </div>
@@ -334,33 +252,25 @@
             </div>
 
 
-            <!-- =========================
-                 INFORMATION PAIEMENT
-            ========================== -->
+            <!-- PAIEMENT -->
 
             <div class="payment-note">
 
-              <span>
-                i
-              </span>
-
+              <span>i</span>
 
               <p>
-
                 Le loyer est réglé directement entre vous.
-
-                <strong>
-                  Aucun paiement sur BailLyon.
-                </strong>
-
+                <strong>Aucun paiement sur BailLyon.</strong>
               </p>
 
             </div>
 
 
-            <!-- =========================
-                 NOUVEAU MESSAGE
-            ========================== -->
+            <!-- NOUVEAU MESSAGE -->
+
+            @if (sendError) {
+              <p class="send-error">{{ sendError }}</p>
+            }
 
             <form
               class="message-form"
@@ -371,36 +281,21 @@
                 type="text"
                 name="message"
                 placeholder="Écrivez votre message..."
-                [(ngModel)]="messageText"
+                maxlength="2000"
                 autocomplete="off"
+                [(ngModel)]="messageText"
               />
-
 
               <button
                 type="submit"
                 class="send-button"
                 aria-label="Envoyer le message"
+                [disabled]="!messageText.trim() || sending"
               >
 
-                <svg
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-
-                  <path
-                    d="M22 2 11 13"
-                  ></path>
-
-                  <path
-                    d="
-                      M22 2
-                      15 22
-                      11 13
-                      2 9
-                      Z
-                    "
-                  ></path>
-
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M22 2 11 13"></path>
+                  <path d="M22 2 15 22 11 13 2 9Z"></path>
                 </svg>
 
               </button>
@@ -409,52 +304,17 @@
 
           </section>
 
+        } @else if (!loading) {
 
-        } @else {
+          <!-- AUCUNE CONVERSATION -->
 
-          <!-- =========================
-               AUCUNE CONVERSATION
-          ========================== -->
+          <section class="chat-panel empty-chat">
 
-          <section class="chat-panel">
+            <h2>Aucune conversation</h2>
 
-            <div
-              style="
-                min-height: 420px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                padding: 32px;
-                text-align: center;
-              "
-            >
-
-              <h2
-                style="
-                  margin: 0 0 10px;
-                  color: #171925;
-                  font-size: 20px;
-                  font-weight: 800;
-                "
-              >
-                Aucune conversation
-              </h2>
-
-
-              <p
-                style="
-                  max-width: 360px;
-                  margin: 0;
-                  color: #777c92;
-                  font-size: 13px;
-                  line-height: 1.6;
-                "
-              >
-                Vos conversations apparaîtront ici après l’envoi d’une demande de logement.
-              </p>
-
-            </div>
+            <p>
+              Vos conversations apparaîtront ici après l’envoi ou la réception d’une demande de logement.
+            </p>
 
           </section>
 

@@ -1,0 +1,236 @@
+<div class="filters">
+
+
+  <!-- =========================
+       BUDGET / SURFACE / DISPONIBILITÉS
+  ========================== -->
+
+  @for (filter of rangeFilters; track filter.key) {
+
+    <div class="filter-item">
+
+      <button
+        type="button"
+        class="filter-button"
+        [class.filter-button-active]="!!filters[filter.key]"
+        [attr.aria-expanded]="openPanel() === filter.key"
+        (click)="toggle(filter.key)"
+      >
+
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          @switch (filter.key) {
+            @case ('budget') {
+              <path d="M3 10.5 12 3l9 7.5V21H3Z" />
+              <path d="M9 21v-6h6v6" />
+            }
+            @case ('surface') {
+              <path d="M8 3H3v5" />
+              <path d="m3 3 6 6" />
+              <path d="M16 3h5v5" />
+              <path d="m21 3-6 6" />
+              <path d="M8 21H3v-5" />
+              <path d="m3 21 6-6" />
+              <path d="M16 21h5v-5" />
+              <path d="m21 21-6-6" />
+            }
+            @default {
+              <rect x="3" y="5" width="18" height="16" rx="2" />
+              <path d="M16 3v4M8 3v4M3 10h18" />
+            }
+          }
+        </svg>
+
+        <span>{{ buttonLabel(filter) }}</span>
+
+        <img
+          src="/icons/arrow_down.svg"
+          alt=""
+          class="arrow"
+          [class.arrow-open]="openPanel() === filter.key"
+        />
+
+      </button>
+
+
+      @if (openPanel() === filter.key) {
+
+        <div class="panel-backdrop" (click)="close()"></div>
+
+        <div
+          class="panel"
+          role="dialog"
+          [attr.aria-label]="filter.title"
+        >
+
+          <p class="panel-title">{{ filter.title }}</p>
+
+          <ul class="options">
+            @for (option of filter.options; track option.value) {
+              <li>
+                <button
+                  type="button"
+                  class="option"
+                  [class.option-selected]="filters[filter.key] === option.value"
+                  [attr.aria-pressed]="filters[filter.key] === option.value"
+                  (click)="selectRange(filter.key, option.value)"
+                >
+                  {{ option.label }}
+                </button>
+              </li>
+            }
+          </ul>
+
+          @if (filters[filter.key]) {
+            <button
+              type="button"
+              class="panel-clear"
+              (click)="clearRange(filter.key)"
+            >
+              Effacer
+            </button>
+          }
+
+        </div>
+
+      }
+
+    </div>
+
+  }
+
+
+  <!-- =========================
+       PLUS DE FILTRES
+  ========================== -->
+
+  <div class="filter-item filter-item-more">
+
+    <button
+      type="button"
+      class="filter-button"
+      [class.filter-button-active]="moreCount > 0"
+      [attr.aria-expanded]="openPanel() === 'more'"
+      (click)="toggle('more')"
+    >
+
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 6h16" />
+        <circle cx="9" cy="6" r="2" />
+        <path d="M4 12h16" />
+        <circle cx="15" cy="12" r="2" />
+        <path d="M4 18h16" />
+        <circle cx="11" cy="18" r="2" />
+      </svg>
+
+      <span>
+        Plus de filtres
+        @if (moreCount > 0) {
+          ({{ moreCount }})
+        }
+      </span>
+
+      <img
+        src="/icons/arrow_down.svg"
+        alt=""
+        class="arrow"
+        [class.arrow-open]="openPanel() === 'more'"
+      />
+
+    </button>
+
+
+    @if (openPanel() === 'more') {
+
+      <div class="panel-backdrop" (click)="close()"></div>
+
+      <div
+        class="panel panel-more"
+        role="dialog"
+        aria-label="Plus de filtres"
+      >
+
+        <p class="panel-title">Type de logement</p>
+
+        <div class="chips">
+          @for (type of typeOptions; track type.value) {
+            <button
+              type="button"
+              class="chip"
+              [class.chip-selected]="filters.types.includes(type.value)"
+              [attr.aria-pressed]="filters.types.includes(type.value)"
+              (click)="toggleType(type.value)"
+            >
+              {{ type.label }}
+            </button>
+          }
+
+          <button
+            type="button"
+            class="chip"
+            [class.chip-selected]="filters.furnished"
+            [attr.aria-pressed]="filters.furnished"
+            (click)="toggleFurnished()"
+          >
+            Meublé
+          </button>
+        </div>
+
+
+        <p class="panel-title">Équipements</p>
+
+        <div class="chips">
+          @for (amenity of amenityOptions; track amenity.value) {
+            <button
+              type="button"
+              class="chip"
+              [class.chip-selected]="filters.amenities.includes(amenity.value)"
+              [attr.aria-pressed]="filters.amenities.includes(amenity.value)"
+              (click)="toggleAmenity(amenity.value)"
+            >
+              {{ amenity.label }}
+            </button>
+          }
+        </div>
+
+
+        <div class="panel-footer">
+
+          <button
+            type="button"
+            class="panel-clear"
+            [disabled]="moreCount === 0"
+            (click)="clearMore()"
+          >
+            Effacer
+          </button>
+
+          <button
+            type="button"
+            class="panel-done"
+            (click)="close()"
+          >
+            Voir les logements
+          </button>
+
+        </div>
+
+      </div>
+
+    }
+
+  </div>
+
+
+  @if (hasActiveFilters) {
+
+    <button
+      type="button"
+      class="clear-all"
+      (click)="clearAll()"
+    >
+      Effacer les filtres
+    </button>
+
+  }
+
+</div>

@@ -3,6 +3,16 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-09-21",
 
+  /*
+   * Valeurs publiques (pas de secret) :
+   * projet Firebase pour vérifier les jetons
+   * et origines autorisées (CORS).
+   */
+  "vars": {
+    "FIREBASE_PROJECT_ID": "m2gdp-g3-log-3963b",
+    "ALLOWED_ORIGINS": "http://localhost:4200,http://127.0.0.1:4200,https://m2gdp-g3-log-3963b.web.app,https://m2gdp-g3-log-3963b.firebaseapp.com"
+  },
+
   "d1_databases": [
     {
       "binding": "sublyon_sessions",

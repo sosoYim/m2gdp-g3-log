@@ -109,14 +109,14 @@
 
 
 .menu-item:hover {
-  color: #7134f5;
+  color: var(--bl-primary);
 
   background: #f6f3ff;
 }
 
 
 .menu-item-active {
-  color: #7134f5;
+  color: var(--bl-primary);
 
   background: #eee9ff;
 
@@ -238,7 +238,7 @@
 
 
 .form-field input:focus {
-  border-color: #7134f5;
+  border-color: var(--bl-primary);
 }
 
 
@@ -322,7 +322,7 @@
 
   border-radius: 6px;
 
-  background: #7134f5;
+  background: var(--bl-primary);
 
   color: #ffffff;
 
@@ -336,7 +336,7 @@
 
 
 .save-button:hover {
-  background: #6026dc;
+  background: var(--bl-primary-hover);
 }
 
 
@@ -344,92 +344,6 @@
   opacity: 0.6;
 
   cursor: default;
-}
-
-
-/* =========================================================
-   RÔLE
-   ========================================================= */
-
-.role-content {
-  display: flex;
-
-  align-items: center;
-
-  gap: 30px;
-}
-
-
-.role-switch {
-  width: 230px;
-
-  flex-shrink: 0;
-
-  display: grid;
-
-  grid-template-columns:
-    1fr
-    1fr;
-
-  gap: 2px;
-
-  padding: 3px;
-
-  border-radius: 999px;
-
-  background: #eee9ff;
-}
-
-
-.role-button {
-  height: 35px;
-
-  border: none;
-
-  border-radius: 999px;
-
-  background: transparent;
-
-  color: #7134f5;
-
-  font-family: inherit;
-
-  font-size: 10px;
-  font-weight: 700;
-
-  cursor: pointer;
-}
-
-
-.role-active {
-  background: #7134f5;
-
-  color: #ffffff;
-}
-
-
-.role-description {
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 4px;
-}
-
-
-.role-description strong {
-  color: #242630;
-
-  font-size: 10px;
-}
-
-
-.role-description p {
-  margin: 0;
-
-  color: #82869a;
-
-  font-size: 9px;
 }
 
 
@@ -515,7 +429,7 @@
 
 
 .switch input:checked + .switch-slider {
-  background: #7134f5;
+  background: var(--bl-primary);
 }
 
 
@@ -549,13 +463,13 @@
 
   padding: 0 20px;
 
-  border: 1px solid #7134f5;
+  border: 1px solid var(--bl-primary);
 
   border-radius: 6px;
 
   background: #ffffff;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-family: inherit;
 
@@ -578,7 +492,7 @@
 
   background: transparent;
 
-  color: #16229c;
+  color: var(--bl-secondary);
 
   font-family: inherit;
 
@@ -614,13 +528,6 @@
   }
 
 
-  .role-content {
-    align-items: flex-start;
-
-    flex-direction: column;
-
-    gap: 16px;
-  }
 
 }
 
@@ -700,11 +607,6 @@
   }
 
 
-  .role-switch {
-    width: 100%;
-
-    box-sizing: border-box;
-  }
 
 
   .account-actions {

@@ -9,6 +9,40 @@
 /* Leaflet */
 @import 'leaflet/dist/leaflet.css';
 
+/* Formulaire « Déposer une annonce » (classes lf-) */
+@import './app/pages/host-listing-form/listing-form-fields.css';
+
+
+/* =========================
+   COULEURS BAILLYON (sémantiques)
+   =========================
+   À utiliser partout : color: var(--bl-text);
+   Préfixe bl- : --color-* est réservé
+   à Tailwind / Spartan.
+========================= */
+
+:root {
+  --bl-primary: #7034f4;        /* couleur d'accent : liens, boutons, étoile, badge */
+  --bl-primary-hover: #6026dc;  /* survol des boutons primaires */
+  --bl-heading: #19154f;        /* titres, icônes d'équipement, compteur photo */
+  --bl-secondary: #16229c;      /* actions secondaires (Mettre en pause, Supprimer), texte des encadrés d'information */
+  --bl-text: #111110;           /* texte noir (prix, intertitres, contenu) */
+  --bl-text-muted: #70768f;     /* texte secondaire (ville, détails, dates, mentions) */
+  --bl-bg-accent: #ece8fe;      /* fond violet clair (badges, encadrés, icônes) */
+  --bl-icon-placeholder: #a174f5; /* icône d'image vide (annonce sans photo) */
+  --bl-bg-footer: #e7e8fd;      /* fond du bloc de bas de page */
+  --bl-white: #fffffd;          /* blanc : texte sur fond violet (rôle sélectionné Je viens / J'accueille) */
+
+  /* Tailles de texte (police Montserrat) */
+  --bl-fs-title: 27px;          /* titre de page */
+  --bl-fs-section: 22px;        /* intertitres (Présentation, Ce que le logement propose) */
+  --bl-fs-subtitle: 21px;       /* sous-titre (Proposé par …) */
+  --bl-fs-price: 30px;          /* prix */
+  --bl-fs-price-unit: 15px;     /* « / mois » */
+  --bl-fs-body: 14px;           /* texte courant, boutons */
+  --bl-fs-small: 12px;          /* petits textes, mentions, libellés */
+}
+
 
 /* =========================
    VARIABLES GLOBALES
@@ -18,6 +52,7 @@
   color-scheme: light;
 
   --font-sans:
+    'Montserrat',
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',
@@ -183,7 +218,7 @@
     50%
     0;
 
-  background: #7134f5;
+  background: var(--bl-primary);
 
   box-shadow:
     0 4px 12px

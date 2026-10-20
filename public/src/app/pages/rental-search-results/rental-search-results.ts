@@ -22,6 +22,16 @@ import { Footer } from '../landing/components/footer/footer';
 
 import { Auth } from '../../core/auth/auth';
 
+import { FilterBar } from './components/filter-bar/filter-bar';
+
+import {
+  SearchFilters,
+  createEmptyFilters,
+  filtersFromParams,
+  filtersToParams,
+  matchesFilters
+} from './search-filters';
+
 import {
   Favorite,
   FavoriteListing
@@ -70,6 +80,7 @@ interface RentalListing {
   imports: [
     Navbar,
     FormsModule,
+    FilterBar,
     ContactSection,
     Footer
   ],
@@ -91,7 +102,23 @@ export class RentalSearchResults
    * =========================================
    */
 
+  /*
+   * allListings : résultats des dates
+   * listings : après les filtres (liste + carte)
+   */
+  allListings: RentalListing[] = [];
+
   listings: RentalListing[] = [];
+
+
+  filters: SearchFilters =
+    createEmptyFilters();
+
+
+  private readonly documents =
+    new Map<string, ListingDocument>();
+
+  private loadedDates: string | null = null;
 
 
   loadingListings = true;
@@ -150,8 +177,28 @@ export class RentalSearchResults
         this.departureDate =
           params.get('departure') ?? '';
 
+        this.filters =
+          filtersFromParams(params);
 
-        void this.loadListings();
+
+        /*
+         * Nouvelles dates : rechargement Firestore.
+         * Filtres seuls : tri local, sans attente.
+         */
+        const dates =
+          `${this.arrivalDate}|${this.departureDate}`;
+
+        if (dates !== this.loadedDates) {
+
+          this.loadedDates = dates;
+
+          void this.loadListings();
+
+        } else {
+
+          this.updateVisibleListings();
+
+        }
 
       }
     );
@@ -209,7 +256,14 @@ export class RentalSearchResults
         );
 
 
-      this.listings =
+      this.documents.clear();
+
+      for (const listing of firestoreListings) {
+        this.documents.set(listing.id, listing);
+      }
+
+
+      this.allListings =
         firestoreListings.map(
           listing =>
             this.mapListing(
@@ -231,7 +285,7 @@ export class RentalSearchResults
 
 
         for (
-          const listing of this.listings
+          const listing of this.allListings
         ) {
 
           listing.favorite =
@@ -256,19 +310,68 @@ export class RentalSearchResults
         'Impossible de charger les logements.';
 
 
-      this.listings = [];
+      this.allListings = [];
 
 
     } finally {
 
       this.loadingListings = false;
 
-      this.cdr.detectChanges();
-
-
-      this.refreshMap();
+      this.updateVisibleListings();
 
     }
+
+  }
+
+
+  /*
+   * =========================================
+   * FILTRES
+   * =========================================
+   *
+   * Les filtres sont dans l'URL : retour
+   * depuis la fiche logement sans les perdre.
+   */
+  applyFilters(
+    filters: SearchFilters
+  ): void {
+
+    void this.router.navigate(
+      [],
+      {
+        relativeTo: this.route,
+        queryParams: filtersToParams(filters),
+        queryParamsHandling: 'merge',
+        replaceUrl: true
+      }
+    );
+
+  }
+
+
+  clearFilters(): void {
+
+    this.applyFilters(createEmptyFilters());
+
+  }
+
+
+  private updateVisibleListings(): void {
+
+    this.listings =
+      this.allListings.filter(listing => {
+
+        const document =
+          this.documents.get(listing.id);
+
+        return !!document && matchesFilters(document, this.filters);
+
+      });
+
+
+    this.cdr.detectChanges();
+
+    this.refreshMap();
 
   }
 
@@ -663,7 +766,12 @@ export class RentalSearchResults
           departure:
             this.departureDate
 
-        }
+        },
+
+        /*
+         * Les filtres en cours sont conservés
+         */
+        queryParamsHandling: 'merge'
       }
     );
 

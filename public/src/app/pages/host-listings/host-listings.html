@@ -1,0 +1,338 @@
+<app-user-navbar />
+
+
+<main class="account-page">
+
+  <div class="account-layout">
+
+
+    <!-- =========================
+         MENU DU COMPTE
+    ========================== -->
+
+    <app-host-sidebar
+      active="listings"
+    />
+
+
+    <!-- =========================
+         CONTENU PRINCIPAL
+    ========================== -->
+
+    <section class="account-content">
+
+
+      <!-- EN-TÊTE -->
+
+      <div class="page-header">
+
+        <h1>
+          Mes annonces
+        </h1>
+
+        <a
+          routerLink="/host/listings/new"
+          class="new-listing-btn"
+        >
+          + Déposer une annonce
+        </a>
+
+      </div>
+
+
+      @if (loading()) {
+
+        <div class="state-box">
+          Chargement de vos annonces...
+        </div>
+
+      }
+
+      @else if (error()) {
+
+        <div class="state-box state-box-error">
+          {{ error() }}
+        </div>
+
+      }
+
+      @else {
+
+
+        <!-- =========================
+             ONGLETS
+        ========================== -->
+
+        <div
+          class="tabs"
+          role="tablist"
+        >
+
+          <button
+            type="button"
+            role="tab"
+            class="tab"
+            [class.tab-active]="activeTab() === 'all'"
+            [attr.aria-selected]="activeTab() === 'all'"
+            (click)="activeTab.set('all')"
+          >
+            Toutes ({{ listings().length }})
+          </button>
+
+          <button
+            type="button"
+            role="tab"
+            class="tab"
+            [class.tab-active]="activeTab() === 'published'"
+            [attr.aria-selected]="activeTab() === 'published'"
+            (click)="activeTab.set('published')"
+          >
+            En ligne ({{ publishedCount }})
+          </button>
+
+          <button
+            type="button"
+            role="tab"
+            class="tab"
+            [class.tab-active]="activeTab() === 'draft'"
+            [attr.aria-selected]="activeTab() === 'draft'"
+            (click)="activeTab.set('draft')"
+          >
+            Brouillons ({{ draftCount }})
+          </button>
+
+        </div>
+
+
+        <!-- =========================
+             LISTE DES ANNONCES
+        ========================== -->
+
+        @if (visibleListings.length === 0) {
+
+          <div class="state-box">
+
+            <strong>
+              Aucune annonce ici pour le moment.
+            </strong>
+
+            <p>
+              Déposez une annonce pour commencer à recevoir des demandes.
+            </p>
+
+          </div>
+
+        }
+
+        @else {
+
+          <div class="listings-list">
+
+            @for (
+              listing of visibleListings;
+              track listing.id
+            ) {
+
+              <article class="listing-row">
+
+
+                <!-- IMAGE -->
+
+                @if (listing.image) {
+
+                  <img
+                    [src]="listing.image"
+                    [alt]="listing.title"
+                    class="listing-image"
+                  />
+
+                }
+
+                @else {
+
+                  <div class="listing-image listing-image-empty">
+
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                      <circle cx="8.5" cy="9.5" r="1.5"></circle>
+                      <path d="M21 16l-5-5-9 9"></path>
+                    </svg>
+
+                    <span>
+                      Aucune photo pour l'instant
+                    </span>
+
+                  </div>
+
+                }
+
+
+                <!-- INFOS -->
+
+                <div class="listing-info">
+
+                  <span
+                    class="listing-status-badge"
+                    [class]="getStatusClass(listing.status)"
+                  >
+                    {{ getStatusLabel(listing.status) }}
+                  </span>
+
+
+                  <h3>
+                    <a
+                      class="listing-title-link"
+                      [routerLink]="['/property-details', listing.id]"
+                    >
+                      {{ listing.title || 'Sans titre' }}
+                    </a>
+                  </h3>
+
+
+                  <p class="listing-details">
+                    {{ listing.location }}
+                    @if (listing.details) {
+                      · {{ listing.details }}
+                    }
+                  </p>
+
+
+                  @if (listing.status === 'draft') {
+
+                    <!-- PROGRESSION DU BROUILLON -->
+
+                    <p class="completion-label">
+                      Annonce complétée à {{ getCompletion(listing) }} %
+                    </p>
+
+                    <div class="completion-bar">
+                      <span [style.width.%]="getCompletion(listing)"></span>
+                    </div>
+
+                  }
+
+                  @else {
+
+                    <p class="listing-availability">
+                      @if (listing.availableFrom && listing.availableTo) {
+                        Disponible du {{ formatDate(listing.availableFrom) }}
+                        au {{ formatDate(listing.availableTo) }}
+                      }
+                    </p>
+
+
+                    <div class="listing-price-row">
+
+                      <strong>
+                        {{ listing.price }} €<small>/ mois</small>
+                      </strong>
+
+                      @if (getPendingCountForListing(listing.id) > 0) {
+
+                        <a
+                          routerLink="/host/requests"
+                          class="pending-requests-link"
+                        >
+                          {{ getPendingCountForListing(listing.id) }}
+                          {{ getPendingCountForListing(listing.id) > 1 ? 'demandes' : 'demande' }}
+                          en attente →
+                        </a>
+
+                      }
+
+                    </div>
+
+                  }
+
+                </div>
+
+
+                <!-- ACTIONS -->
+
+                <div class="listing-actions">
+
+                  @if (listing.status === 'draft') {
+
+                    <a
+                      routerLink="/host/listings/edit"
+                      [queryParams]="{ id: listing.id }"
+                      class="action-btn action-btn-primary"
+                    >
+                      Continuer
+                    </a>
+
+                    <button
+                      type="button"
+                      class="secondary-btn"
+                      [disabled]="updatingId() === listing.id"
+                      (click)="deleteListing(listing)"
+                    >
+                      Supprimer
+                    </button>
+
+                  }
+
+                  @else {
+
+                    <a
+                      routerLink="/host/listings/edit"
+                      [queryParams]="{ id: listing.id }"
+                      class="action-btn"
+                    >
+                      Modifier
+                    </a>
+
+                    <button
+                      type="button"
+                      class="secondary-btn"
+                      [disabled]="updatingId() === listing.id"
+                      (click)="toggleListingStatus(listing)"
+                    >
+                      {{ listing.status === 'inactive' ? 'Remettre en ligne' : 'Mettre en pause' }}
+                    </button>
+
+                  }
+
+                </div>
+
+              </article>
+
+            }
+
+          </div>
+
+        }
+
+
+        <!-- =========================
+             INFORMATION PAIEMENT
+        ========================== -->
+
+        <div class="payment-info">
+
+          <span class="payment-icon">
+            i
+          </span>
+
+          <p>
+            Le loyer est réglé directement entre les utilisateurs.
+            <strong>
+              Aucun paiement sur BailLyon.
+            </strong>
+          </p>
+
+        </div>
+
+      }
+
+    </section>
+
+  </div>
+
+
+  <app-contact-section />
+
+</main>
+
+
+<app-footer />

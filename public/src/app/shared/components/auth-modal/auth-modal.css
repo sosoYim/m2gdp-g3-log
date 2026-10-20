@@ -265,7 +265,7 @@
 
 
 .input-wrapper input:focus {
-  border-color: #7134f5;
+  border-color: var(--bl-primary);
 
   box-shadow:
     0 0 0 3px rgba(113, 52, 245, 0.09);
@@ -285,7 +285,7 @@
   border: none;
   border-radius: 9px;
 
-  background: #7134f5;
+  background: var(--bl-primary);
 
   color: #ffffff;
 
@@ -298,7 +298,7 @@
 
 
 .primary-button:hover:not(:disabled) {
-  background: #6026dc;
+  background: var(--bl-primary-hover);
 }
 
 
@@ -331,7 +331,7 @@
 .magic-icon {
   flex-shrink: 0;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-size: 17px;
 }
@@ -420,7 +420,7 @@
 
   background: transparent;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-family: inherit;
   font-size: 14px;

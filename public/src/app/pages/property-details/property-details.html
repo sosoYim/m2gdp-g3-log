@@ -13,6 +13,15 @@
          TITRE + NOTE
     ========================== -->
 
+    <button
+      type="button"
+      class="back-link"
+      (click)="goBack()"
+    >
+      ← Retour à la liste
+    </button>
+
+
     <div class="property-heading">
 
       <h1>
@@ -24,12 +33,14 @@
 
         <div class="rating">
 
-          <span class="rating-star">
-            ☆
-          </span>
+          <img
+            src="/images/rental/icons/star.svg"
+            alt=""
+            class="rating-star"
+          />
 
           <strong>
-            {{ listing.rating }} ({{ listing.reviews }} avis)
+            {{ listing.rating }}
           </strong>
 
         </div>
@@ -42,6 +53,10 @@
           {{ listing.location }}
         </span>
 
+
+        <!-- Favori (desktop) -->
+        <ng-container *ngTemplateOutlet="favoriteButton" />
+
       </div>
 
     </div>
@@ -52,46 +67,17 @@
          GALERIE
     ========================== -->
 
-    <section class="gallery">
+    <app-property-gallery
+      [photos]="listing.photos"
+      [title]="listing.title"
+    >
 
-
-      <!-- Grande photo -->
-      <div class="gallery-main">
-
-        <img
-          [src]="listing.images.main"
-          [alt]="listing.title"
-        />
-
+      <!-- Favori (mobile) -->
+      <div class="photo-favorite">
+        <ng-container *ngTemplateOutlet="favoriteButton" />
       </div>
 
-
-      <!-- 4 petites photos -->
-      <div class="gallery-small">
-
-        <img
-          [src]="listing.images.kitchen"
-          alt="Cuisine du logement"
-        />
-
-        <img
-          [src]="listing.images.window"
-          alt="Coin fenêtre du logement"
-        />
-
-        <img
-          [src]="listing.images.desk"
-          alt="Bureau du logement"
-        />
-
-        <img
-          [src]="listing.images.bathroom"
-          alt="Salle de bains du logement"
-        />
-
-      </div>
-
-    </section>
+    </app-property-gallery>
 
 
 
@@ -119,11 +105,7 @@
             </h2>
 
             <p>
-              {{ listing.bedroom }}
-              ·
-              {{ listing.bed }}
-              ·
-              {{ listing.bathroom }}
+              {{ listing.details }}
             </p>
 
           </div>
@@ -140,25 +122,25 @@
         </section>
 
 
-        <div class="section-divider"></div>
+        @if (listing.description) {
+
+          <div class="section-divider"></div>
 
 
+          <!-- Présentation -->
+          <section class="description-section">
 
-        <!-- Présentation -->
-        <section class="description-section">
+            <h3>
+              Présentation
+            </h3>
 
-          <h3>
-            Présentation
-          </h3>
+            <p>
+              {{ listing.description }}
+            </p>
 
-          <p>
-            {{ listing.description }}
-          </p>
+          </section>
 
-        </section>
-
-
-        <div class="section-divider"></div>
+        }
 
 
 
@@ -166,35 +148,42 @@
              ÉQUIPEMENTS
         ========================== -->
 
-        <section class="equipment-section">
+        @if (listing.equipments.length) {
 
-          <h3>
-            Ce que le logement propose
-          </h3>
+          <div class="section-divider"></div>
 
 
-          <div class="equipment-grid">
+          <section class="equipment-section">
 
-            @for (
-              equipment of listing.equipments;
-              track equipment.alt
-            ) {
+            <h3>
+              Ce que le logement propose
+            </h3>
 
-              <div class="equipment-item">
 
-                <img
-                  [src]="equipment.icon"
-                  [alt]="equipment.alt"
-                  class="equipment-svg"
-                />
+            <div class="equipment-grid">
 
-              </div>
+              @for (
+                equipment of listing.equipments;
+                track equipment.label
+              ) {
 
-            }
+                <div class="equipment-item">
 
-          </div>
+                  <app-equipment-icon [icon]="equipment.icon" />
 
-        </section>
+                  <span class="equipment-label">
+                    {{ equipment.label }}
+                  </span>
+
+                </div>
+
+              }
+
+            </div>
+
+          </section>
+
+        }
 
       </div>
 
@@ -320,3 +309,28 @@
 ========================= -->
 
 <app-footer />
+
+
+<!-- =========================
+     BOUTON FAVORI
+     (titre en desktop, photo en mobile)
+========================= -->
+
+<ng-template #favoriteButton>
+
+  <button
+    type="button"
+    class="favorite-button"
+    [attr.aria-label]="favorite() ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+    [attr.aria-pressed]="favorite()"
+    (click)="toggleFavorite()"
+  >
+    <img
+      [src]="favorite()
+        ? '/images/rental/icons/heart-filled.svg'
+        : '/images/rental/icons/heart-outline.svg'"
+      alt=""
+    />
+  </button>
+
+</ng-template>

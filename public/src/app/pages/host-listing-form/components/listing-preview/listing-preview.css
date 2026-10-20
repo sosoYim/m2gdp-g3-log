@@ -1,0 +1,207 @@
+.preview {
+  padding: 16px;
+
+  border: 1px solid #e4e6ef;
+  border-radius: 10px;
+
+  background: #ffffff;
+}
+
+
+/* =========================================================
+   EN-TÊTE
+   ========================================================= */
+
+.preview-toggle {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 14px;
+  padding: 0;
+
+  border: none;
+
+  background: none;
+
+  font-family: inherit;
+
+  text-align: left;
+
+  pointer-events: none;
+}
+
+
+.preview-toggle svg,
+.preview-see {
+  display: none;
+}
+
+
+.preview-title {
+  flex: 1;
+
+  color: #171925;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   CONTENU
+   ========================================================= */
+
+.preview-image {
+  width: 100%;
+  height: 156px;
+
+  display: block;
+
+  object-fit: cover;
+
+  border-radius: 6px;
+}
+
+
+.preview-image-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  background: #e6e5fa;
+
+  color: #424556;
+
+  font-size: 10px;
+}
+
+
+.preview-image-empty svg {
+  width: 26px;
+  height: 26px;
+
+  fill: none;
+  stroke: var(--bl-primary);
+  stroke-width: 1.4;
+}
+
+
+.verified-badge {
+  display: inline-block;
+
+  margin: 14px 0 10px;
+  padding: 3px 10px;
+
+  border-radius: 999px;
+
+  background: #eee9ff;
+
+  color: var(--bl-primary);
+
+  font-size: 9px;
+  font-weight: 800;
+}
+
+
+.preview h3 {
+  margin: 0 0 6px;
+
+  color: #171925;
+
+  font-size: 16px;
+  font-weight: 800;
+}
+
+
+.area {
+  margin: 0 0 6px;
+
+  color: #424556;
+
+  font-size: 9px;
+
+  text-transform: uppercase;
+}
+
+
+.summary,
+.price {
+  margin: 0;
+
+  color: #424556;
+
+  font-size: 11px;
+}
+
+
+.price {
+  margin-top: 16px;
+}
+
+
+/* =========================================================
+   MOBILE : CARTE REPLIABLE
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+  .preview-toggle {
+    margin-bottom: 0;
+
+    pointer-events: auto;
+
+    cursor: pointer;
+  }
+
+
+  .preview-toggle svg {
+    display: block;
+
+    width: 26px;
+    height: 26px;
+
+    fill: none;
+    stroke: var(--bl-primary);
+    stroke-width: 1.6;
+  }
+
+
+  .preview-title {
+    font-size: 15px;
+  }
+
+
+  .preview-see {
+    display: inline;
+
+    color: var(--bl-primary);
+
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+
+  .preview-body {
+    display: none;
+
+    margin-top: 14px;
+  }
+
+
+  .preview-open .preview-body {
+    display: block;
+  }
+
+
+  .preview-image {
+    height: 170px;
+  }
+
+}

@@ -57,24 +57,13 @@
 
       @else if (bookings().length === 0) {
 
-        <div class="booking-state">
-
-          <strong>
-            Aucune demande pour le moment.
-          </strong>
-
-          <p>
-            Recherchez un logement puis contactez l’annonceur pour envoyer votre première demande.
-          </p>
-
-          <a
-            routerLink="/rental-search-results"
-            class="manage-button empty-booking-button"
-          >
-            Rechercher un logement
-          </a>
-
-        </div>
+        <app-empty-state
+          icon="calendar"
+          title="Aucun séjour prévu pour le moment"
+          text="Lorsqu’un propriétaire acceptera votre demande, votre séjour apparaîtra ici."
+          actionLabel="Rechercher un logement"
+          actionLink="/rental-search-results"
+        />
 
       }
 
@@ -179,7 +168,10 @@
 
       <!-- =========================
            INFORMATION PAIEMENT
+           (seulement avec des demandes)
       ========================== -->
+
+      @if (bookings().length > 0) {
 
       <div class="payment-info">
 
@@ -200,6 +192,8 @@
 
       </div>
 
+      }
+
 
       <!-- =========================
            FAVORIS
@@ -212,13 +206,17 @@
         </h2>
 
 
-        <button
-          type="button"
-          class="all-favorites-button"
-          routerLink="/saved-listings"
-        >
-          Voir tous les favoris ({{ favoriteCount }})
-        </button>
+        @if (favoriteCount > 0) {
+
+          <button
+            type="button"
+            class="all-favorites-button"
+            routerLink="/saved-listings"
+          >
+            Voir tous les favoris ({{ favoriteCount }})
+          </button>
+
+        }
 
       </div>
 
@@ -227,6 +225,20 @@
            LISTE FAVORIS
            encore temporairement fictive
       ========================== -->
+
+      @if (favorites.length === 0 && !loadingBookings()) {
+
+        <app-empty-state
+          icon="heart"
+          title="Pas encore de favoris"
+          text="Cliquez sur le cœur d’une annonce pour la retrouver ici."
+          actionLabel="Découvrir les logements"
+          actionLink="/rental-search-results"
+          actionStyle="link"
+        />
+
+      }
+
 
       <div class="favorites-grid">
 

@@ -10,16 +10,14 @@ import { Router } from '@angular/router';
 
 import { UserNavbar } from '../../shared/components/user-navbar/user-navbar';
 import { AccountSidebar } from '../../shared/components/account-sidebar/account-sidebar';
+import { HostSidebar } from '../../shared/components/host-sidebar/host-sidebar';
 
 import { ContactSection } from '../landing/components/contact-section/contact-section';
 import { Footer } from '../landing/components/footer/footer';
 
 import { Auth } from '../../core/auth/auth';
 
-import {
-  Profile,
-  UserRole
-} from '../../core/profile/profile';
+import { Profile } from '../../core/profile/profile';
 
 
 @Component({
@@ -31,6 +29,7 @@ import {
     FormsModule,
     UserNavbar,
     AccountSidebar,
+    HostSidebar,
     ContactSection,
     Footer
   ],
@@ -45,10 +44,6 @@ export class AccountSettings implements OnInit {
   lastName = '';
 
   email = '';
-
-
-  currentRole =
-    signal<UserRole>('guest');
 
 
   notificationMessages = true;
@@ -66,6 +61,17 @@ export class AccountSettings implements OnInit {
 
   errorMessage =
     signal('');
+
+
+  /*
+   * Menu latéral selon le rôle
+   * (Je viens / J'accueille)
+   */
+  get isHost(): boolean {
+
+    return this.profileService.currentRole() === 'host';
+
+  }
 
 
   constructor(
@@ -158,16 +164,6 @@ export class AccountSettings implements OnInit {
       }
 
 
-      /*
-       * Rôle
-       */
-      if (profile.role) {
-
-        this.currentRole.set(
-          profile.role
-        );
-
-      }
 
 
       /*
@@ -263,10 +259,7 @@ export class AccountSettings implements OnInit {
            * avec Firebase Authentication.
            */
           email:
-            user.email ?? '',
-
-          role:
-            this.currentRole()
+            user.email ?? ''
         }
       );
 
@@ -292,61 +285,6 @@ export class AccountSettings implements OnInit {
     } finally {
 
       this.saving.set(false);
-
-    }
-
-  }
-
-
-  async selectRole(
-    role: UserRole
-  ): Promise<void> {
-
-    this.errorMessage.set('');
-
-
-    /*
-     * Mise à jour immédiate de l'interface.
-     */
-    this.currentRole.set(
-      role
-    );
-
-
-    const user =
-      this.authService.getCurrentUser();
-
-
-    if (!user) {
-
-      this.errorMessage.set(
-        'Vous devez être connecté pour changer de rôle.'
-      );
-
-      return;
-
-    }
-
-
-    try {
-
-      await this.profileService.saveRole(
-        user.uid,
-        role
-      );
-
-
-    } catch (error) {
-
-      console.error(
-        'Erreur changement de rôle :',
-        error
-      );
-
-
-      this.errorMessage.set(
-        'Impossible de modifier votre rôle.'
-      );
 
     }
 

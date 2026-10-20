@@ -1,0 +1,121 @@
+<h2 class="lf-step-title">
+  Dates et loyer
+</h2>
+
+<p class="lf-step-subtitle">
+  Indiquez vos disponibilités et le loyer demandé.
+</p>
+
+
+<!-- =========================
+     DISPONIBILITÉS
+========================== -->
+
+<div class="lf-grid-3 lf-grid-stack">
+
+  <div class="lf-field">
+
+    <label
+      class="lf-label"
+      for="listing-from"
+    >
+      Disponible du
+    </label>
+
+    <input
+      id="listing-from"
+      class="lf-input"
+      type="date"
+      [(ngModel)]="form.availableFrom"
+    />
+
+  </div>
+
+
+  <div class="lf-field">
+
+    <label
+      class="lf-label"
+      for="listing-to"
+    >
+      Au
+    </label>
+
+    <input
+      id="listing-to"
+      class="lf-input"
+      type="date"
+      [min]="form.availableFrom"
+      [(ngModel)]="form.availableTo"
+    />
+
+  </div>
+
+
+  <div class="lf-field">
+
+    <label
+      class="lf-label"
+      for="listing-min-stay"
+    >
+      Séjour minimum
+    </label>
+
+    <select
+      id="listing-min-stay"
+      class="lf-input"
+      [(ngModel)]="form.minStayMonths"
+    >
+      @for (months of minStayOptions; track months) {
+        <option [ngValue]="months">{{ months }} mois</option>
+      }
+    </select>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     LOYER
+========================== -->
+
+<div class="lf-field">
+
+  <label
+    class="lf-label"
+    for="listing-price"
+  >
+    Loyer mensuel
+  </label>
+
+  <div class="lf-input-wrap-unit lf-input-wrap">
+
+    <input
+      id="listing-price"
+      class="lf-input"
+      type="number"
+      min="1"
+      inputmode="numeric"
+      style="padding-right: 76px"
+      [(ngModel)]="form.price"
+    />
+
+    <span class="lf-input-unit">€ / mois</span>
+
+  </div>
+
+</div>
+
+
+<label class="lf-toggle-row">
+
+  <span>Charges comprises</span>
+
+  <input
+    type="checkbox"
+    class="lf-switch"
+    [(ngModel)]="form.chargesIncluded"
+  />
+
+</label>

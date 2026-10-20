@@ -1,0 +1,138 @@
+<div class="backdrop" (click)="close()"></div>
+
+
+<section
+  class="modal"
+  [class.modal-sheet]="mode === 'refuse'"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="answer-modal-title"
+>
+
+  <span class="sheet-handle" aria-hidden="true"></span>
+
+  <button
+    type="button"
+    class="close-btn"
+    aria-label="Fermer"
+    (click)="close()"
+  >
+    ✕
+  </button>
+
+
+  @if (mode === 'accept') {
+
+    <!-- =========================
+         ACCEPTER
+    ========================== -->
+
+    <span class="check-icon" aria-hidden="true">✓</span>
+
+    <h2 id="answer-modal-title">
+      Accepter la demande {{ ofFirstName }} ?
+    </h2>
+
+    <div class="summary">
+
+      <strong>{{ listingTitle }}</strong>
+
+      <span>
+        {{ dateRange }}
+        @if (price !== null) {
+          · {{ price }} € / mois (exemple)
+        }
+      </span>
+
+    </div>
+
+    <ul class="checks">
+
+      <li>
+        Le séjour {{ ofFirstName }} sera confirmé et ces dates bloquées dans votre calendrier.
+      </li>
+
+      <li>
+        {{ firstName }} sera prévenu dans la messagerie.
+      </li>
+
+      <li>
+        Le loyer se règle directement entre vous.
+        <strong>Aucun paiement sur BailLyon.</strong>
+      </li>
+
+    </ul>
+
+  } @else {
+
+    <!-- =========================
+         REFUSER
+    ========================== -->
+
+    <h2 id="answer-modal-title">
+      Refuser la demande {{ ofFirstName }} ?
+    </h2>
+
+    <p class="intro">
+      {{ firstName }} sera prévenu. Vous pouvez lui indiquer un motif et lui laisser un mot (facultatif).
+    </p>
+
+    <p class="field-label">Motif</p>
+
+    <div class="reasons" role="radiogroup" aria-label="Motif">
+
+      @for (item of reasons; track item.value) {
+
+        <button
+          type="button"
+          role="radio"
+          class="reason"
+          [class.reason-active]="reason === item.value"
+          [attr.aria-checked]="reason === item.value"
+          (click)="reason = item.value"
+        >
+          {{ item.label }}
+        </button>
+
+      }
+
+    </div>
+
+    <label class="field-label" for="refuse-message">
+      Message à {{ firstName }} (facultatif)
+    </label>
+
+    <textarea
+      id="refuse-message"
+      rows="4"
+      maxlength="1000"
+      [placeholder]="'Bonjour ' + firstName + ', merci pour votre demande. Malheureusement, le logement n\'est pas disponible à ces dates…'"
+      [(ngModel)]="message"
+    ></textarea>
+
+  }
+
+
+  <div class="actions">
+
+    <button
+      type="button"
+      class="btn-outline"
+      [disabled]="saving"
+      (click)="close()"
+    >
+      Annuler
+    </button>
+
+    <button
+      type="button"
+      class="btn-primary"
+      [disabled]="saving"
+      (click)="confirm()"
+    >
+      {{ mode === 'accept' ? 'Confirmer' : 'Refuser la demande' }}
+    </button>
+
+  </div>
+
+</section>

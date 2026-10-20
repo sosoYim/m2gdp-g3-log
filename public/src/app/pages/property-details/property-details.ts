@@ -5,6 +5,8 @@ import {
   signal
 } from '@angular/core';
 
+import { Location, NgTemplateOutlet } from '@angular/common';
+
 import {
   ActivatedRoute,
   Router
@@ -21,13 +23,38 @@ import { Profile } from '../../core/profile/profile';
 
 import {
   Listing,
-  ListingDocument
+  ListingDocument,
+  ListingForm,
+  createEmptyListingForm
 } from '../../core/listing/listing';
+
+import { Favorite } from '../../core/favorite/favorite';
+
+import { PropertyGallery } from './components/property-gallery/property-gallery';
+
+import { EquipmentIcon } from '../../shared/components/equipment-icon/equipment-icon';
+
+import { getAmenityLabel } from '../host-listing-form/listing-form.data';
+
+
+/*
+ * Listes qui mènent à cette page :
+ * « Retour à la liste » y revient
+ * (filtres et défilement conservés).
+ */
+const LIST_PAGES = [
+  '/rental-search-results',
+  '/saved-listings',
+  '/host/listings'
+];
 
 
 interface Equipment {
+  /*
+   * SVG de l'icône ('' si aucune)
+   */
   icon: string;
-  alt: string;
+  label: string;
 }
 
 
@@ -41,26 +68,35 @@ interface PropertyDetailsViewModel {
 
   verified: boolean;
 
-  images: {
-    main: string;
-    kitchen: string;
-    window: string;
-    desk: string;
-    bathroom: string;
-  };
+  /*
+   * Toutes les photos (1re = principale)
+   */
+  photos: string[];
 
   price: number;
 
   minimumStay: string;
 
-  bedroom: string;
-  bed: string;
-  bathroom: string;
+  details: string;
 
   description: string;
 
   equipments: Equipment[];
 }
+
+
+/*
+ * Icônes existantes par équipement
+ * (valeurs de AMENITIES).
+ */
+const EQUIPMENT_ICONS: Record<string, string> = {
+  wifi: 'icon-wifi.svg',
+  kitchen: 'icon-cook.svg',
+  desk: 'icon-desk.svg',
+  washer: 'icon-wash.svg',
+  dishwasher: 'icon-dish.svg',
+  elevator: 'icon-lift.svg'
+};
 
 
 @Component({
@@ -69,8 +105,11 @@ interface PropertyDetailsViewModel {
   standalone: true,
 
   imports: [
+    NgTemplateOutlet,
     Navbar,
     AuthModal,
+    EquipmentIcon,
+    PropertyGallery,
     ContactSection,
     Footer
   ],
@@ -91,69 +130,31 @@ export class PropertyDetails implements OnInit {
 
   listingError = signal('');
 
+  favorite = signal(false);
+
+  private favoriteSaving = false;
+
+  private firestoreListing: ListingDocument | null = null;
+
+  /*
+   * Page précédente = une liste de l'app
+   */
+  private cameFromList = false;
+
 
   listing: PropertyDetailsViewModel = {
-
     title: '',
-
     location: '',
-
     owner: '',
-
     rating: 0,
-
     reviews: 42,
-
     verified: false,
-
-    images: {
-      main: '',
-      kitchen: '/images/rental/property-1/kitchen.png',
-      window: '/images/rental/property-1/window.png',
-      desk: '/images/rental/property-1/desk.png',
-      bathroom: '/images/rental/property-1/bathroom.png'
-    },
-
+    photos: [],
     price: 0,
-
-    minimumStay: '1 mois',
-
-    bedroom: '1 chambre',
-
-    bed: '1 lit',
-
-    bathroom: '1 salle de bains',
-
-    description:
-      'L’appartement est idéalement situé, à proximité des transports, des commerces et de nombreux cafés et restaurants. Un logement pratique et cosy, idéal pour un étudiant ou un jeune professionnel le temps d’un séjour à Lyon.',
-
-    equipments: [
-      {
-        icon: '/images/rental/equipment/Equipement-wifi.svg',
-        alt: 'Wi-Fi'
-      },
-      {
-        icon: '/images/rental/equipment/Equipement-cook.svg',
-        alt: 'Cuisine entièrement équipée'
-      },
-      {
-        icon: '/images/rental/equipment/Equipement-desk.svg',
-        alt: 'Bureau dédié'
-      },
-      {
-        icon: '/images/rental/equipment/Equipement-wash.svg',
-        alt: 'Lave-linge'
-      },
-      {
-        icon: '/images/rental/equipment/Equipement-dish.svg',
-        alt: 'Lave-vaisselle'
-      },
-      {
-        icon: '/images/rental/equipment/Equipement-lift.svg',
-        alt: 'Ascenseur'
-      }
-    ]
-
+    minimumStay: '',
+    details: '',
+    description: '',
+    equipments: []
   };
 
 
@@ -163,6 +164,8 @@ export class PropertyDetails implements OnInit {
     private readonly authService: Auth,
     private readonly profileService: Profile,
     private readonly listingService: Listing,
+    private readonly favoriteService: Favorite,
+    private readonly location: Location,
     private readonly cdr: ChangeDetectorRef
   ) {}
 
@@ -176,6 +179,20 @@ export class PropertyDetails implements OnInit {
      */
     this.listingId =
       this.route.snapshot.paramMap.get('id') ?? '';
+
+
+    const previousUrl =
+      this.router.lastSuccessfulNavigation()?.previousNavigation?.finalUrl;
+
+    if (previousUrl) {
+
+      const path =
+        this.router.serializeUrl(previousUrl).split(/[?#]/)[0];
+
+      this.cameFromList =
+        LIST_PAGES.includes(path);
+
+    }
 
 
     /*
@@ -215,10 +232,11 @@ export class PropertyDetails implements OnInit {
 
     try {
 
-      const firestoreListing =
-        await this.listingService.getListingById(
-          this.listingId
-        );
+      const [firestoreListing, listingForm] =
+        await Promise.all([
+          this.listingService.getListingById(this.listingId),
+          this.listingService.getListingForm(this.listingId)
+        ]);
 
 
       if (!firestoreListing) {
@@ -234,11 +252,16 @@ export class PropertyDetails implements OnInit {
 
       /*
        * On refuse d'afficher une annonce
-       * non publiée côté demandeur.
+       * non publiée côté demandeur
+       * (l'annonceur peut voir la sienne).
        */
+      const user =
+        await this.authService.waitForAuthState();
+
       if (
         firestoreListing.status !==
-        'published'
+        'published' &&
+        firestoreListing.ownerId !== user?.uid
       ) {
 
         this.listingError.set(
@@ -250,8 +273,20 @@ export class PropertyDetails implements OnInit {
       }
 
 
+      this.firestoreListing =
+        firestoreListing;
+
+      if (user) {
+        const favoriteIds =
+          await this.favoriteService.getFavoriteIds(user.uid);
+
+        this.favorite.set(favoriteIds.has(this.listingId));
+      }
+
+
       this.applyFirestoreListing(
-        firestoreListing
+        firestoreListing,
+        listingForm?.form ?? createEmptyListingForm()
       );
 
 
@@ -280,8 +315,14 @@ export class PropertyDetails implements OnInit {
 
 
   private applyFirestoreListing(
-    firestoreListing: ListingDocument
+    firestoreListing: ListingDocument,
+    form: ListingForm
   ): void {
+
+    const photos =
+      form.photos.map(photo => photo.url);
+
+
 
     this.listing = {
 
@@ -305,14 +346,27 @@ export class PropertyDetails implements OnInit {
       price:
         firestoreListing.price,
 
-      images: {
+      photos:
+        photos.length
+          ? photos
+          : [firestoreListing.image].filter(Boolean),
 
-        ...this.listing.images,
+      minimumStay:
+        `${form.minStayMonths} mois`,
 
-        main:
-          firestoreListing.image
+      details:
+        firestoreListing.details,
 
-      }
+      description:
+        form.description,
+
+      equipments:
+        form.amenities.map(value => ({
+          icon: EQUIPMENT_ICONS[value]
+            ? `/images/rental/equipment/${EQUIPMENT_ICONS[value]}`
+            : '',
+          label: getAmenityLabel(value)
+        }))
 
     };
 
@@ -493,6 +547,113 @@ export class PropertyDetails implements OnInit {
       ]);
 
     }
+
+  }
+
+
+  /*
+   * =========================================
+   * FAVORI
+   * =========================================
+   */
+  async toggleFavorite(): Promise<void> {
+
+    const listing =
+      this.firestoreListing;
+
+    if (!listing || this.favoriteSaving) {
+      return;
+    }
+
+
+    const user =
+      await this.authService.waitForAuthState();
+
+    if (!user) {
+      this.authModalOpen.set(true);
+      return;
+    }
+
+
+    this.favoriteSaving = true;
+
+    try {
+
+      if (this.favorite()) {
+
+        await this.favoriteService.removeFavorite(user.uid, listing.id);
+
+        this.favorite.set(false);
+
+      } else {
+
+        await this.favoriteService.addFavorite(user.uid, {
+          listingId: listing.id,
+          title: listing.title,
+          location: listing.location,
+          details: listing.details,
+          price: listing.price,
+          rating: listing.rating,
+          image: this.listing.photos[0] ?? listing.image
+        });
+
+        this.favorite.set(true);
+
+      }
+
+    } catch (err) {
+
+      console.error('Erreur favori :', err);
+
+    } finally {
+
+      this.favoriteSaving = false;
+
+    }
+
+  }
+
+
+  /*
+   * =========================================
+   * RETOUR À LA LISTE
+   * =========================================
+   *
+   * Venu d'une liste : retour arrière.
+   * Sinon : mes annonces (annonceur)
+   * ou résultats de recherche.
+   */
+  async goBack(): Promise<void> {
+
+    if (this.cameFromList) {
+      this.location.back();
+      return;
+    }
+
+
+    let target =
+      '/rental-search-results';
+
+    try {
+
+      const user =
+        await this.authService.waitForAuthState();
+
+      const profile =
+        user ? await this.profileService.getProfile(user.uid) : null;
+
+      if (profile?.role === 'host') {
+        target = '/host/listings';
+      }
+
+    } catch (err) {
+
+      console.error('Erreur lecture du rôle :', err);
+
+    }
+
+
+    await this.router.navigateByUrl(target);
 
   }
 

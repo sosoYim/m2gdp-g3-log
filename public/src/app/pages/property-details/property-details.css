@@ -18,8 +18,25 @@
 
 
 /* =========================
-   TITRE
+   RETOUR + TITRE
 ========================= */
+
+.back-link {
+  margin: 0 0 10px;
+  padding: 0;
+
+  border: 0;
+
+  background: none;
+
+  color: var(--bl-primary);
+
+  font-family: inherit;
+  font-size: var(--bl-fs-body);
+  font-weight: 700;
+
+  cursor: pointer;
+}
 
 .property-heading {
   display: flex;
@@ -34,9 +51,9 @@
 .property-heading h1 {
   margin: 0;
 
-  color: #171925;
+  color: var(--bl-heading);
 
-  font-size: 28px;
+  font-size: var(--bl-fs-title);
   font-weight: 800;
   line-height: 1.2;
 }
@@ -52,9 +69,9 @@
 
   gap: 14px;
 
-  color: #30354f;
+  color: var(--bl-heading);
 
-  font-size: 13px;
+  font-size: var(--bl-fs-body);
 }
 
 .rating {
@@ -65,19 +82,8 @@
 }
 
 .rating-star {
-  width: 24px;
-  height: 24px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  border: 1px solid #acb3c6;
-
-  color: #48536d;
-
-  font-size: 18px;
-  line-height: 1;
+  width: 16px;
+  height: 16px;
 }
 
 .rating strong {
@@ -92,88 +98,75 @@
 }
 
 .location {
-  color: #566078;
+  color: var(--bl-text-muted);
+}
 
-  text-decoration: underline;
+
+/* Favori desktop : cœur seul */
+.property-meta .favorite-button {
+  margin-left: 18px;
+  padding: 0;
+
+  border: 0;
+
+  background: none;
 
   cursor: pointer;
 }
 
+.property-meta .favorite-button img {
+  display: block;
+
+  width: 28px;
+  height: 28px;
+
+  transition: transform 0.15s ease;
+}
+
+.property-meta .favorite-button:hover img {
+  transform: scale(1.12);
+}
+
 
 /* =========================
-   GALERIE
+   FAVORI SUR LA PHOTO (MOBILE)
 ========================= */
 
-.gallery {
-  width: 100%;
-  height: 360px;
+.photo-favorite {
+  display: none;
 
-  display: grid;
-
-  grid-template-columns:
-    minmax(0, 1fr)
-    minmax(0, 1fr);
-
-  gap: 10px;
-
-  margin-bottom: 28px;
-
-  overflow: hidden;
+  position: absolute;
+  top: 12px;
+  right: 12px;
 }
 
+.photo-favorite .favorite-button {
+  width: 34px;
+  height: 34px;
 
-/* Grande image */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-.gallery-main {
-  min-width: 0;
-  height: 360px;
+  padding: 0;
 
-  overflow: hidden;
+  border: 0;
+  border-radius: 7px;
+
+  background: #ffffff;
+
+  cursor: pointer;
+
+  transition: background 0.15s ease;
 }
 
-.gallery-main img {
-  display: block;
-
-  width: 100%;
-  height: 100%;
-
-  object-fit: cover;
-  object-position: center;
+.photo-favorite .favorite-button:hover {
+  background: var(--bl-bg-accent);
 }
 
-
-/* 4 petites images */
-
-.gallery-small {
-  min-width: 0;
-  height: 360px;
-
-  display: grid;
-
-  grid-template-columns:
-    1fr
-    1fr;
-
-  grid-template-rows:
-    1fr
-    1fr;
-
-  gap: 10px;
-}
-
-.gallery-small img {
-  display: block;
-
-  width: 100%;
-  height: 100%;
-
-  min-width: 0;
-  min-height: 0;
-
-  object-fit: cover;
-  object-position: center;
-
-  overflow: hidden;
+.photo-favorite .favorite-button img {
+  width: 20px;
+  height: 20px;
 }
 
 
@@ -215,18 +208,18 @@
 .owner-info h2 {
   margin: 0 0 7px;
 
-  color: #17194f;
+  color: var(--bl-heading);
 
-  font-size: 18px;
+  font-size: var(--bl-fs-subtitle);
   font-weight: 800;
 }
 
 .owner-info p {
   margin: 0;
 
-  color: #7d849f;
+  color: var(--bl-text-muted);
 
-  font-size: 12px;
+  font-size: var(--bl-fs-small);
 }
 
 
@@ -246,11 +239,11 @@
 
   border-radius: 999px;
 
-  background: #eee8ff;
+  background: var(--bl-bg-accent);
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
-  font-size: 11px;
+  font-size: var(--bl-fs-small);
   font-weight: 700;
 
   white-space: nowrap;
@@ -279,9 +272,9 @@
 .equipment-section h3 {
   margin: 0 0 13px;
 
-  color: #17194f;
+  color: var(--bl-text);
 
-  font-size: 15px;
+  font-size: var(--bl-fs-section);
   font-weight: 800;
 }
 
@@ -293,10 +286,11 @@
 .description-section p {
   margin: 0;
 
-  color: #77809e;
+  color: var(--bl-text);
 
-  font-size: 12px;
+  font-size: var(--bl-fs-body);
   line-height: 1.55;
+  white-space: pre-line;
 }
 
 
@@ -322,31 +316,25 @@
 
 .equipment-item {
   min-width: 0;
-  min-height: 34px;
 
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+
+  gap: 14px;
 }
 
 
-/*
- * Le SVG contient déjà :
- * icône + texte.
- *
- * Donc on ne rajoute aucun texte en HTML.
- */
-.equipment-svg {
-  display: block;
+.equipment-label {
+  color: var(--bl-text);
 
-  width: auto;
-  height: 24px;
-
-  max-width: 190px;
-
-  object-fit: contain;
-  object-position: left center;
+  font-size: var(--bl-fs-body);
 }
+
+
+
+
+
+
 
 
 /* =========================
@@ -372,24 +360,24 @@
 }
 
 .price strong {
-  color: #17194f;
+  color: var(--bl-text);
 
-  font-size: 28px;
+  font-size: var(--bl-fs-price);
   font-weight: 800;
 }
 
 .price span {
-  color: #7f859e;
+  color: var(--bl-text-muted);
 
-  font-size: 13px;
+  font-size: var(--bl-fs-price-unit);
 }
 
 .minimum-stay {
   margin: 4px 0 17px;
 
-  color: #8790aa;
+  color: var(--bl-text-muted);
 
-  font-size: 10px;
+  font-size: var(--bl-fs-small);
 }
 
 
@@ -425,16 +413,16 @@
 
   margin-bottom: 5px;
 
-  color: #7d849e;
+  color: var(--bl-text-muted);
 
-  font-size: 9px;
+  font-size: var(--bl-fs-small);
   font-weight: 700;
 }
 
 .booking-date span {
-  color: #343952;
+  color: var(--bl-text);
 
-  font-size: 11px;
+  font-size: var(--bl-fs-body);
 }
 
 
@@ -444,17 +432,17 @@
 
 .contact-button {
   width: 100%;
-  height: 42px;
+  height: 48px;
 
   border: 0;
   border-radius: 7px;
 
-  background: #7134f5;
+  background: var(--bl-primary);
 
   color: #ffffff;
 
   font-family: inherit;
-  font-size: 12px;
+  font-size: var(--bl-fs-body);
   font-weight: 700;
 
   cursor: pointer;
@@ -463,7 +451,7 @@
 }
 
 .contact-button:hover {
-  background: #6026dc;
+  background: var(--bl-primary-hover);
 }
 
 
@@ -483,7 +471,7 @@
 
   border-radius: 7px;
 
-  background: #eee9ff;
+  background: var(--bl-bg-accent);
 }
 
 .payment-icon {
@@ -498,20 +486,20 @@
 
   border-radius: 50%;
 
-  background: #8b5cf6;
+  background: var(--bl-primary);
 
   color: #ffffff;
 
-  font-size: 10px;
+  font-size: var(--bl-fs-small);
   font-weight: 700;
 }
 
 .payment-info p {
   margin: 0;
 
-  color: #6652b5;
+  color: var(--bl-primary);
 
-  font-size: 9px;
+  font-size: var(--bl-fs-small);
   line-height: 1.55;
 }
 
@@ -520,15 +508,15 @@
 
   margin-top: 2px;
 
-  color: #5f43bd;
+  color: var(--bl-primary);
 }
 
 .price-info {
   margin: 11px 0 0;
 
-  color: #969aad;
+  color: var(--bl-text-muted);
 
-  font-size: 9px;
+  font-size: var(--bl-fs-small);
 }
 
 
@@ -541,31 +529,45 @@
   .property-container {
   width: calc(100% - 48px);
  }
-  .gallery {
-    height: 320px;
-  }
 
-  .gallery-main,
-  .gallery-small {
-    height: 320px;
-  }
-
+  /*
+   * Une colonne : propriétaire → carte prix
+   * → présentation → équipements
+   */
   .property-layout {
     grid-template-columns: 1fr;
+
+    gap: 0;
+  }
+
+  .property-main {
+    display: contents;
+  }
+
+  .property-main > * {
+    order: 2;
+  }
+
+  .property-main > .owner-section {
+    order: 0;
+  }
+
+  .property-main > .section-divider:first-of-type {
+    display: none;
   }
 
   .booking-card {
+    order: 1;
+
     max-width: 420px;
+
+    margin: 18px 0 28px;
   }
 
   .equipment-grid {
     column-gap: 28px;
   }
 
-  .equipment-svg {
-    height: 23px;
-    max-width: 180px;
-  }
 
 }
 
@@ -585,38 +587,24 @@
 
   .property-heading {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+
+    gap: 8px;
   }
 
 
-  .property-heading h1 {
-    font-size: 23px;
+  /* Note à gauche, ville à droite */
+  .property-meta {
+    justify-content: space-between;
   }
 
-
-  .gallery {
-    height: auto;
-
-    grid-template-columns: 1fr;
+  .meta-divider,
+  .property-meta .favorite-button {
+    display: none;
   }
 
-
-  .gallery-main {
-    height: 270px;
-  }
-
-
-  .gallery-small {
-    height: auto;
-
-    grid-template-columns:
-      1fr
-      1fr;
-  }
-
-
-  .gallery-small img {
-    height: 140px;
+  .photo-favorite {
+    display: block;
   }
 
 
@@ -635,10 +623,6 @@
   }
 
 
-  .equipment-svg {
-    height: 22px;
-    max-width: 170px;
-  }
 
 
   .booking-card {
@@ -658,9 +642,5 @@
     grid-template-columns: 1fr;
   }
 
-  .equipment-svg {
-    height: 23px;
-    max-width: 190px;
-  }
 
 }
