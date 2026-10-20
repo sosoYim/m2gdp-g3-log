@@ -1,5 +1,13 @@
+/*
+ * Barre toujours visible en haut de l'écran
+ * (au-dessus des contrôles de la carte Leaflet : 1000)
+ */
 :host {
   display: block;
+
+  position: sticky;
+  top: 0;
+  z-index: 1100;
 }
 
 
@@ -9,7 +17,7 @@
 
 .user-navbar {
   width: 100%;
-  height: 78px;
+  height: 80px;
 
   background: #ffffff;
 
@@ -527,21 +535,8 @@
 
 @media (max-width: 760px) {
 
-  /*
-   * Menu ouvert : header fixé en haut
-   * au-dessus de l'overlay.
-   */
-  :host(.mobile-menu-open) {
-    position: sticky;
-
-    top: 0;
-
-    z-index: 1000;
-  }
-
-
   .user-navbar {
-    height: 68px;
+    height: 64px;
   }
 
 

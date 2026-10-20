@@ -1,3 +1,22 @@
+/*
+ * Barre toujours visible en haut de l'écran
+ * (au-dessus des contrôles de la carte Leaflet : 1000)
+ */
+:host {
+  display: block;
+
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+}
+
+
+/* Hauteur de la barre : 80px desktop, 64px mobile */
+.guest-header {
+  height: 80px;
+}
+
+
 /* =========================================================
    LOGO BAILLYON
    Même identité visuelle que le footer
@@ -23,6 +42,15 @@
 /* =========================================================
    MOBILE
    ========================================================= */
+
+@media (max-width: 760px) {
+
+  .guest-header {
+    height: 64px;
+  }
+
+}
+
 
 @media (max-width: 700px) {
 

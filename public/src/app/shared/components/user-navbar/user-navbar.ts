@@ -1,6 +1,5 @@
 import {
   Component,
-  HostBinding,
   HostListener,
   OnDestroy,
   OnInit,
@@ -388,18 +387,6 @@ export class UserNavbar
    * MENU MOBILE
    * =========================================
    */
-
-  /*
-   * Header fixé en haut pendant que
-   * le menu mobile est ouvert.
-   */
-  @HostBinding('class.mobile-menu-open')
-  get isMobileMenuOpen(): boolean {
-
-    return this.mobileMenuOpen();
-
-  }
-
 
   toggleMobileMenu(): void {
 
