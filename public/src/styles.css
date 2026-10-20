@@ -31,6 +31,7 @@
   --bl-bg-accent: #ece8fe;      /* fond violet clair (badges, encadrés, icônes) */
   --bl-icon-placeholder: #a174f5; /* icône d'image vide (annonce sans photo) */
   --bl-bg-footer: #e7e8fd;      /* fond du bloc de bas de page */
+  --bl-white: #fffffd;          /* blanc : texte sur fond violet (rôle sélectionné Je viens / J'accueille) */
 
   /* Tailles de texte (police Montserrat) */
   --bl-fs-title: 27px;          /* titre de page */

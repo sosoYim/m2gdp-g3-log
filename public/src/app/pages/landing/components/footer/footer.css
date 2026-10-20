@@ -42,33 +42,10 @@
 }
 
 .footer-logo-image {
-  width: 34px;
-  height: 34px;
+  width: auto;
+  height: 36px;
 
   display: block;
-  object-fit: contain;
-}
-
-
-/* =========================================================
-   NOM BAILLYON
-   ========================================================= */
-
-.logo-name {
-  display: inline-flex;
-  align-items: center;
-
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.logo-bail {
-  color: #16229c;
-}
-
-.logo-lyon {
-  color: #7034f4;
 }
 
 
@@ -247,12 +224,7 @@
   }
 
   .footer-logo-image {
-    width: 32px;
-    height: 32px;
-  }
-
-  .logo-name {
-    font-size: 17px;
+    height: 31px;
   }
 
   .footer-slogan {

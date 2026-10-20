@@ -141,7 +141,7 @@
 
   background: transparent;
 
-  color: #7134f5;
+  color: var(--bl-primary);
 
   font-family: inherit;
 
@@ -153,9 +153,9 @@
 
 
 .menu-role-button.menu-role-active {
-  background: #7134f5;
+  background: var(--bl-primary);
 
-  color: #ffffff;
+  color: var(--bl-white);
 }
 
 
