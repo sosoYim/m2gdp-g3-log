@@ -85,6 +85,14 @@ export class HostDashboard implements OnInit {
 
 
   /*
+   * Annonce en cours de mise à jour
+   * (bouton désactivé)
+   */
+  updatingId =
+    signal('');
+
+
+  /*
    * =========================================
    * DEMANDES REÇUES
    * =========================================
@@ -551,6 +559,134 @@ export class HostDashboard implements OnInit {
     }
 
     return `reçue il y a ${diffDays} jours`;
+
+  }
+
+
+  /*
+   * =========================================
+   * METTRE EN PAUSE / REMETTRE EN LIGNE
+   * =========================================
+   */
+
+  async toggleListingStatus(
+    listing: ListingDocument
+  ): Promise<void> {
+
+    if (this.updatingId()) {
+      return;
+    }
+
+
+    const newStatus =
+      listing.status === 'inactive'
+        ? 'published'
+        : 'inactive';
+
+
+    try {
+
+      this.updatingId.set(listing.id);
+
+
+      await this.listingService.updateListingStatus(
+        listing.id,
+        newStatus
+      );
+
+
+      this.listings.update(
+        listings => listings.map(
+          l => l.id === listing.id
+            ? { ...l, status: newStatus }
+            : l
+        )
+      );
+
+
+    } catch (err) {
+
+      console.error(
+        'Erreur changement statut annonce :',
+        err
+      );
+
+
+      this.error.set(
+        'Impossible de modifier le statut de l\'annonce.'
+      );
+
+
+    } finally {
+
+      this.updatingId.set('');
+
+    }
+
+  }
+
+
+  /*
+   * =========================================
+   * SUPPRIMER UN BROUILLON
+   * =========================================
+   */
+
+  async deleteListing(
+    listing: ListingDocument
+  ): Promise<void> {
+
+    if (this.updatingId()) {
+      return;
+    }
+
+
+    const confirmed =
+      window.confirm(
+        `Supprimer le brouillon « ${listing.title || 'Sans titre'} » ?`
+      );
+
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    try {
+
+      this.updatingId.set(listing.id);
+
+
+      await this.listingService.deleteListing(
+        listing.id
+      );
+
+
+      this.listings.update(
+        listings => listings.filter(
+          l => l.id !== listing.id
+        )
+      );
+
+
+    } catch (err) {
+
+      console.error(
+        'Erreur suppression annonce :',
+        err
+      );
+
+
+      this.error.set(
+        'Impossible de supprimer l\'annonce.'
+      );
+
+
+    } finally {
+
+      this.updatingId.set('');
+
+    }
 
   }
 

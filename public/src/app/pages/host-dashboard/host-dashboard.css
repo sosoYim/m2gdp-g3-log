@@ -705,6 +705,25 @@
 }
 
 
+.pause-btn:disabled {
+  opacity: 0.5;
+
+  cursor: default;
+}
+
+
+.action-btn-primary {
+  background: var(--bl-primary);
+
+  color: var(--bl-white);
+}
+
+
+.action-btn-primary:hover {
+  background: var(--bl-primary-hover);
+}
+
+
 /* =========================================================
    INFO PAIEMENT
    ========================================================= */
