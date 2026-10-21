@@ -354,20 +354,47 @@
 
               <div class="listing-actions">
 
-                <a
-                  routerLink="/host/listings/edit"
-                  [queryParams]="{ id: listing.id }"
-                  class="action-btn"
-                >
-                  Modifier
-                </a>
+                @if (listing.status === 'draft') {
 
-                <button
-                  type="button"
-                  class="pause-btn"
-                >
-                  Mettre en pause
-                </button>
+                  <a
+                    routerLink="/host/listings/edit"
+                    [queryParams]="{ id: listing.id }"
+                    class="action-btn action-btn-primary"
+                  >
+                    Continuer
+                  </a>
+
+                  <button
+                    type="button"
+                    class="pause-btn"
+                    [disabled]="updatingId() === listing.id"
+                    (click)="deleteListing(listing)"
+                  >
+                    Supprimer
+                  </button>
+
+                }
+
+                @else {
+
+                  <a
+                    routerLink="/host/listings/edit"
+                    [queryParams]="{ id: listing.id }"
+                    class="action-btn"
+                  >
+                    Modifier
+                  </a>
+
+                  <button
+                    type="button"
+                    class="pause-btn"
+                    [disabled]="updatingId() === listing.id"
+                    (click)="toggleListingStatus(listing)"
+                  >
+                    {{ listing.status === 'inactive' ? 'Remettre en ligne' : 'Mettre en pause' }}
+                  </button>
+
+                }
 
               </div>
 
