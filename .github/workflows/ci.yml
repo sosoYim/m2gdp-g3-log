@@ -1,0 +1,74 @@
+# Vérifications automatiques : build + tests Playwright sur chaque PR et chaque push sur main.
+# Le déploiement Firebase Hosting est désactivé (en commentaire en bas) tant que le
+# secret FIREBASE_SERVICE_ACCOUNT_M2GDP_G3_LOG_3963B n'est pas enregistré. Voir docs/deploiement.md
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            public/package-lock.json
+
+      - name: Installer les dépendances
+        run: |
+          npm ci
+          npm ci --prefix public
+
+      # Les fichiers environment sont gitignorés : ils sont recréés depuis le secret ENVIRONMENT_PROD
+      - name: Créer les fichiers environment
+        env:
+          ENVIRONMENT_PROD: ${{ secrets.ENVIRONMENT_PROD }}
+        run: |
+          if [ -z "$ENVIRONMENT_PROD" ]; then
+            echo "Secret ENVIRONMENT_PROD manquant" >&2
+            exit 1
+          fi
+          printf '%s\n' "$ENVIRONMENT_PROD" > public/src/environments/environment.prod.ts
+          cp public/src/environments/environment.prod.ts public/src/environments/environment.ts
+
+      - name: Build
+        run: npm run build
+
+      # Les tests « annonceur connecté » sont ignorés (pas de session enregistrée en CI)
+      - name: Tests Playwright
+        run: npm test
+
+      - name: Rapport Playwright
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+
+      # Déploiement Firebase Hosting (main uniquement) — à réactiver quand le secret
+      # FIREBASE_SERVICE_ACCOUNT_M2GDP_G3_LOG_3963B existe (créé par le propriétaire du projet).
+      # - name: Déployer sur Firebase Hosting
+      #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      #   uses: FirebaseExtended/action-hosting-deploy@v0
+      #   with:
+      #     repoToken: ${{ secrets.GITHUB_TOKEN }}
+      #     firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_M2GDP_G3_LOG_3963B }}
+      #     channelId: live
+      #     projectId: m2gdp-g3-log-3963b
