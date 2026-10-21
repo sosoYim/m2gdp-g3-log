@@ -21,7 +21,7 @@ npm run build        # production build -> public/dist/sublyon/browser
 npm test             # Playwright (tests/*.spec.cjs, auto-starts dev server)
 ```
 
-- Requires `public/src/environments/environment.ts` (gitignored; copy from `environment.example.ts`; includes `apiUrl`, `googleMapsApiKey`, `googleMapsMapId`). Firebase project: `m2gdp-g3-log-3963b` (always pass `--project m2gdp-g3-log-3963b` to `firebase deploy`). **Never commit it, never hardcode keys.**
+- Requires `public/src/environments/environment.ts` (gitignored; copy from `environment.example.ts`; includes `apiUrl`, `googleMapsApiKey`, `googleMapsMapId`). Firebase project: `m2gdp-g3-log-3963b` (always pass `--project m2gdp-g3-log-3963b` to `firebase deploy`). **Never commit it, never hardcode keys.** Production builds use `environment.prod.ts` instead (also gitignored, `fileReplacements` in `angular.json`; Worker URL as `apiUrl`). CI (`.github/workflows/ci.yml`) builds + runs Playwright on PRs and `main`; Hosting auto-deploy step is commented out until a project owner adds the Firebase service account secret — see `docs/deploiement.md`.
 - Build budget: component CSS **4kB warning / 8kB error** (minified). `messages.css` is already ~7.9kB → put new styles in a new component.
 
 ## Structure (`public/src/app`)
