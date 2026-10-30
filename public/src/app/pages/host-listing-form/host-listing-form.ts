@@ -309,7 +309,21 @@ export class HostListingForm implements OnInit {
 
     this.errors.set([]);
 
-    await this.save();
+
+    const saved =
+      await this.save();
+
+
+    /*
+     * Échec : on reste sur le formulaire
+     * (le message d'erreur est affiché).
+     */
+    if (!saved) {
+      return;
+    }
+
+
+    await this.router.navigate(['/host/listings']);
 
   }
 
