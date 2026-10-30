@@ -59,7 +59,7 @@ Code : `public/src/app/pages/host-listing-form/` (page, `steps/`, `components/`)
 
 | Méthode | Route | Accès |
 | --- | --- | --- |
-| `POST` | `/api/media` | Connecté (`Authorization: Bearer <idToken Firebase>`), corps = image JPG/PNG, 5 Mo max |
+| `POST` | `/api/media` | Connecté (`Authorization: Bearer <idToken Firebase>`), corps = image JPG/PNG/WebP, 5 Mo max |
 | `GET` | `/api/media/{key}` | Public |
 | `DELETE` | `/api/media/{key}` | Propriétaire uniquement (clé `listings/{uid}/…`) |
 

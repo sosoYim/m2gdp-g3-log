@@ -14,7 +14,8 @@ const MAX_UPLOAD_BYTES =
 
 const ALLOWED_TYPES: Record<string, string> = {
   'image/jpeg': 'jpg',
-  'image/png': 'png'
+  'image/png': 'png',
+  'image/webp': 'webp'
 };
 
 
@@ -101,7 +102,7 @@ async function uploadMedia(
     ALLOWED_TYPES[contentType];
 
   if (!extension) {
-    return json({ error: 'Formats acceptés : JPG ou PNG' }, 415, cors);
+    return json({ error: 'Formats acceptés : JPG, PNG ou WebP' }, 415, cors);
   }
 
 
