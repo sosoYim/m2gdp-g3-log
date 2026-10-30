@@ -187,24 +187,16 @@ export class RoleSelection implements OnInit {
       /*
        * 5. Annonceur
        *
-       * Les maquettes annonceur ne sont pas encore
-       * terminées. Pour l'instant, on conserve
-       * simplement son rôle.
+       * On l'envoie vers son tableau de bord.
        */
-      if (
-        this.selectedRole() === 'host'
-      ) {
-
-        localStorage.removeItem(
-          'baillYonPendingBooking'
-        );
+      localStorage.removeItem(
+        'baillYonPendingBooking'
+      );
 
 
-        console.log(
-          'Rôle annonceur enregistré.'
-        );
-
-      }
+      await this.router.navigate([
+        '/host/dashboard'
+      ]);
 
     } catch (error) {
 

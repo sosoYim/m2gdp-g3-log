@@ -364,7 +364,7 @@ paths:
       tags: [Médias]
       summary: Envoyer une photo d'annonce
       description: |
-        Corps = image brute (JPG ou PNG, 5 Mo max). Stockée dans R2 sous
+        Corps = image brute (JPG, PNG ou WebP, 5 Mo max). Stockée dans R2 sous
         `listings/{uid}/{uuid}.{ext}`.
       operationId: uploadMedia
       x-implemented: true
@@ -376,6 +376,10 @@ paths:
               type: string
               format: binary
           image/png:
+            schema:
+              type: string
+              format: binary
+          image/webp:
             schema:
               type: string
               format: binary

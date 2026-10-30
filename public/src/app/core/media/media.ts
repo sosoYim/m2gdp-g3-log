@@ -36,10 +36,10 @@ export class Media {
     file: File
   ): Promise<UploadedMedia> {
 
-    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
 
       throw new Error(
-        'Formats acceptés : JPG ou PNG.'
+        'Formats acceptés : JPG, PNG ou WebP.'
       );
 
     }
