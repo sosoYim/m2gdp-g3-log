@@ -47,24 +47,63 @@ export const MAX_PHOTOS = 10;
  * =========================================
  */
 
-export const PROPERTY_TYPES: { value: PropertyType; label: string }[] = [
-  { value: 'studio', label: 'Studio' },
-  { value: 'apartment', label: 'Appartement' },
-  { value: 'room', label: 'Chambre' }
+/*
+ * Icônes des options du logement
+ * (liste « Ce que le logement propose »)
+ */
+const OPTION_ICONS_DIR = '/images/rental/equipment';
+
+
+export const PROPERTY_TYPES: { value: PropertyType; label: string; icon: string }[] = [
+  { value: 'studio', label: 'Studio', icon: `${OPTION_ICONS_DIR}/i-studio.svg` },
+  { value: 'apartment', label: 'Appartement', icon: `${OPTION_ICONS_DIR}/i-apartment.svg` },
+  { value: 'room', label: 'Chambre', icon: `${OPTION_ICONS_DIR}/i-chambre.svg` }
 ];
 
 
-export const AMENITIES: { value: string; label: string }[] = [
-  { value: 'wifi', label: 'Wi-Fi' },
-  { value: 'kitchen', label: 'Cuisine équipée' },
-  { value: 'desk', label: 'Bureau dédié' },
-  { value: 'washer', label: 'Lave-linge' },
-  { value: 'dishwasher', label: 'Lave-vaisselle' },
-  { value: 'elevator', label: 'Ascenseur' },
-  { value: 'balcony', label: 'Balcon' },
-  { value: 'parking', label: 'Parking' },
-  { value: 'linen', label: 'Linge de maison fourni' }
+export const FURNISHED_OPTION = {
+  label: 'Meublé',
+  icon: `${OPTION_ICONS_DIR}/i-meuble.svg`
+};
+
+
+export const AMENITIES: { value: string; label: string; icon: string }[] = [
+  { value: 'wifi', label: 'Wi-Fi', icon: `${OPTION_ICONS_DIR}/i-wifi.svg` },
+  { value: 'kitchen', label: 'Cuisine équipée', icon: `${OPTION_ICONS_DIR}/i-cuisine.svg` },
+  { value: 'desk', label: 'Bureau dédié', icon: `${OPTION_ICONS_DIR}/i-bureau.svg` },
+  { value: 'washer', label: 'Lave-linge', icon: `${OPTION_ICONS_DIR}/i-lave-linge.svg` },
+  { value: 'dishwasher', label: 'Lave-vaisselle', icon: `${OPTION_ICONS_DIR}/i-lave-vaisselle.svg` },
+  { value: 'elevator', label: 'Ascenseur', icon: `${OPTION_ICONS_DIR}/i-ascenseur.svg` },
+  { value: 'balcony', label: 'Balcon', icon: `${OPTION_ICONS_DIR}/i-balcon.svg` },
+  { value: 'parking', label: 'Parking', icon: `${OPTION_ICONS_DIR}/i-parking.svg` },
+  { value: 'linen', label: 'Linge de maison fourni', icon: `${OPTION_ICONS_DIR}/i-linge_de_maison_fourni.svg` }
 ];
+
+
+/*
+ * Options affichées sur l'annonce :
+ * type, meublé, puis équipements
+ * (mêmes choix que le formulaire).
+ */
+export function getListingOptions(
+  form: ListingForm
+): { icon: string; label: string }[] {
+
+  const type =
+    PROPERTY_TYPES.find(t => t.value === form.propertyType);
+
+  const amenities =
+    form.amenities
+      .map(value => AMENITIES.find(a => a.value === value))
+      .filter(amenity => !!amenity);
+
+  return [
+    ...(type ? [type] : []),
+    ...(form.furnished ? [FURNISHED_OPTION] : []),
+    ...amenities
+  ].map(({ icon, label }) => ({ icon, label }));
+
+}
 
 
 export function getAmenityLabel(

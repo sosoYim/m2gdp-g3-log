@@ -34,7 +34,7 @@ import { PropertyGallery } from './components/property-gallery/property-gallery'
 
 import { EquipmentIcon } from '../../shared/components/equipment-icon/equipment-icon';
 
-import { getAmenityLabel } from '../host-listing-form/listing-form.data';
+import { getListingOptions } from '../host-listing-form/listing-form.data';
 
 
 /*
@@ -84,19 +84,6 @@ interface PropertyDetailsViewModel {
   equipments: Equipment[];
 }
 
-
-/*
- * Icônes existantes par équipement
- * (valeurs de AMENITIES).
- */
-const EQUIPMENT_ICONS: Record<string, string> = {
-  wifi: 'icon-wifi.svg',
-  kitchen: 'icon-cook.svg',
-  desk: 'icon-desk.svg',
-  washer: 'icon-wash.svg',
-  dishwasher: 'icon-dish.svg',
-  elevator: 'icon-lift.svg'
-};
 
 
 @Component({
@@ -361,12 +348,7 @@ export class PropertyDetails implements OnInit {
         form.description,
 
       equipments:
-        form.amenities.map(value => ({
-          icon: EQUIPMENT_ICONS[value]
-            ? `/images/rental/equipment/${EQUIPMENT_ICONS[value]}`
-            : '',
-          label: getAmenityLabel(value)
-        }))
+        getListingOptions(form)
 
     };
 
