@@ -653,22 +653,31 @@ export class Messages implements OnInit, OnDestroy {
     this.cdr.detectChanges();
 
 
+    /*
+     * Étape en cours, pour un message
+     * d'erreur précis
+     */
+    let uploaded = false;
+
+
     try {
 
-      const uploaded =
+      const media =
         await this.mediaService.uploadAttachment(
           file,
           this.selectedConversationId
         );
+
+      uploaded = true;
 
       await this.messagingService.sendMessage(
         this.selectedConversationId,
         this.currentUserId,
         '',
         {
-          url: uploaded.url,
+          url: media.url,
           name: file.name.slice(0, 200),
-          type: uploaded.type
+          type: media.type
         }
       );
 
@@ -676,10 +685,14 @@ export class Messages implements OnInit, OnDestroy {
 
       console.error('Erreur envoi pièce jointe :', error);
 
+      /*
+       * Upload : message du Worker / de Media
+       * (format, taille, accès refusé…)
+       */
       this.sendError =
-        error instanceof Error && error.message.includes('5 Mo')
-          ? error.message
-          : 'Fichier non envoyé. Formats acceptés : JPG, PNG, WebP ou PDF (5 Mo max).';
+        uploaded
+          ? 'Message non envoyé. Réessayez.'
+          : `Fichier non envoyé : ${error instanceof Error ? error.message : 'erreur inconnue'}`;
 
     } finally {
 
