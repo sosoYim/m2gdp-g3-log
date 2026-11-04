@@ -1,0 +1,21 @@
+<input
+  #fileInput
+  type="file"
+  class="file-input"
+  accept="image/jpeg,image/png,image/webp,application/pdf"
+  (change)="onFileChange($event)"
+/>
+
+<button
+  type="button"
+  class="attach-button"
+  aria-label="Joindre un fichier"
+  [disabled]="disabled"
+  (click)="openPicker()"
+>
+
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M12 5v14M5 12h14" />
+  </svg>
+
+</button>

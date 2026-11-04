@@ -634,7 +634,8 @@
 
   height: 48px;
 
-  padding: 0 18px;
+  /* À gauche : place du bouton « + » */
+  padding: 0 18px 0 48px;
 
   border: 1px solid #dfe1ea;
 

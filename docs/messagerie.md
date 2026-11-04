@@ -12,7 +12,7 @@ Route : `/messages` (option `?conversationId=` pour ouvrir une conversation) —
 | `listingId`, `listingTitle`, `ownerName` | affichage |
 | `lastMessage`, `lastMessageAt`, `lastSenderId` | aperçu dans la liste, non-lus |
 | `readBy/{uid}` | dernière lecture de chaque participant |
-| `messages/{messageId}` | `senderId`, `text`, `createdAt` |
+| `messages/{messageId}` | `senderId`, `text`, `createdAt`, `attachment` (optionnel : `url`, `name`, `type`) |
 
 ## Fonctionnement
 
@@ -21,6 +21,8 @@ Route : `/messages` (option `?conversationId=` pour ouvrir une conversation) —
 - Nom affiché : pour l'annonceur, profil public du demandeur (`publicProfiles`) ; pour le demandeur, `ownerName`.
 - Non lu : dernier message envoyé par l'autre personne après `readBy/{moi}` → nom et aperçu en gras + pastille, compteur à côté du titre. Ouvrir la conversation la marque comme lue.
 - Bandeau de la demande : statut (`bookingRequests`) et photo de l'annonce ; l'annonceur a un lien vers `/host/requests/:id`.
+- Pièce jointe : bouton **+** à gauche du champ → photo (JPG/PNG/WebP, redimensionnée) ou PDF, 5 Mo max, envoyée tout de suite. Fichier stocké sur R2 via le Worker (`POST /api/media?folder=messages`, clé `messages/{uid}/…`), message avec `text` vide + `attachment`. Aperçu de la photo / carte PDF dans la conversation, ouverture dans un nouvel onglet. Composants `pages/messages/components/attach-button` et `message-attachment`.
+  - L'URL du fichier est publique (clé aléatoire non devinable), comme les photos d'annonces.
 - Mobile : liste des conversations, puis conversation en plein écran avec bouton retour.
 - Menu latéral : `host-sidebar` pour un annonceur, `account-sidebar` pour un demandeur (rôle du profil).
 

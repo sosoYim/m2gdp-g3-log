@@ -230,11 +230,20 @@
                     [class.message-row-me]="message.sender === 'me'"
                   >
 
-                    <div
-                      class="message-bubble"
-                      [class.message-me]="message.sender === 'me'"
-                      [class.message-other]="message.sender === 'other'"
-                    >{{ message.text }}</div>
+                    @if (message.attachment) {
+                      <app-message-attachment
+                        [attachment]="message.attachment"
+                        [mine]="message.sender === 'me'"
+                      />
+                    }
+
+                    @if (message.text) {
+                      <div
+                        class="message-bubble"
+                        [class.message-me]="message.sender === 'me'"
+                        [class.message-other]="message.sender === 'other'"
+                      >{{ message.text }}</div>
+                    }
 
                     <span class="message-time">
                       @if (message.sender === 'other') {
@@ -276,6 +285,11 @@
               class="message-form"
               (ngSubmit)="sendMessage()"
             >
+
+              <app-attach-button
+                [disabled]="sending"
+                (fileSelected)="sendAttachment($event)"
+              />
 
               <input
                 type="text"

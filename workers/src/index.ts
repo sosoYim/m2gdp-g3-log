@@ -5,6 +5,7 @@
  *
  * GET    /api/health          état de l'API
  * POST   /api/media           upload d'une photo (connecté)
+ *                              ?folder=messages : pièce jointe (photo ou PDF)
  * GET    /api/media/{key}     lecture publique d'une photo
  * DELETE /api/media/{key}     suppression (propriétaire uniquement)
  */
@@ -17,6 +18,17 @@ const ALLOWED_TYPES: Record<string, string> = {
   'image/png': 'png',
   'image/webp': 'webp'
 };
+
+/*
+ * Pièces jointes de la messagerie :
+ * photos + PDF
+ */
+const ATTACHMENT_TYPES: Record<string, string> = {
+  ...ALLOWED_TYPES,
+  'application/pdf': 'pdf'
+};
+
+const FOLDERS = ['listings', 'messages'];
 
 
 export default {
@@ -95,14 +107,21 @@ async function uploadMedia(
   }
 
 
+  const folder =
+    url.searchParams.get('folder') === 'messages' ? 'messages' : 'listings';
+
   const contentType =
     (request.headers.get('Content-Type') ?? '').split(';')[0].trim();
 
   const extension =
-    ALLOWED_TYPES[contentType];
+    (folder === 'messages' ? ATTACHMENT_TYPES : ALLOWED_TYPES)[contentType];
 
   if (!extension) {
-    return json({ error: 'Formats acceptés : JPG, PNG ou WebP' }, 415, cors);
+    return json(
+      { error: folder === 'messages' ? 'Formats acceptés : JPG, PNG, WebP ou PDF' : 'Formats acceptés : JPG, PNG ou WebP' },
+      415,
+      cors
+    );
   }
 
 
@@ -110,7 +129,7 @@ async function uploadMedia(
     await request.arrayBuffer();
 
   if (body.byteLength === 0 || body.byteLength > MAX_UPLOAD_BYTES) {
-    return json({ error: 'Photo vide ou trop lourde (5 Mo max)' }, 413, cors);
+    return json({ error: 'Fichier vide ou trop lourd (5 Mo max)' }, 413, cors);
   }
 
 
@@ -120,7 +139,7 @@ async function uploadMedia(
    * le propriétaire à la suppression.
    */
   const key =
-    `listings/${uid}/${crypto.randomUUID()}.${extension}`;
+    `${folder}/${uid}/${crypto.randomUUID()}.${extension}`;
 
   await env.sublyon_media.put(key, body, {
     httpMetadata: { contentType }
@@ -178,7 +197,7 @@ async function deleteMedia(
   }
 
 
-  if (!key.startsWith(`listings/${uid}/`)) {
+  if (!FOLDERS.some(folder => key.startsWith(`${folder}/${uid}/`))) {
     return json({ error: 'Accès refusé' }, 403, cors);
   }
 
