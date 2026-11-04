@@ -1,22 +1,29 @@
-@if (isImage) {
+@if (error) {
 
-  <a
+  <p class="attachment-error">Fichier indisponible.</p>
+
+} @else if (isImage) {
+
+  <button
+    type="button"
     class="attachment-image"
-    [href]="attachment.url"
-    target="_blank"
-    rel="noopener"
+    [attr.aria-label]="'Ouvrir ' + attachment.name"
+    (click)="open()"
   >
-    <img [src]="attachment.url" [alt]="attachment.name" loading="lazy" />
-  </a>
+    @if (imageUrl) {
+      <img [src]="imageUrl" [alt]="attachment.name" />
+    } @else {
+      <span class="image-loading">Chargement...</span>
+    }
+  </button>
 
 } @else {
 
-  <a
+  <button
+    type="button"
     class="attachment-file"
     [class.attachment-file-me]="mine"
-    [href]="attachment.url"
-    target="_blank"
-    rel="noopener"
+    (click)="open()"
   >
 
     <span class="file-icon">
@@ -31,6 +38,6 @@
       <span>PDF</span>
     </span>
 
-  </a>
+  </button>
 
 }

@@ -7,10 +7,35 @@
 }
 
 
+button {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+}
+
+
 /* ===== PHOTO ===== */
 
 .attachment-image {
   display: block;
+  padding: 0;
+  background: none;
+}
+
+.image-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 200px;
+  height: 140px;
+
+  border-radius: 15px;
+  background: var(--bl-bg-neutral);
+  color: var(--bl-text-muted);
+
+  font-size: var(--bl-fs-small);
 }
 
 .attachment-image img {
@@ -20,6 +45,20 @@
 
   border-radius: 15px;
   object-fit: cover;
+}
+
+
+/* ===== ERREUR ===== */
+
+.attachment-error {
+  margin: 0;
+  padding: 10px 14px;
+
+  border-radius: 15px;
+  background: var(--bl-bg-neutral);
+  color: var(--bl-text-muted);
+
+  font-size: var(--bl-fs-small);
 }
 
 
@@ -36,7 +75,7 @@
   background: var(--bl-bg-accent);
   color: var(--bl-text);
 
-  text-decoration: none;
+  max-width: 100%;
 }
 
 .attachment-file-me {

@@ -65,10 +65,13 @@ export class Media {
    * PIÈCE JOINTE DE LA MESSAGERIE
    * =========================================
    *
-   * Photo (redimensionnée) ou PDF (tel quel).
+   * Photo (redimensionnée) ou PDF (tel quel),
+   * lisible uniquement par les participants
+   * de la conversation.
    */
   async uploadAttachment(
-    file: File
+    file: File,
+    conversationId: string
   ): Promise<UploadedMedia & { type: string }> {
 
     const isImage =
@@ -98,7 +101,10 @@ export class Media {
 
 
     const uploaded =
-      await this.upload(body, '?folder=messages');
+      await this.upload(
+        body,
+        `?folder=messages&conversationId=${encodeURIComponent(conversationId)}`
+      );
 
     return { ...uploaded, type: body.type };
 
@@ -137,6 +143,44 @@ export class Media {
 
 
     return response.json();
+
+  }
+
+
+  /*
+   * =========================================
+   * LECTURE D'UNE PIÈCE JOINTE
+   * =========================================
+   *
+   * Le Worker exige le jeton Firebase :
+   * le fichier est téléchargé puis affiché
+   * via une URL locale (blob:).
+   */
+  async fetchAttachment(
+    url: string
+  ): Promise<Blob> {
+
+    const response =
+      await fetch(
+        url,
+        {
+          headers: {
+            Authorization: `Bearer ${await this.getIdToken()}`
+          }
+        }
+      );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        'Fichier indisponible.'
+      );
+
+    }
+
+
+    return response.blob();
 
   }
 

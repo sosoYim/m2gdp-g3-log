@@ -5,9 +5,15 @@
  *
  * GET    /api/health          état de l'API
  * POST   /api/media           upload d'une photo (connecté)
- *                              ?folder=messages : pièce jointe (photo ou PDF)
- * GET    /api/media/{key}     lecture publique d'une photo
+ *                              ?folder=messages&conversationId=… :
+ *                              pièce jointe (photo ou PDF), participants uniquement
+ * GET    /api/media/{key}     lecture publique d'une photo d'annonce ;
+ *                              pièce jointe (messages/…) : participants uniquement
  * DELETE /api/media/{key}     suppression (propriétaire uniquement)
+ *
+ * Clés R2 :
+ *   listings/{uid}/{uuid}.{ext}
+ *   messages/{conversationId}/{uid}/{uuid}.{ext}
  */
 
 const MAX_UPLOAD_BYTES =
@@ -28,7 +34,8 @@ const ATTACHMENT_TYPES: Record<string, string> = {
   'application/pdf': 'pdf'
 };
 
-const FOLDERS = ['listings', 'messages'];
+const CONVERSATION_ID_PATTERN =
+  /^[A-Za-z0-9_-]{1,128}$/;
 
 
 export default {
@@ -62,7 +69,7 @@ export default {
           decodeURIComponent(url.pathname.slice('/api/media/'.length));
 
         if (request.method === 'GET') {
-          return await getMedia(key, env, cors);
+          return await getMedia(request, key, env, cors);
         }
 
         if (request.method === 'DELETE') {
@@ -110,6 +117,26 @@ async function uploadMedia(
   const folder =
     url.searchParams.get('folder') === 'messages' ? 'messages' : 'listings';
 
+
+  /*
+   * Pièce jointe : rangée par conversation,
+   * l'expéditeur doit en faire partie.
+   */
+  const conversationId =
+    url.searchParams.get('conversationId') ?? '';
+
+  if (folder === 'messages') {
+
+    if (!CONVERSATION_ID_PATTERN.test(conversationId)) {
+      return json({ error: 'Conversation manquante' }, 400, cors);
+    }
+
+    if (!(await isParticipant(request, conversationId, env))) {
+      return json({ error: 'Accès refusé' }, 403, cors);
+    }
+
+  }
+
   const contentType =
     (request.headers.get('Content-Type') ?? '').split(';')[0].trim();
 
@@ -139,7 +166,9 @@ async function uploadMedia(
    * le propriétaire à la suppression.
    */
   const key =
-    `${folder}/${uid}/${crypto.randomUUID()}.${extension}`;
+    folder === 'messages'
+      ? `messages/${conversationId}/${uid}/${crypto.randomUUID()}.${extension}`
+      : `listings/${uid}/${crypto.randomUUID()}.${extension}`;
 
   await env.sublyon_media.put(key, body, {
     httpMetadata: { contentType }
@@ -156,10 +185,31 @@ async function uploadMedia(
 
 
 async function getMedia(
+  request: Request,
   key: string,
   env: Env,
   cors: HeadersInit
 ): Promise<Response> {
+
+  /*
+   * Pièce jointe : réservée aux deux
+   * participants de la conversation.
+   */
+  const isAttachment =
+    key.startsWith('messages/');
+
+  if (isAttachment) {
+
+    if (!(await authenticate(request, env))) {
+      return json({ error: 'Non authentifié' }, 401, cors);
+    }
+
+    if (!(await isParticipant(request, key.split('/')[1] ?? '', env))) {
+      return json({ error: 'Accès refusé' }, 403, cors);
+    }
+
+  }
+
 
   const object =
     await env.sublyon_media.get(key);
@@ -174,7 +224,10 @@ async function getMedia(
 
   object.writeHttpMetadata(headers);
 
-  headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+  headers.set(
+    'Cache-Control',
+    isAttachment ? 'private, max-age=3600' : 'public, max-age=31536000, immutable'
+  );
 
 
   return new Response(object.body, { headers });
@@ -197,7 +250,14 @@ async function deleteMedia(
   }
 
 
-  if (!FOLDERS.some(folder => key.startsWith(`${folder}/${uid}/`))) {
+  const [folder, , attachmentUid] =
+    key.split('/');
+
+  const isOwner =
+    key.startsWith(`listings/${uid}/`) ||
+    (folder === 'messages' && attachmentUid === uid);
+
+  if (!isOwner) {
     return json({ error: 'Accès refusé' }, 403, cors);
   }
 
@@ -226,16 +286,25 @@ const JWKS_URL =
 let cachedKeys: { keys: JsonWebKey[]; expiresAt: number } | null = null;
 
 
+function bearerToken(
+  request: Request
+): string {
+
+  const header =
+    request.headers.get('Authorization') ?? '';
+
+  return header.startsWith('Bearer ') ? header.slice(7) : '';
+
+}
+
+
 async function authenticate(
   request: Request,
   env: Env
 ): Promise<string | null> {
 
-  const header =
-    request.headers.get('Authorization') ?? '';
-
   const token =
-    header.startsWith('Bearer ') ? header.slice(7) : '';
+    bearerToken(request);
 
   if (!token) {
     return null;
@@ -310,6 +379,43 @@ async function authenticate(
     return null;
 
   }
+
+}
+
+
+/*
+ * Participant d'une conversation ?
+ *
+ * Lecture Realtime Database (REST) avec le
+ * jeton de l'utilisateur : les règles RTDB
+ * n'autorisent la lecture qu'aux deux
+ * participants (requesterId / ownerId).
+ */
+async function isParticipant(
+  request: Request,
+  conversationId: string,
+  env: Env
+): Promise<boolean> {
+
+  const token =
+    bearerToken(request);
+
+  if (!token || !CONVERSATION_ID_PATTERN.test(conversationId)) {
+    return false;
+  }
+
+
+  const response =
+    await fetch(
+      `${env.FIREBASE_DATABASE_URL}/conversations/${conversationId}/requesterId.json?auth=${encodeURIComponent(token)}`
+    );
+
+  if (!response.ok) {
+    return false;
+  }
+
+
+  return typeof (await response.json()) === 'string';
 
 }
 

@@ -656,7 +656,10 @@ export class Messages implements OnInit, OnDestroy {
     try {
 
       const uploaded =
-        await this.mediaService.uploadAttachment(file);
+        await this.mediaService.uploadAttachment(
+          file,
+          this.selectedConversationId
+        );
 
       await this.messagingService.sendMessage(
         this.selectedConversationId,

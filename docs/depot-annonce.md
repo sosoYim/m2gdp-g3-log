@@ -59,9 +59,9 @@ Code : `public/src/app/pages/host-listing-form/` (page, `steps/`, `components/`)
 
 | Méthode | Route | Accès |
 | --- | --- | --- |
-| `POST` | `/api/media` | Connecté (`Authorization: Bearer <idToken Firebase>`), corps = image JPG/PNG/WebP, 5 Mo max. `?folder=messages` : pièce jointe de la messagerie (PDF accepté en plus) |
-| `GET` | `/api/media/{key}` | Public |
-| `DELETE` | `/api/media/{key}` | Propriétaire uniquement (clé `listings/{uid}/…` ou `messages/{uid}/…`) |
+| `POST` | `/api/media` | Connecté (`Authorization: Bearer <idToken Firebase>`), corps = image JPG/PNG/WebP, 5 Mo max. `?folder=messages&conversationId=…` : pièce jointe de la messagerie (PDF accepté en plus, participants uniquement) |
+| `GET` | `/api/media/{key}` | Public (photos d'annonce) ; `messages/…` : connecté + participant de la conversation |
+| `DELETE` | `/api/media/{key}` | Propriétaire uniquement (clé `listings/{uid}/…` ou `messages/{conversationId}/{uid}/…`) |
 
 - Le Worker vérifie le jeton Firebase avec les clés publiques Google (`FIREBASE_PROJECT_ID` dans `workers/wrangler.jsonc`).
 - Origines autorisées (CORS) : `ALLOWED_ORIGINS` dans `workers/wrangler.jsonc`.

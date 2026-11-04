@@ -1,5 +1,12 @@
-import { Component, Input } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 
+import { Media } from '../../../../core/media/media';
 import { MessageAttachment as Attachment } from '../../../../core/messaging/messaging';
 
 
@@ -7,6 +14,10 @@ import { MessageAttachment as Attachment } from '../../../../core/messaging/mess
  * Pièce jointe dans la conversation :
  * aperçu de la photo ou carte PDF,
  * ouverte dans un nouvel onglet.
+ *
+ * Le fichier n'est lisible qu'avec le jeton
+ * Firebase d'un participant : il est
+ * téléchargé puis affiché en URL locale (blob:).
  */
 @Component({
   selector: 'app-message-attachment',
@@ -19,7 +30,7 @@ import { MessageAttachment as Attachment } from '../../../../core/messaging/mess
 
   styleUrl: './message-attachment.css'
 })
-export class MessageAttachment {
+export class MessageAttachment implements OnInit, OnDestroy {
 
   @Input({ required: true })
   attachment!: Attachment;
@@ -31,7 +42,110 @@ export class MessageAttachment {
   mine = false;
 
 
+  /*
+   * URL locale de la photo
+   */
+  imageUrl = '';
+
+  error = false;
+
+  private objectUrls: string[] = [];
+
+
+  constructor(
+    private readonly mediaService: Media,
+    private readonly cdr: ChangeDetectorRef
+  ) {}
+
+
   get isImage(): boolean {
     return this.attachment.type.startsWith('image/');
+  }
+
+
+  async ngOnInit(): Promise<void> {
+
+    if (!this.isImage) {
+      return;
+    }
+
+
+    try {
+
+      this.imageUrl =
+        await this.loadObjectUrl();
+
+    } catch (err) {
+
+      console.error('Erreur chargement pièce jointe :', err);
+
+      this.error = true;
+
+    } finally {
+
+      this.cdr.detectChanges();
+
+    }
+
+  }
+
+
+  ngOnDestroy(): void {
+
+    this.objectUrls.forEach(url => URL.revokeObjectURL(url));
+
+  }
+
+
+  /*
+   * Ouverture dans un nouvel onglet.
+   *
+   * L'onglet est ouvert tout de suite (au clic)
+   * pour ne pas être bloqué par le navigateur,
+   * puis reçoit le fichier une fois téléchargé.
+   */
+  async open(): Promise<void> {
+
+    const tab =
+      window.open('', '_blank');
+
+
+    try {
+
+      const url =
+        this.imageUrl || await this.loadObjectUrl();
+
+      if (tab) {
+        tab.location.href = url;
+      } else {
+        window.location.href = url;
+      }
+
+    } catch (err) {
+
+      console.error('Erreur ouverture pièce jointe :', err);
+
+      tab?.close();
+
+      this.error = true;
+
+      this.cdr.detectChanges();
+
+    }
+
+  }
+
+
+  private async loadObjectUrl(): Promise<string> {
+
+    const url =
+      URL.createObjectURL(
+        await this.mediaService.fetchAttachment(this.attachment.url)
+      );
+
+    this.objectUrls.push(url);
+
+    return url;
+
   }
 }
