@@ -1,4 +1,4 @@
-# Déploiement du front (Firebase Hosting)
+# Déploiement (Firebase Hosting + Worker)
 
 ## Environnements
 
@@ -51,3 +51,16 @@ Rappel : la configuration Firebase et la clé Google Maps se retrouvent dans le 
 npm run build
 npx -y firebase-tools deploy --only hosting --project m2gdp-g3-log-3963b
 ```
+
+## Déploiement du Worker (Cloudflare)
+
+À faire **avant** le front quand le Worker change (ex. nouveaux formats de photo acceptés), sinon le front publié appelle une API qui n'est pas encore à jour.
+
+```bash
+npx wrangler login        # une seule fois (connexion au compte Cloudflare)
+npx wrangler deploy --config workers/wrangler.jsonc
+```
+
+- URL publiée : `https://m2gdp-g3-log-api.m2gdp-g3-log.workers.dev` (vérifier avec `/api/health`).
+- Configuration (projet Firebase, CORS, D1, R2) : `workers/wrangler.jsonc`. Ajouter l'origine dans `ALLOWED_ORIGINS` si le front est servi depuis un nouveau domaine.
+- Pas de déploiement automatique du Worker en CI.
