@@ -18,7 +18,19 @@
             ".validate": "newData.hasChildren(['senderId', 'text', 'createdAt']) && newData.child('senderId').val() === auth.uid && newData.child('text').isString() && (newData.child('text').val().length > 0 || newData.hasChild('attachment')) && newData.child('text').val().length <= 2000",
 
             "attachment": {
-              ".validate": "newData.hasChildren(['url', 'name', 'type']) && newData.child('url').isString() && newData.child('url').val().matches(/^https?:\\/\\//) && newData.child('url').val().contains('/api/media/messages/' + $conversationId + '/' + auth.uid + '/') && newData.child('name').isString() && newData.child('name').val().length <= 200 && newData.child('type').isString() && newData.child('type').val().matches(/^(image\\/(jpeg|png|webp)|application\\/pdf)$/)",
+              ".validate": "newData.hasChildren(['url', 'name', 'type'])",
+
+              "url": {
+                ".validate": "newData.isString() && newData.val().matches(/^https?:\\/\\//) && newData.val().contains('/api/media/messages/' + $conversationId + '/' + auth.uid + '/')"
+              },
+
+              "name": {
+                ".validate": "newData.isString() && newData.val().length <= 200"
+              },
+
+              "type": {
+                ".validate": "newData.isString() && newData.val().matches(/^(image\\/(jpeg|png|webp)|application\\/pdf)$/)"
+              },
 
               "$other": {
                 ".validate": false

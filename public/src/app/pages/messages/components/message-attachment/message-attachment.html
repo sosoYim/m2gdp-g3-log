@@ -7,8 +7,8 @@
   <button
     type="button"
     class="attachment-image"
-    [attr.aria-label]="'Ouvrir ' + attachment.name"
-    (click)="open()"
+    [attr.aria-label]="'Agrandir ' + attachment.name"
+    (click)="openPreview()"
   >
     @if (imageUrl) {
       <img [src]="imageUrl" [alt]="attachment.name" />
@@ -23,7 +23,7 @@
     type="button"
     class="attachment-file"
     [class.attachment-file-me]="mine"
-    (click)="open()"
+    (click)="openFile()"
   >
 
     <span class="file-icon">
@@ -39,5 +39,40 @@
     </span>
 
   </button>
+
+}
+
+
+<!-- PHOTO EN GRAND -->
+
+@if (previewOpen) {
+
+  <div
+    class="preview-backdrop"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="attachment.name"
+    (click)="closePreview()"
+  >
+
+    <button
+      type="button"
+      class="preview-close"
+      aria-label="Fermer"
+      (click)="closePreview()"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6 6l12 12M18 6 6 18" />
+      </svg>
+    </button>
+
+    <img
+      class="preview-image"
+      [src]="imageUrl"
+      [alt]="attachment.name"
+      (click)="$event.stopPropagation()"
+    />
+
+  </div>
 
 }

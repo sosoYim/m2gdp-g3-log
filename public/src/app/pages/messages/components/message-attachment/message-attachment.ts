@@ -1,6 +1,7 @@
 import {
   ChangeDetectorRef,
   Component,
+  HostListener,
   Input,
   OnDestroy,
   OnInit
@@ -12,8 +13,9 @@ import { MessageAttachment as Attachment } from '../../../../core/messaging/mess
 
 /*
  * Pièce jointe dans la conversation :
- * aperçu de la photo ou carte PDF,
- * ouverte dans un nouvel onglet.
+ * aperçu de la photo (agrandie dans une
+ * fenêtre au clic) ou carte PDF (ouverte
+ * dans un nouvel onglet).
  *
  * Le fichier n'est lisible qu'avec le jeton
  * Firebase d'un participant : il est
@@ -48,6 +50,11 @@ export class MessageAttachment implements OnInit, OnDestroy {
   imageUrl = '';
 
   error = false;
+
+  /*
+   * Photo affichée en grand
+   */
+  previewOpen = false;
 
   private objectUrls: string[] = [];
 
@@ -90,6 +97,23 @@ export class MessageAttachment implements OnInit, OnDestroy {
   }
 
 
+  openPreview(): void {
+
+    if (this.imageUrl) {
+      this.previewOpen = true;
+    }
+
+  }
+
+
+  @HostListener('document:keydown.escape')
+  closePreview(): void {
+
+    this.previewOpen = false;
+
+  }
+
+
   ngOnDestroy(): void {
 
     this.objectUrls.forEach(url => URL.revokeObjectURL(url));
@@ -98,13 +122,13 @@ export class MessageAttachment implements OnInit, OnDestroy {
 
 
   /*
-   * Ouverture dans un nouvel onglet.
+   * PDF : ouverture dans un nouvel onglet.
    *
    * L'onglet est ouvert tout de suite (au clic)
    * pour ne pas être bloqué par le navigateur,
    * puis reçoit le fichier une fois téléchargé.
    */
-  async open(): Promise<void> {
+  async openFile(): Promise<void> {
 
     const tab =
       window.open('', '_blank');
@@ -113,7 +137,7 @@ export class MessageAttachment implements OnInit, OnDestroy {
     try {
 
       const url =
-        this.imageUrl || await this.loadObjectUrl();
+        await this.loadObjectUrl();
 
       if (tab) {
         tab.location.href = url;
