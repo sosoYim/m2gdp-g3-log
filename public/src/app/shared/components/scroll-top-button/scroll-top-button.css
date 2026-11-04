@@ -1,0 +1,54 @@
+/* ===== BOUTON RETOUR EN HAUT ===== */
+
+.scroll-top-btn {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 900;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 48px;
+  height: 48px;
+  padding: 0;
+
+  border: none;
+  border-radius: 50%;
+  background: var(--bl-primary);
+  color: var(--bl-white);
+
+  box-shadow: 0 6px 18px rgba(25, 21, 79, 0.18);
+  cursor: pointer;
+  font-family: inherit;
+
+  transition: background 0.2s ease;
+}
+
+.scroll-top-btn:hover {
+  background: var(--bl-primary-hover);
+}
+
+.scroll-top-btn svg {
+  width: 22px;
+  height: 22px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+/* ===== MOBILE ===== */
+
+@media (max-width: 600px) {
+
+  .scroll-top-btn {
+    right: 16px;
+    bottom: 16px;
+  }
+
+}
