@@ -5,11 +5,13 @@
 
   /*
    * Valeurs publiques (pas de secret) :
-   * projet Firebase pour vérifier les jetons
+   * projet Firebase pour vérifier les jetons,
+   * Realtime Database (participants d'une conversation)
    * et origines autorisées (CORS).
    */
   "vars": {
     "FIREBASE_PROJECT_ID": "m2gdp-g3-log-3963b",
+    "FIREBASE_DATABASE_URL": "https://m2gdp-g3-log-3963b-default-rtdb.europe-west1.firebasedatabase.app",
     "ALLOWED_ORIGINS": "http://localhost:4200,http://127.0.0.1:4200,https://m2gdp-g3-log-3963b.web.app,https://m2gdp-g3-log-3963b.firebaseapp.com"
   },
 

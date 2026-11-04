@@ -77,6 +77,21 @@ export interface RealtimeConversation {
 }
 
 
+/*
+ * Fichier joint à un message
+ * (photo ou PDF stocké sur R2)
+ */
+export interface MessageAttachment {
+
+  url: string;
+
+  name: string;
+
+  type: string;
+
+}
+
+
 export interface RealtimeMessage {
 
   id: string;
@@ -84,6 +99,8 @@ export interface RealtimeMessage {
   senderId: string;
 
   text: string;
+
+  attachment: MessageAttachment | null;
 
   createdAt: number;
 
@@ -303,14 +320,15 @@ export class Messaging {
   async sendMessage(
     conversationId: string,
     senderId: string,
-    text: string
+    text: string,
+    attachment: MessageAttachment | null = null
   ): Promise<void> {
 
     const cleanText =
       text.trim();
 
 
-    if (!cleanText) {
+    if (!cleanText && !attachment) {
 
       return;
 
@@ -371,13 +389,15 @@ export class Messaging {
             text:
               cleanText,
 
+            ...(attachment ? { attachment } : {}),
+
             createdAt:
               serverTimestamp()
 
           },
 
         [`conversations/${conversationId}/lastMessage`]:
-          cleanText,
+          cleanText || `Pièce jointe : ${attachment?.name}`,
 
         [`conversations/${conversationId}/lastMessageAt`]:
           serverTimestamp(),
@@ -530,6 +550,23 @@ export class Messaging {
   }
 
 
+  private mapAttachment(
+    data: Record<string, any> | undefined
+  ): MessageAttachment | null {
+
+    if (typeof data?.['url'] !== 'string') {
+      return null;
+    }
+
+    return {
+      url: data['url'],
+      name: typeof data['name'] === 'string' ? data['name'] : 'Fichier',
+      type: typeof data['type'] === 'string' ? data['type'] : ''
+    };
+
+  }
+
+
   private mapConversation(
     id: string,
     data: Record<string, any>
@@ -640,6 +677,9 @@ export class Messaging {
 
                 text:
                   data['text'] ?? '',
+
+                attachment:
+                  this.mapAttachment(data['attachment']),
 
                 createdAt:
                   typeof data['createdAt'] === 'number'

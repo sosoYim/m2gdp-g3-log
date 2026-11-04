@@ -100,6 +100,7 @@ Template: `@if (loading()) { <div class="state-box">Chargement...</div> } @else 
   | `--bl-bg-accent` | `#ECE8FE` | light purple backgrounds (badges, notices, icon tiles, hovers) |
   | `--bl-icon-placeholder` | `#A174F5` | empty-image placeholder icon (listing without photo) |
   | `--bl-bg-footer` | `#E7E8FD` | bottom block background (contact section) |
+  | `--bl-bg-neutral` | `#F1F1F7` | neutral light grey background (Messagerie icon in the main menu, icon button hover e.g. messagerie « + ») |
   | `--bl-white` | `#FFFFFD` | white text on purple (selected role in Je viens / J'accueille) |
 
   **Always use a token** when the color is in this palette (CSS `var(--bl-…)`, Tailwind arbitrary classes `text-[var(--bl-primary)]`). If a needed color has no token, propose adding one to `src/styles.css` + this table instead of hardcoding it.

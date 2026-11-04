@@ -1,0 +1,63 @@
+/* ===== BOUTON JOINDRE UN FICHIER ===== */
+
+/*
+ * Posé à l'intérieur du champ de message :
+ * la marge négative ramène le champ
+ * sous le bouton (champ : padding-left 48px).
+ *
+ * 6px (marge) + 36px (bouton) - 55px = -13px
+ * → compense l'écart (gap 13px) du formulaire.
+ */
+:host {
+  position: relative;
+  z-index: 1;
+
+  flex-shrink: 0;
+
+  margin-left: 6px;
+  margin-right: -55px;
+}
+
+.file-input {
+  display: none;
+}
+
+.attach-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+  padding: 0;
+
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--bl-text-muted);
+
+  cursor: pointer;
+  font-family: inherit;
+
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.attach-button:hover:not(:disabled) {
+  background: var(--bl-bg-neutral);
+  color: var(--bl-text);
+}
+
+.attach-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.attach-button svg {
+  width: 20px;
+  height: 20px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}

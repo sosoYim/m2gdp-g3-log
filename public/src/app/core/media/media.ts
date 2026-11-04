@@ -20,6 +20,13 @@ export interface UploadedMedia {
  */
 const MAX_DIMENSION = 1920;
 
+const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+/*
+ * Limite du Worker (5 Mo)
+ */
+const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +43,7 @@ export class Media {
     file: File
   ): Promise<UploadedMedia> {
 
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+    if (!IMAGE_TYPES.includes(file.type)) {
 
       throw new Error(
         'Formats acceptés : JPG, PNG ou WebP.'
@@ -45,13 +52,73 @@ export class Media {
     }
 
 
-    const body =
-      await this.resizeImage(file);
+    return this.upload(
+      await this.resizeImage(file),
+      ''
+    );
 
+  }
+
+
+  /*
+   * =========================================
+   * PIÈCE JOINTE DE LA MESSAGERIE
+   * =========================================
+   *
+   * Photo (redimensionnée) ou PDF (tel quel),
+   * lisible uniquement par les participants
+   * de la conversation.
+   */
+  async uploadAttachment(
+    file: File,
+    conversationId: string
+  ): Promise<UploadedMedia & { type: string }> {
+
+    const isImage =
+      IMAGE_TYPES.includes(file.type);
+
+
+    if (!isImage && file.type !== 'application/pdf') {
+
+      throw new Error(
+        'Formats acceptés : JPG, PNG, WebP ou PDF.'
+      );
+
+    }
+
+
+    const body =
+      isImage ? await this.resizeImage(file) : file;
+
+
+    if (body.size > MAX_UPLOAD_BYTES) {
+
+      throw new Error(
+        'Fichier trop lourd (5 Mo max).'
+      );
+
+    }
+
+
+    const uploaded =
+      await this.upload(
+        body,
+        `?folder=messages&conversationId=${encodeURIComponent(conversationId)}`
+      );
+
+    return { ...uploaded, type: body.type };
+
+  }
+
+
+  private async upload(
+    body: Blob,
+    query: string
+  ): Promise<UploadedMedia> {
 
     const response =
       await fetch(
-        `${environment.apiUrl}/api/media`,
+        `${environment.apiUrl}/api/media${query}`,
         {
           method: 'POST',
           headers: {
@@ -69,13 +136,51 @@ export class Media {
         await response.json().catch(() => ({}));
 
       throw new Error(
-        data.error ?? 'Impossible d\'envoyer la photo.'
+        data.error ?? 'Impossible d\'envoyer le fichier.'
       );
 
     }
 
 
     return response.json();
+
+  }
+
+
+  /*
+   * =========================================
+   * LECTURE D'UNE PIÈCE JOINTE
+   * =========================================
+   *
+   * Le Worker exige le jeton Firebase :
+   * le fichier est téléchargé puis affiché
+   * via une URL locale (blob:).
+   */
+  async fetchAttachment(
+    url: string
+  ): Promise<Blob> {
+
+    const response =
+      await fetch(
+        url,
+        {
+          headers: {
+            Authorization: `Bearer ${await this.getIdToken()}`
+          }
+        }
+      );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        'Fichier indisponible.'
+      );
+
+    }
+
+
+    return response.blob();
 
   }
 

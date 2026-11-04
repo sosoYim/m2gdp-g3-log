@@ -25,6 +25,7 @@ import { Auth } from '../../core/auth/auth';
 import { Profile, getDisplayName } from '../../core/profile/profile';
 import { Listing } from '../../core/listing/listing';
 import { Booking, BookingStatus } from '../../core/booking/booking';
+import { Media } from '../../core/media/media';
 
 import {
   Messaging,
@@ -33,11 +34,16 @@ import {
   isConversationUnread
 } from '../../core/messaging/messaging';
 
+import { AttachButton } from './components/attach-button/attach-button';
+import { MessageAttachment } from './components/message-attachment/message-attachment';
+
 
 interface ChatMessage {
   id: string;
 
   text: string;
+
+  attachment: RealtimeMessage['attachment'];
 
   sender:
     | 'me'
@@ -115,7 +121,9 @@ const STATUS_LABELS: Record<BookingStatus, string> = {
     AccountSidebar,
     HostSidebar,
     ContactSection,
-    Footer
+    Footer,
+    AttachButton,
+    MessageAttachment
   ],
 
   templateUrl: './messages.html',
@@ -185,6 +193,7 @@ export class Messages implements OnInit, OnDestroy {
     private readonly listingService: Listing,
     private readonly bookingService: Booking,
     private readonly messagingService: Messaging,
+    private readonly mediaService: Media,
     private readonly cdr: ChangeDetectorRef
   ) {}
 
@@ -621,6 +630,70 @@ export class Messages implements OnInit, OnDestroy {
 
   /*
    * =========================================
+   * ENVOYER UNE PIÈCE JOINTE
+   * =========================================
+   *
+   * Upload sur R2 (Worker), puis message
+   * avec le lien du fichier.
+   */
+
+  async sendAttachment(
+    file: File
+  ): Promise<void> {
+
+    if (this.sending || !this.currentUserId || !this.selectedConversationId) {
+      return;
+    }
+
+
+    this.sending = true;
+
+    this.sendError = '';
+
+    this.cdr.detectChanges();
+
+
+    try {
+
+      const uploaded =
+        await this.mediaService.uploadAttachment(
+          file,
+          this.selectedConversationId
+        );
+
+      await this.messagingService.sendMessage(
+        this.selectedConversationId,
+        this.currentUserId,
+        '',
+        {
+          url: uploaded.url,
+          name: file.name.slice(0, 200),
+          type: uploaded.type
+        }
+      );
+
+    } catch (error) {
+
+      console.error('Erreur envoi pièce jointe :', error);
+
+      this.sendError =
+        error instanceof Error && error.message.includes('5 Mo')
+          ? error.message
+          : 'Fichier non envoyé. Formats acceptés : JPG, PNG, WebP ou PDF (5 Mo max).';
+
+    } finally {
+
+      this.sending = false;
+
+      this.cdr.detectChanges();
+
+    }
+
+  }
+
+
+  /*
+   * =========================================
    * MAPPING FIREBASE → INTERFACE
    * =========================================
    */
@@ -702,6 +775,7 @@ export class Messages implements OnInit, OnDestroy {
       group.messages.push({
         id: message.id,
         text: message.text,
+        attachment: message.attachment,
         sender: message.senderId === this.currentUserId ? 'me' : 'other',
         time: this.formatTime(message.createdAt)
       });

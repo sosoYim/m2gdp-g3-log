@@ -1,0 +1,128 @@
+/* ===== PIÈCE JOINTE ===== */
+
+:host {
+  display: block;
+  max-width: 67%;
+  margin-bottom: 4px;
+}
+
+
+button {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+}
+
+
+/* ===== PHOTO ===== */
+
+.attachment-image {
+  display: block;
+  padding: 0;
+  background: none;
+}
+
+.image-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 200px;
+  height: 140px;
+
+  border-radius: 15px;
+  background: var(--bl-bg-neutral);
+  color: var(--bl-text-muted);
+
+  font-size: var(--bl-fs-small);
+}
+
+.attachment-image img {
+  display: block;
+  max-width: 100%;
+  max-height: 260px;
+
+  border-radius: 15px;
+  object-fit: cover;
+}
+
+
+/* ===== ERREUR ===== */
+
+.attachment-error {
+  margin: 0;
+  padding: 10px 14px;
+
+  border-radius: 15px;
+  background: var(--bl-bg-neutral);
+  color: var(--bl-text-muted);
+
+  font-size: var(--bl-fs-small);
+}
+
+
+/* ===== PDF ===== */
+
+.attachment-file {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 14px;
+
+  border-radius: 15px;
+  background: var(--bl-bg-accent);
+  color: var(--bl-text);
+
+  max-width: 100%;
+}
+
+.attachment-file-me {
+  background: var(--bl-primary);
+  color: var(--bl-white);
+}
+
+.file-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 36px;
+  height: 36px;
+
+  border-radius: 9px;
+  background: var(--bl-white);
+  color: var(--bl-primary);
+}
+
+.file-icon svg {
+  width: 20px;
+  height: 20px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+
+.file-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.file-info strong {
+  overflow: hidden;
+
+  font-size: var(--bl-fs-small);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-info span {
+  font-size: 10px;
+  opacity: 0.75;
+}
