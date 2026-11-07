@@ -731,6 +731,15 @@ export class RentalSearchResults
    * =========================================
    */
 
+  /** Ouvre le calendrier natif au clic sur toute la zone de date. */
+  openDatePicker(input: HTMLInputElement): void {
+    try {
+      input.showPicker();
+    } catch {
+      input.focus();
+    }
+  }
+
   search(): void {
 
     if (

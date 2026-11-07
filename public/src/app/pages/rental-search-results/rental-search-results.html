@@ -15,34 +15,22 @@
     >
 
       <!-- Arrivée -->
-      <div class="date-field">
-
-        <div class="date-icon">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-
-            <rect
-              x="3"
-              y="5"
-              width="18"
-              height="16"
-              rx="2"
-            />
-
-            <path d="M16 3v4M8 3v4M3 10h18" />
-
-          </svg>
-        </div>
-
+      <div
+        class="date-field"
+        (click)="openDatePicker(arrivalInput)"
+      >
 
         <div class="date-content">
 
-          <label for="arrival">
+          <span class="date-label">
             ARRIVÉE
-          </label>
+          </span>
 
           <input
+            #arrivalInput
             id="arrival"
             name="arrival"
+            aria-label="Arrivée"
             type="date"
             [(ngModel)]="arrivalDate"
           />
@@ -56,34 +44,22 @@
 
 
       <!-- Départ -->
-      <div class="date-field">
-
-        <div class="date-icon">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-
-            <rect
-              x="3"
-              y="5"
-              width="18"
-              height="16"
-              rx="2"
-            />
-
-            <path d="M16 3v4M8 3v4M3 10h18" />
-
-          </svg>
-        </div>
-
+      <div
+        class="date-field"
+        (click)="openDatePicker(departureInput)"
+      >
 
         <div class="date-content">
 
-          <label for="departure">
+          <span class="date-label">
             DÉPART
-          </label>
+          </span>
 
           <input
+            #departureInput
             id="departure"
             name="departure"
+            aria-label="Départ"
             type="date"
             [(ngModel)]="departureDate"
           />

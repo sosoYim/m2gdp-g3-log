@@ -24,6 +24,16 @@ export class Hero {
   ) {}
 
 
+  /** Ouvre le calendrier natif au clic sur toute la zone de date. */
+  openDatePicker(input: HTMLInputElement): void {
+    try {
+      input.showPicker();
+    } catch {
+      input.focus();
+    }
+  }
+
+
   async search(): Promise<void> {
 
     if (!this.arrivalDate || !this.departureDate) {

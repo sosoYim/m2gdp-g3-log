@@ -41,16 +41,12 @@
 
       <!-- Arrivée -->
 
-      <label
+      <div
         class="flex flex-1 cursor-pointer items-center gap-3 border-b px-5 py-4 text-left md:border-b-0 md:border-r"
+        (click)="openDatePicker(arrivalInput)"
       >
 
-        <span class="text-xl">
-          📅
-        </span>
-
-
-        <span class="flex flex-col">
+        <span class="flex w-full flex-col">
 
           <span
             class="text-xs font-semibold uppercase text-gray-500"
@@ -60,29 +56,27 @@
 
 
           <input
+            #arrivalInput
             type="date"
+            aria-label="Arrivée"
             [(ngModel)]="arrivalDate"
             name="arrivalDate"
-            class="w-full bg-transparent text-sm text-gray-700 outline-none"
+            class="date-input w-full cursor-pointer bg-transparent text-sm text-gray-700 outline-none"
           />
 
         </span>
 
-      </label>
+      </div>
 
 
       <!-- Départ -->
 
-      <label
+      <div
         class="flex flex-1 cursor-pointer items-center gap-3 border-b px-5 py-4 text-left md:border-b-0"
+        (click)="openDatePicker(departureInput)"
       >
 
-        <span class="text-xl">
-          📅
-        </span>
-
-
-        <span class="flex flex-col">
+        <span class="flex w-full flex-col">
 
           <span
             class="text-xs font-semibold uppercase text-gray-500"
@@ -92,15 +86,17 @@
 
 
           <input
+            #departureInput
             type="date"
+            aria-label="Départ"
             [(ngModel)]="departureDate"
             name="departureDate"
-            class="w-full bg-transparent text-sm text-gray-700 outline-none"
+            class="date-input w-full cursor-pointer bg-transparent text-sm text-gray-700 outline-none"
           />
 
         </span>
 
-      </label>
+      </div>
 
 
       <!-- Rechercher -->

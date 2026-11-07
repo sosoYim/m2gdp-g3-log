@@ -1,0 +1,6 @@
+/* ===== DATES ===== */
+
+/* Icône native masquée : toute la zone ouvre le calendrier */
+.date-input::-webkit-calendar-picker-indicator {
+  display: none;
+}
