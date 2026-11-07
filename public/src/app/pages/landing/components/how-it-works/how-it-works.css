@@ -41,7 +41,7 @@
 
   text-align: center;
 
-  color: #202aaa;
+  color: var(--bl-secondary);
 }
 
 .slogan-title span {
@@ -96,7 +96,7 @@
 
   padding: 56px 24px;
 
-  background-color: #e7e8fd;
+  background-color: var(--bl-bg-footer);
 }
 
 .steps-container {
@@ -113,7 +113,7 @@
   line-height: 1.2;
   font-weight: 800;
 
-  color: #171b2f;
+  color: var(--bl-text);
 }
 
 
@@ -190,7 +190,7 @@
   font-size: 17px;
   font-weight: 700;
 
-  color: #20253a;
+  color: var(--bl-text);
 }
 
 
@@ -202,7 +202,7 @@
   font-size: 14px;
   line-height: 1.4;
 
-  color: #616a80;
+  color: var(--bl-text-muted);
 }
 
 
@@ -225,7 +225,7 @@
 
   background-color: var(--bl-primary);
 
-  color: #ffffff;
+  color: var(--bl-white);
 
   font-size: 14px;
   font-weight: 600;
@@ -238,7 +238,7 @@
 }
 
 .steps-action button:hover {
-  background-color: #5f24df;
+  background-color: var(--bl-primary-hover);
 
   transform: translateY(-1px);
 }

@@ -21,7 +21,7 @@
   line-height: 1.15;
   font-weight: 800;
 
-  color: #171b2f;
+  color: var(--bl-text);
 }
 
 .about-content p {
@@ -32,7 +32,12 @@
   font-size: 16px;
   line-height: 1.45;
 
-  color: #5e667d;
+  color: var(--bl-text-muted);
+}
+
+/* Une ligne vide entre les paragraphes */
+.about-content p + p {
+  margin-top: 1.45em;
 }
 
 .about-image {
@@ -55,13 +60,11 @@
     gap: 40px;
   }
 
+  /* Bloc centré, texte aligné à gauche */
   .about-content {
-    text-align: center;
-  }
-
-  .about-content p {
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
+    max-width: 560px;
+    margin: 0 auto;
   }
 
   .about-image {

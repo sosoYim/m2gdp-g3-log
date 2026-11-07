@@ -45,7 +45,7 @@
   line-height: 1.2;
   font-weight: 800;
 
-  color: #171b2f;
+  color: var(--bl-text);
 }
 
 .contact-content p {
@@ -54,7 +54,7 @@
   font-size: 15px;
   line-height: 1.5;
 
-  color: #65708a;
+  color: var(--bl-text-muted);
 }
 
 .contact-content button {
@@ -65,7 +65,7 @@
 
   background-color: var(--bl-primary);
 
-  color: #ffffff;
+  color: var(--bl-white);
 
   font-size: 14px;
   font-weight: 600;
@@ -78,7 +78,7 @@
 }
 
 .contact-content button:hover {
-  background-color: #5f24df;
+  background-color: var(--bl-primary-hover);
 
   transform: translateY(-1px);
 }

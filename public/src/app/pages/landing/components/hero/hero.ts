@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+
+import { DateField } from '../../../../shared/components/date-field/date-field';
 
 @Component({
   selector: 'app-hero',
@@ -8,7 +9,7 @@ import { Router } from '@angular/router';
   standalone: true,
 
   imports: [
-    FormsModule
+    DateField
   ],
 
   styleUrl: './hero.css',

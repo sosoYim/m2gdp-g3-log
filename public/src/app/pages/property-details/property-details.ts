@@ -13,6 +13,7 @@ import {
 } from '@angular/router';
 
 import { Navbar } from '../../shared/components/navbar/navbar';
+import { DateField } from '../../shared/components/date-field/date-field';
 import { AuthModal } from '../../shared/components/auth-modal/auth-modal';
 
 import { ContactSection } from '../landing/components/contact-section/contact-section';
@@ -20,6 +21,14 @@ import { Footer } from '../landing/components/footer/footer';
 
 import { Auth } from '../../core/auth/auth';
 import { Profile } from '../../core/profile/profile';
+
+import {
+  StayLimits,
+  formatIsoDate,
+  getMinStayError,
+  getStayLimits,
+  isStayInAvailability
+} from '../../core/dates/dates';
 
 import {
   Listing,
@@ -94,6 +103,7 @@ interface PropertyDetailsViewModel {
   imports: [
     NgTemplateOutlet,
     Navbar,
+    DateField,
     AuthModal,
     EquipmentIcon,
     PropertyGallery,
@@ -110,6 +120,15 @@ export class PropertyDetails implements OnInit {
 
   arrivalDate = '';
   departureDate = '';
+
+  /* Période de disponibilité du logement ('YYYY-MM-DD') */
+  availableFrom = '';
+  availableTo = '';
+
+  minStayMonths = 0;
+
+  /* Erreur sous les dates (séjour trop court…) */
+  bookingError = signal('');
 
   authModalOpen = signal(false);
 
@@ -263,6 +282,26 @@ export class PropertyDetails implements OnInit {
       this.firestoreListing =
         firestoreListing;
 
+      this.availableFrom =
+        firestoreListing.availableFrom;
+
+      this.availableTo =
+        firestoreListing.availableTo;
+
+
+      /*
+       * Dates de la recherche hors de la
+       * période du logement : on les retire.
+       */
+      if (
+        this.arrivalDate &&
+        this.departureDate &&
+        !isStayInAvailability(this.availableFrom, this.availableTo, this.arrivalDate, this.departureDate)
+      ) {
+        this.arrivalDate = '';
+        this.departureDate = '';
+      }
+
       if (user) {
         const favoriteIds =
           await this.favoriteService.getFavoriteIds(user.uid);
@@ -308,6 +347,11 @@ export class PropertyDetails implements OnInit {
 
     const photos =
       form.photos.map(photo => photo.url);
+
+
+    /* Même valeur que « Séjour minimum : n mois » */
+    this.minStayMonths =
+      form.minStayMonths;
 
 
 
@@ -386,10 +430,84 @@ export class PropertyDetails implements OnInit {
 
   /*
    * =========================================
+   * DATES DU SÉJOUR
+   * =========================================
+   */
+  get stayLimits(): StayLimits {
+
+    return getStayLimits(this.availableFrom, this.availableTo, this.arrivalDate);
+
+  }
+
+
+  /* « Disponible du 01/07/2027 au 31/12/2027 » */
+  get availabilityText(): string {
+
+    if (this.availableFrom && this.availableTo) {
+      return `Disponible du ${formatIsoDate(this.availableFrom)} au ${formatIsoDate(this.availableTo)}`;
+    }
+
+    if (this.availableFrom) {
+      return `Disponible à partir du ${formatIsoDate(this.availableFrom)}`;
+    }
+
+    if (this.availableTo) {
+      return `Disponible jusqu’au ${formatIsoDate(this.availableTo)}`;
+    }
+
+    return '';
+
+  }
+
+
+  /*
+   * Le départ doit rester après l'arrivée :
+   * sinon on le vide.
+   */
+  setArrivalDate(
+    date: string
+  ): void {
+
+    this.arrivalDate = date;
+
+    this.bookingError.set('');
+
+    if (this.departureDate && this.departureDate <= date) {
+      this.departureDate = '';
+    }
+
+  }
+
+
+  /*
+   * =========================================
    * CONTACTER L'ANNONCEUR
    * =========================================
    */
+  setDepartureDate(
+    date: string
+  ): void {
+
+    this.departureDate = date;
+
+    this.bookingError.set('');
+
+  }
+
+
   async contactOwner(): Promise<void> {
+
+    /*
+     * Séjour minimum du logement
+     */
+    const minStayError =
+      getMinStayError(this.arrivalDate, this.departureDate, this.minStayMonths);
+
+    this.bookingError.set(minStayError);
+
+    if (minStayError) {
+      return;
+    }
 
     /*
      * On mémorise le logement.

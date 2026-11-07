@@ -34,7 +34,7 @@
   line-height: 1.15;
   font-weight: 800;
 
-  color: #171b2f;
+  color: var(--bl-text);
 }
 
 .reason {
@@ -61,7 +61,7 @@
   font-size: 17px;
   font-weight: 700;
 
-  color: #171b2f;
+  color: var(--bl-text);
 }
 
 .reason p {
@@ -70,7 +70,7 @@
   font-size: 15px;
   line-height: 1.4;
 
-  color: #555d70;
+  color: var(--bl-text-muted);
 }
 
 /* Tablette */

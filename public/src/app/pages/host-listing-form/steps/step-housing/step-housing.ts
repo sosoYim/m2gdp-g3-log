@@ -30,6 +30,11 @@ export class StepHousing {
   form!: ListingForm;
 
 
+  /* Champs invalides (bordure rouge) */
+  @Input()
+  invalid = new Set<string>();
+
+
   readonly propertyTypes =
     PROPERTY_TYPES;
 

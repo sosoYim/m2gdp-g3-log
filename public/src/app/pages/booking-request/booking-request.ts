@@ -15,6 +15,7 @@ import {
 } from '@angular/router';
 
 import { UserNavbar } from '../../shared/components/user-navbar/user-navbar';
+import { DateField } from '../../shared/components/date-field/date-field';
 
 import { ContactSection } from '../landing/components/contact-section/contact-section';
 import { Footer } from '../landing/components/footer/footer';
@@ -24,6 +25,13 @@ import { Booking } from '../../core/booking/booking';
 import { Messaging } from '../../core/messaging/messaging';
 import { Listing } from '../../core/listing/listing';
 import { Profile } from '../../core/profile/profile';
+
+import {
+  StayLimits,
+  getMinStayError,
+  getStayLimits,
+  isStayInAvailability
+} from '../../core/dates/dates';
 
 
 @Component({
@@ -35,6 +43,7 @@ import { Profile } from '../../core/profile/profile';
     FormsModule,
     RouterLink,
     UserNavbar,
+    DateField,
     ContactSection,
     Footer
   ],
@@ -108,7 +117,13 @@ export class BookingRequest implements OnInit {
 
     owner: '',
 
-    image: ''
+    image: '',
+
+    availableFrom: '',
+
+    availableTo: '',
+
+    minStayMonths: 0
 
   };
 
@@ -269,7 +284,16 @@ export class BookingRequest implements OnInit {
           firestoreListing.ownerName,
 
         image:
-          firestoreListing.image
+          firestoreListing.image,
+
+        availableFrom:
+          firestoreListing.availableFrom,
+
+        availableTo:
+          firestoreListing.availableTo,
+
+        minStayMonths:
+          firestoreListing.minStayMonths
 
       };
 
@@ -307,28 +331,26 @@ export class BookingRequest implements OnInit {
 
   /*
    * =========================================
-   * FORMATAGE DES DATES
+   * DATES DU SÉJOUR
    * =========================================
    */
-  formatDate(
+  get stayLimits(): StayLimits {
+
+    return getStayLimits(this.listing.availableFrom, this.listing.availableTo, this.arrivalDate);
+
+  }
+
+
+  /* Le départ doit rester après l'arrivée */
+  setArrivalDate(
     date: string
-  ): string {
+  ): void {
 
-    if (!date) {
+    this.arrivalDate = date;
 
-      return 'Choisir une date';
-
+    if (this.departureDate && this.departureDate <= date) {
+      this.departureDate = '';
     }
-
-
-    const [
-      year,
-      month,
-      day
-    ] = date.split('-');
-
-
-    return `${day}/${month}/${year}`;
 
   }
 
@@ -409,6 +431,36 @@ export class BookingRequest implements OnInit {
       this.errorMessage.set(
         'La date de départ doit être après la date d’arrivée.'
       );
+
+      return;
+
+    }
+
+
+    if (
+      !isStayInAvailability(
+        this.listing.availableFrom,
+        this.listing.availableTo,
+        this.arrivalDate,
+        this.departureDate
+      )
+    ) {
+
+      this.errorMessage.set(
+        'Ces dates ne sont pas dans la période de disponibilité du logement.'
+      );
+
+      return;
+
+    }
+
+
+    const minStayError =
+      getMinStayError(this.arrivalDate, this.departureDate, this.listing.minStayMonths);
+
+    if (minStayError) {
+
+      this.errorMessage.set(minStayError);
 
       return;
 

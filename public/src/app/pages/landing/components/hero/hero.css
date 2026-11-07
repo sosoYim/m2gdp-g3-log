@@ -1,0 +1,9 @@
+/* ===== DATES ===== */
+
+.hero-date {
+  --df-padding: 16px 20px;
+  --df-label-size: 12px;
+  --df-label-weight: 600;
+  --df-label-color: var(--bl-text-muted);
+  --df-value-color: var(--bl-text);
+}

@@ -40,6 +40,11 @@ export class StepPhotos {
   form!: ListingForm;
 
 
+  /* Champs invalides (bordure rouge) */
+  @Input()
+  invalid = new Set<string>();
+
+
   readonly minPhotos =
     MIN_PHOTOS_TO_PUBLISH;
 

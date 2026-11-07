@@ -97,6 +97,18 @@ textarea.lf-input {
 }
 
 
+/* Champ invalide (après « Suivant ») */
+.lf-input.lf-invalid,
+.lf-chip.lf-invalid {
+  border-color: #c43b3b;
+}
+
+
+.lf-input.lf-invalid:focus {
+  box-shadow: 0 0 0 3px rgba(196, 59, 59, 0.12);
+}
+
+
 .lf-counter {
   margin-top: -4px;
 

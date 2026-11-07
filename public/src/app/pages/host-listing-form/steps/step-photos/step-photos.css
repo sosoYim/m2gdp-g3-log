@@ -24,6 +24,12 @@
 }
 
 
+/* Après « Suivant » sans photo */
+.dropzone-invalid {
+  border-color: #c43b3b;
+}
+
+
 .dropzone-active {
   border-color: var(--bl-primary);
 

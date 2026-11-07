@@ -15,6 +15,7 @@ import {
 
 import * as L from 'leaflet';
 
+import { DateField } from '../../shared/components/date-field/date-field';
 import { Navbar } from '../../shared/components/navbar/navbar';
 
 import { ContactSection } from '../landing/components/contact-section/contact-section';
@@ -26,6 +27,7 @@ import { FilterBar } from './components/filter-bar/filter-bar';
 
 import {
   SearchFilters,
+  compareByFilters,
   createEmptyFilters,
   filtersFromParams,
   filtersToParams,
@@ -81,6 +83,7 @@ interface RentalListing {
     Navbar,
     FormsModule,
     FilterBar,
+    DateField,
     ContactSection,
     Footer
   ],
@@ -150,6 +153,10 @@ export class RentalSearchResults
   private viewReady = false;
 
 
+  /* Écran étroit : liste ou carte */
+  mobileView: 'list' | 'map' = 'list';
+
+
   constructor(
     private readonly router: Router,
     private readonly route: ActivatedRoute,
@@ -217,6 +224,26 @@ export class RentalSearchResults
      * on peut maintenant dessiner la carte.
      */
     this.refreshMap();
+
+  }
+
+
+  /*
+   * La carte était masquée : Leaflet doit
+   * recalculer sa taille avant de recadrer.
+   */
+  setMobileView(
+    view: 'list' | 'map'
+  ): void {
+
+    this.mobileView = view;
+
+    if (view === 'map') {
+      setTimeout(() => {
+        this.map?.invalidateSize();
+        this.refreshMap();
+      }, 0);
+    }
 
   }
 
@@ -366,7 +393,14 @@ export class RentalSearchResults
 
         return !!document && matchesFilters(document, this.filters);
 
-      });
+      })
+      .sort((a, b) =>
+        compareByFilters(
+          this.documents.get(a.id)!,
+          this.documents.get(b.id)!,
+          this.filters
+        )
+      );
 
 
     this.cdr.detectChanges();
@@ -665,6 +699,20 @@ export class RentalSearchResults
 
       popup.appendChild(
         price
+      );
+
+
+      /*
+       * Toute la popup mène
+       * au détail du logement.
+       */
+      popup.classList.add(
+        'popup-clickable'
+      );
+
+      popup.addEventListener(
+        'click',
+        () => this.openListing(listing)
       );
 
 

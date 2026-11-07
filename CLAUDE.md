@@ -93,9 +93,9 @@ Template: `@if (loading()) { <div class="state-box">Chargement...</div> } @else 
   | --- | --- | --- |
   | `--bl-primary` | `#7034F4` | accent: links ("Retour à la liste"), buttons, star, "Profil vérifié", payment notice text |
   | `--bl-primary-hover` | `#6026DC` | primary button hover |
-  | `--bl-heading` | `#19154F` | page titles, "Proposé par …", amenity icons, photo counter |
+  | `--bl-heading` | `#19154F` | page titles, listing card titles, price, "Proposé par …", amenity icons, photo counter |
   | `--bl-secondary` | `#16229C` | secondary actions ("Mettre en pause", "Supprimer"), text of info notices ("Le loyer est réglé directement…") |
-  | `--bl-text` | `#111110` | all black text (price, section titles, body) — the project's black |
+  | `--bl-text` | `#111110` | all black text (section titles, body) — the project's black |
   | `--bl-text-muted` | `#70768F` | secondary text (city, details line, Arrivée/Départ, minimum stay, small notes) |
   | `--bl-bg-accent` | `#ECE8FE` | light purple backgrounds (badges, notices, icon tiles, hovers) |
   | `--bl-icon-placeholder` | `#A174F5` | empty-image placeholder icon (listing without photo) |

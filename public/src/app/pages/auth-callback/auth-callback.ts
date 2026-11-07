@@ -110,7 +110,33 @@ export class AuthCallback implements OnInit {
 
 
       /*
-       * 7. Aucun rôle ou utilisateur actuellement annonceur.
+       * 7. Annonceur (« J'accueille ») :
+       * toujours son tableau de bord.
+       * Le logement en attente est oublié
+       * (comme dans la sélection du rôle).
+       */
+      if (profile.role === 'host') {
+
+        localStorage.removeItem(
+          'baillYonPendingBooking'
+        );
+
+        this.profileService.setCurrentRole(
+          user.uid,
+          'host'
+        );
+
+        await this.router.navigate([
+          '/host/dashboard'
+        ]);
+
+        return;
+      }
+
+
+      /*
+       * 8. Aucun rôle, ou demandeur
+       * sans logement en attente.
        *
        * On passe par la sélection du rôle.
        */

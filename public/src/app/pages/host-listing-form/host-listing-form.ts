@@ -60,6 +60,16 @@ const LAST_STEP =
  * Le brouillon est enregistré à chaque
  * changement d'étape.
  */
+/* Erreur de validation : champs concernés + message */
+interface FieldError {
+
+  fields: string[];
+
+  message: string;
+
+}
+
+
 @Component({
   selector: 'app-host-listing-form',
 
@@ -117,6 +127,28 @@ export class HostListingForm implements OnInit {
    */
   errors =
     signal<string[]>([]);
+
+
+  /*
+   * Après « Suivant » refusé : bordure rouge
+   * sur les champs encore invalides
+   * (elle disparaît dès que le champ est corrigé).
+   */
+  showInvalidFields =
+    signal(false);
+
+
+  get invalidFields(): Set<string> {
+
+    if (!this.showInvalidFields()) {
+      return new Set();
+    }
+
+    return new Set(
+      this.validateStep(this.step()).flatMap(error => error.fields)
+    );
+
+  }
 
 
   step =
@@ -264,6 +296,8 @@ export class HostListingForm implements OnInit {
 
     this.errors.set([]);
 
+    this.showInvalidFields.set(false);
+
 
     await this.save();
 
@@ -286,7 +320,9 @@ export class HostListingForm implements OnInit {
 
     if (errors.length) {
 
-      this.errors.set(errors);
+      this.errors.set(errors.map(error => error.message));
+
+      this.showInvalidFields.set(true);
 
       return;
 
@@ -342,7 +378,7 @@ export class HostListingForm implements OnInit {
 
     if (errors.length) {
 
-      this.errors.set(errors);
+      this.errors.set(errors.map(error => error.message));
 
       return;
 
@@ -461,12 +497,12 @@ export class HostListingForm implements OnInit {
   private validateStep(
     step: number,
     forPublish = false
-  ): string[] {
+  ): FieldError[] {
 
     const form =
       this.form;
 
-    const errors: string[] = [];
+    const errors: FieldError[] = [];
 
 
     switch (step) {
@@ -474,17 +510,17 @@ export class HostListingForm implements OnInit {
       case 0:
 
         if (!form.title.trim()) {
-          errors.push('Indiquez un titre.');
+          errors.push({ fields: ['title'], message: 'Indiquez un titre.' });
         }
 
         if (!form.address.trim()) {
-          errors.push('Indiquez l\'adresse du logement.');
+          errors.push({ fields: ['address'], message: 'Indiquez l\'adresse du logement.' });
         } else if (this.maps.enabled && !form.placeId) {
-          errors.push('Choisissez l\'adresse dans la liste proposée.');
+          errors.push({ fields: ['address'], message: 'Choisissez l\'adresse dans la liste proposée.' });
         }
 
         if (!form.surface || form.surface <= 0) {
-          errors.push('Indiquez la surface.');
+          errors.push({ fields: ['surface'], message: 'Indiquez la surface.' });
         }
 
         break;
@@ -493,9 +529,9 @@ export class HostListingForm implements OnInit {
       case 1:
 
         if (forPublish && form.photos.length < MIN_PHOTOS_TO_PUBLISH) {
-          errors.push(`Ajoutez au moins ${MIN_PHOTOS_TO_PUBLISH} photos pour publier.`);
+          errors.push({ fields: ['photos'], message: `Ajoutez au moins ${MIN_PHOTOS_TO_PUBLISH} photos pour publier.` });
         } else if (form.photos.length === 0) {
-          errors.push('Ajoutez au moins une photo.');
+          errors.push({ fields: ['photos'], message: 'Ajoutez au moins une photo.' });
         }
 
         break;
@@ -504,9 +540,9 @@ export class HostListingForm implements OnInit {
       case 2:
 
         if (!form.ownerConsent) {
-          errors.push('Indiquez si vous avez l\'accord du propriétaire.');
+          errors.push({ fields: ['ownerConsent'], message: 'Indiquez si vous avez l\'accord du propriétaire.' });
         } else if (forPublish && form.ownerConsent === 'no') {
-          errors.push('L\'accord du propriétaire est nécessaire pour publier.');
+          errors.push({ fields: ['ownerConsent'], message: 'L\'accord du propriétaire est nécessaire pour publier.' });
         }
 
         break;
@@ -515,13 +551,19 @@ export class HostListingForm implements OnInit {
       case 3:
 
         if (!form.price || form.price <= 0) {
-          errors.push('Indiquez le loyer mensuel.');
+          errors.push({ fields: ['price'], message: 'Indiquez le loyer mensuel.' });
         }
 
         if (!form.availableFrom || !form.availableTo) {
-          errors.push('Indiquez les dates de disponibilité.');
+          errors.push({
+            fields: [
+              ...(form.availableFrom ? [] : ['availableFrom']),
+              ...(form.availableTo ? [] : ['availableTo'])
+            ],
+            message: 'Indiquez les dates de disponibilité.'
+          });
         } else if (form.availableFrom >= form.availableTo) {
-          errors.push('La date de fin doit être après la date de début.');
+          errors.push({ fields: ['availableTo'], message: 'La date de fin doit être après la date de début.' });
         }
 
         break;

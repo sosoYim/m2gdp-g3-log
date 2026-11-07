@@ -65,108 +65,48 @@
 
               <!-- Arrivée -->
 
-              <label class="date-field">
-
-                <span class="date-icon">
-
-                  <svg
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <rect
-                      x="3"
-                      y="5"
-                      width="18"
-                      height="16"
-                      rx="2"
-                    ></rect>
-
-                    <path d="M16 3V7"></path>
-                    <path d="M8 3V7"></path>
-                    <path d="M3 10H21"></path>
-                  </svg>
-
-                </span>
-
-
-                <span class="date-content">
-
-                  <span class="date-label">
-                    ARRIVÉE
-                  </span>
-
-                  <span
-                    class="date-value"
-                    [class.date-placeholder]="!arrivalDate"
-                  >
-                    {{ formatDate(arrivalDate) }}
-                  </span>
-
-                </span>
-
-
-                <input
-                  class="date-native-input"
-                  type="date"
-                  [(ngModel)]="arrivalDate"
-                  name="arrivalDate"
-                  aria-label="Date d’arrivée"
-                />
-
-              </label>
+              <app-date-field
+                class="date-field"
+                label="Arrivée"
+                [min]="stayLimits.arrivalMin"
+                [max]="stayLimits.arrivalMax"
+                [value]="arrivalDate"
+                (valueChange)="setArrivalDate($event)"
+              >
+                <svg
+                  class="date-icon"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                  <path d="M16 3V7"></path>
+                  <path d="M8 3V7"></path>
+                  <path d="M3 10H21"></path>
+                </svg>
+              </app-date-field>
 
 
               <!-- Départ -->
 
-              <label class="date-field">
+              <app-date-field
+                class="date-field"
+                label="Départ"
+                [min]="stayLimits.departureMin"
+                [max]="stayLimits.departureMax"
+                [(value)]="departureDate"
+              >
+                <svg
+                  class="date-icon"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                  <path d="M16 3V7"></path>
+                  <path d="M8 3V7"></path>
+                  <path d="M3 10H21"></path>
+                </svg>
+              </app-date-field>
 
-                <span class="date-icon">
-
-                  <svg
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <rect
-                      x="3"
-                      y="5"
-                      width="18"
-                      height="16"
-                      rx="2"
-                    ></rect>
-
-                    <path d="M16 3V7"></path>
-                    <path d="M8 3V7"></path>
-                    <path d="M3 10H21"></path>
-                  </svg>
-
-                </span>
-
-
-                <span class="date-content">
-
-                  <span class="date-label">
-                    DÉPART
-                  </span>
-
-                  <span
-                    class="date-value"
-                    [class.date-placeholder]="!departureDate"
-                  >
-                    {{ formatDate(departureDate) }}
-                  </span>
-
-                </span>
-
-
-                <input
-                  class="date-native-input"
-                  type="date"
-                  [(ngModel)]="departureDate"
-                  name="departureDate"
-                  aria-label="Date de départ"
-                />
-
-              </label>
 
             </div>
 

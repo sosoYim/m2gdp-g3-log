@@ -1,0 +1,97 @@
+<button
+  type="button"
+  class="date-trigger"
+  [attr.aria-expanded]="open()"
+  (click)="toggle()"
+>
+
+  <ng-content />
+
+  <span class="date-text">
+
+    <span class="date-label">{{ label }}</span>
+
+    <span
+      class="date-value"
+      [class.date-placeholder]="!value"
+    >
+      {{ displayValue }}
+    </span>
+
+  </span>
+
+</button>
+
+
+@if (open()) {
+
+  <div
+    class="calendar"
+    role="dialog"
+    [attr.aria-label]="label"
+    [style.top.px]="position().top"
+    [style.left.px]="position().left"
+  >
+
+    <!-- Mois -->
+    <div class="calendar-header">
+
+      <button
+        type="button"
+        class="calendar-nav"
+        aria-label="Mois précédent"
+        [disabled]="!canGoPrevious"
+        (click)="changeMonth(-1)"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m15 6-6 6 6 6" />
+        </svg>
+      </button>
+
+      <p class="calendar-title">{{ monthTitle }}</p>
+
+      <button
+        type="button"
+        class="calendar-nav"
+        aria-label="Mois suivant"
+        [disabled]="!canGoNext"
+        (click)="changeMonth(1)"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m9 6 6 6-6 6" />
+        </svg>
+      </button>
+
+    </div>
+
+
+    <!-- Jours -->
+    <div class="calendar-grid">
+
+      @for (weekDay of weekDays; track $index) {
+        <span class="calendar-weekday">{{ weekDay }}</span>
+      }
+
+      @for (cell of days; track $index) {
+        @if (cell) {
+          <button
+            type="button"
+            class="calendar-day"
+            [class.calendar-day-today]="cell.iso === today"
+            [class.calendar-day-selected]="cell.iso === value"
+            [attr.aria-pressed]="cell.iso === value"
+            [disabled]="cell.disabled"
+            (click)="select(cell.iso)"
+          >
+            {{ cell.day }}
+          </button>
+        } @else {
+          <span></span>
+        }
+      }
+
+    </div>
+
+  </div>
+
+}
