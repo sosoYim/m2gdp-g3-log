@@ -25,6 +25,7 @@
     <input
       id="listing-from"
       class="lf-input"
+      [class.lf-invalid]="invalid.has('availableFrom')"
       type="date"
       [(ngModel)]="form.availableFrom"
     />
@@ -44,6 +45,7 @@
     <input
       id="listing-to"
       class="lf-input"
+      [class.lf-invalid]="invalid.has('availableTo')"
       type="date"
       [min]="form.availableFrom"
       [(ngModel)]="form.availableTo"
@@ -94,6 +96,7 @@
     <input
       id="listing-price"
       class="lf-input"
+      [class.lf-invalid]="invalid.has('price')"
       type="number"
       min="1"
       inputmode="numeric"

@@ -78,10 +78,10 @@
             <div class="form-card">
 
               @switch (step()) {
-                @case (0) { <app-step-housing [form]="form" /> }
-                @case (1) { <app-step-photos [form]="form" /> }
-                @case (2) { <app-step-amenities [form]="form" /> }
-                @case (3) { <app-step-pricing [form]="form" /> }
+                @case (0) { <app-step-housing [form]="form" [invalid]="invalidFields" /> }
+                @case (1) { <app-step-photos [form]="form" [invalid]="invalidFields" /> }
+                @case (2) { <app-step-amenities [form]="form" [invalid]="invalidFields" /> }
+                @case (3) { <app-step-pricing [form]="form" [invalid]="invalidFields" /> }
               }
 
               <div class="actions-desktop">

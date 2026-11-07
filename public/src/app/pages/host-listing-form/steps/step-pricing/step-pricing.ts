@@ -28,6 +28,11 @@ export class StepPricing {
   form!: ListingForm;
 
 
+  /* Champs invalides (bordure rouge) */
+  @Input()
+  invalid = new Set<string>();
+
+
   readonly minStayOptions =
     Array.from({ length: 12 }, (_, i) => i + 1);
 

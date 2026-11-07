@@ -51,6 +51,11 @@ export class AddressField implements OnInit, OnDestroy {
   form!: ListingForm;
 
 
+  /* Adresse manquante ou non choisie dans la liste */
+  @Input()
+  invalid = false;
+
+
   @ViewChild('map')
   set mapElement(element: ElementRef<HTMLElement> | undefined) {
     this.mapRef = element;

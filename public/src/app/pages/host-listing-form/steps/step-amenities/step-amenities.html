@@ -93,6 +93,7 @@
       <label
         class="lf-chip consent-chip"
         [class.lf-chip-active]="form.ownerConsent === option.value"
+        [class.lf-invalid]="invalid.has('ownerConsent')"
       >
 
         <input

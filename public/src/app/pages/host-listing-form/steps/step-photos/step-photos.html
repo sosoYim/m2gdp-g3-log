@@ -24,6 +24,7 @@
 <div
   class="dropzone"
   [class.dropzone-active]="dragOver()"
+  [class.dropzone-invalid]="invalid.has('photos')"
   (dragover)="onDragOver($event)"
   (dragleave)="dragOver.set(false)"
   (drop)="onDrop($event)"

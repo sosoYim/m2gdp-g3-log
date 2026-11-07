@@ -28,6 +28,11 @@ export class StepAmenities {
   form!: ListingForm;
 
 
+  /* Champs invalides (bordure rouge) */
+  @Input()
+  invalid = new Set<string>();
+
+
   readonly amenities =
     AMENITIES;
 

@@ -21,6 +21,7 @@
   <input
     id="listing-title"
     class="lf-input"
+    [class.lf-invalid]="invalid.has('title')"
     maxlength="60"
     placeholder="Ex. : Charmant studio-loft"
     [(ngModel)]="form.title"
@@ -62,7 +63,7 @@
 </div>
 
 
-<app-address-field [form]="form" />
+<app-address-field [form]="form" [invalid]="invalid.has('address')" />
 
 
 <!-- SURFACE / PIÈCES / ÉTAGE -->
@@ -83,6 +84,7 @@
       <input
         id="listing-surface"
         class="lf-input"
+        [class.lf-invalid]="invalid.has('surface')"
         type="number"
         min="1"
         inputmode="numeric"
