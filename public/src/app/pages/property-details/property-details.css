@@ -373,7 +373,16 @@
 }
 
 .minimum-stay {
-  margin: 4px 0 17px;
+  margin: 4px 0 6px;
+
+  color: var(--bl-text-muted);
+
+  font-size: var(--bl-fs-small);
+}
+
+
+.availability {
+  margin: 0 0 17px;
 
   color: var(--bl-text-muted);
 
@@ -401,28 +410,23 @@
 }
 
 .booking-date {
-  padding: 11px 10px;
+  min-height: 62px;
+
+  --df-padding: 11px 10px;
+  --df-label-size: var(--bl-fs-small);
 }
 
 .booking-date + .booking-date {
   border-left: 1px solid #d4d8e6;
 }
 
-.booking-date label {
-  display: block;
 
-  margin-bottom: 5px;
+.booking-error {
+  margin: -5px 0 12px;
 
-  color: var(--bl-text-muted);
+  color: #c43b3b;
 
   font-size: var(--bl-fs-small);
-  font-weight: 700;
-}
-
-.booking-date span {
-  color: var(--bl-text);
-
-  font-size: var(--bl-fs-body);
 }
 
 

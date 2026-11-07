@@ -215,36 +215,43 @@
 
 
 
+        <!-- Période de disponibilité -->
+        @if (availabilityText) {
+          <p class="availability">
+            {{ availabilityText }}
+          </p>
+        }
+
+
         <!-- Dates -->
         <div class="booking-dates">
 
+          <app-date-field
+            class="booking-date"
+            label="Arrivée"
+            [min]="stayLimits.arrivalMin"
+            [max]="stayLimits.arrivalMax"
+            [value]="arrivalDate"
+            (valueChange)="setArrivalDate($event)"
+          />
 
-          <div class="booking-date">
-
-            <label>
-              ARRIVÉE
-            </label>
-
-            <span>
-              {{ arrivalDate }}
-            </span>
-
-          </div>
-
-
-          <div class="booking-date">
-
-            <label>
-              DÉPART
-            </label>
-
-            <span>
-              {{ departureDate }}
-            </span>
-
-          </div>
+          <app-date-field
+            class="booking-date"
+            label="Départ"
+            [min]="stayLimits.departureMin"
+            [max]="stayLimits.departureMax"
+            [value]="departureDate"
+            (valueChange)="setDepartureDate($event)"
+          />
 
         </div>
+
+
+        @if (bookingError()) {
+          <p class="booking-error" role="alert">
+            {{ bookingError() }}
+          </p>
+        }
 
 
 

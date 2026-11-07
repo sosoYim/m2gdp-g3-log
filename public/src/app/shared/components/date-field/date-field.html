@@ -5,13 +5,19 @@
   (click)="toggle()"
 >
 
-  <span class="date-label">{{ label }}</span>
+  <ng-content />
 
-  <span
-    class="date-value"
-    [class.date-placeholder]="!value"
-  >
-    {{ displayValue }}
+  <span class="date-text">
+
+    <span class="date-label">{{ label }}</span>
+
+    <span
+      class="date-value"
+      [class.date-placeholder]="!value"
+    >
+      {{ displayValue }}
+    </span>
+
   </span>
 
 </button>
@@ -34,6 +40,7 @@
         type="button"
         class="calendar-nav"
         aria-label="Mois précédent"
+        [disabled]="!canGoPrevious"
         (click)="changeMonth(-1)"
       >
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -47,6 +54,7 @@
         type="button"
         class="calendar-nav"
         aria-label="Mois suivant"
+        [disabled]="!canGoNext"
         (click)="changeMonth(1)"
       >
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -72,6 +80,7 @@
             [class.calendar-day-today]="cell.iso === today"
             [class.calendar-day-selected]="cell.iso === value"
             [attr.aria-pressed]="cell.iso === value"
+            [disabled]="cell.disabled"
             (click)="select(cell.iso)"
           >
             {{ cell.day }}

@@ -15,10 +15,9 @@
   height: 100%;
 
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: center;
 
-  gap: 2px;
+  gap: var(--df-icon-gap, 13px);
 
   padding: var(--df-padding, 0);
 
@@ -31,6 +30,16 @@
   text-align: left;
 
   cursor: pointer;
+}
+
+
+.date-text {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
 }
 
 
@@ -117,7 +126,14 @@
 }
 
 
-.calendar-nav:hover {
+.calendar-nav:disabled {
+  opacity: 0.3;
+
+  cursor: default;
+}
+
+
+.calendar-nav:hover:not(:disabled) {
   background: var(--bl-bg-neutral);
 }
 
@@ -174,7 +190,14 @@
 }
 
 
-.calendar-day:hover {
+.calendar-day:disabled {
+  color: #c3c6d4;
+
+  cursor: default;
+}
+
+
+.calendar-day:hover:not(:disabled) {
   background: var(--bl-bg-accent);
 }
 
