@@ -35,6 +35,11 @@
   color: #5e667d;
 }
 
+/* Une ligne vide entre les paragraphes */
+.about-content p + p {
+  margin-top: 1.45em;
+}
+
 .about-image {
   display: flex;
   align-items: center;
@@ -55,13 +60,11 @@
     gap: 40px;
   }
 
+  /* Bloc centré, texte aligné à gauche */
   .about-content {
-    text-align: center;
-  }
-
-  .about-content p {
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
+    max-width: 560px;
+    margin: 0 auto;
   }
 
   .about-image {
