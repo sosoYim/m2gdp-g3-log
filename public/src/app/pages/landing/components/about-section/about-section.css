@@ -21,7 +21,7 @@
   line-height: 1.15;
   font-weight: 800;
 
-  color: #171b2f;
+  color: var(--bl-text);
 }
 
 .about-content p {
@@ -32,7 +32,7 @@
   font-size: 16px;
   line-height: 1.45;
 
-  color: #5e667d;
+  color: var(--bl-text-muted);
 }
 
 /* Une ligne vide entre les paragraphes */

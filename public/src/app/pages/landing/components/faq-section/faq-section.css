@@ -36,7 +36,7 @@
   line-height: 1;
   font-weight: 800;
 
-  color: #202aaa;
+  color: var(--bl-secondary);
 }
 
 .faq-intro > p {
@@ -47,7 +47,7 @@
   font-size: 15px;
   line-height: 1.5;
 
-  color: #65708a;
+  color: var(--bl-text-muted);
 }
 
 .faq-image {
@@ -88,7 +88,7 @@
 }
 
 .faq-item.active {
-  background-color: #eeeeff;
+  background-color: var(--bl-bg-accent);
 }
 
 
@@ -109,7 +109,7 @@
 
   background: transparent;
 
-  color: #171b2f;
+  color: var(--bl-text);
 
   font-size: 16px;
   font-weight: 700;
@@ -130,7 +130,7 @@
 
   font-weight: 300;
 
-  color: #6d7690;
+  color: var(--bl-text-muted);
 
   transition: transform 0.2s ease;
 }
@@ -155,7 +155,7 @@
   font-size: 14px;
   line-height: 1.5;
 
-  color: #65708a;
+  color: var(--bl-text-muted);
 }
 
 

@@ -91,7 +91,7 @@
 
   border-radius: 8px;
 
-  background-color: #f0effa;
+  background-color: var(--bl-bg-neutral);
 
   text-decoration: none;
 
@@ -103,7 +103,7 @@
 .social-links a:hover {
   transform: translateY(-2px);
 
-  background-color: #e7e3ff;
+  background-color: var(--bl-bg-accent);
 }
 
 .social-links img {
@@ -147,7 +147,7 @@
 
   font-size: 13px;
 
-  color: #7a8399;
+  color: var(--bl-text-muted);
 }
 
 .footer-links {
@@ -161,7 +161,7 @@
 .footer-links span {
   font-size: 13px;
 
-  color: #7a8399;
+  color: var(--bl-text-muted);
 
   text-decoration: none;
 }

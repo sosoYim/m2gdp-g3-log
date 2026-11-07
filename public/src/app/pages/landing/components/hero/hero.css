@@ -4,6 +4,6 @@
   --df-padding: 16px 20px;
   --df-label-size: 12px;
   --df-label-weight: 600;
-  --df-label-color: #6b7280;
-  --df-value-color: #374151;
+  --df-label-color: var(--bl-text-muted);
+  --df-value-color: var(--bl-text);
 }

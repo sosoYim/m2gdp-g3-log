@@ -1,6 +1,6 @@
 .listings-section {
   width: 100%;
-  background-color: #e7e8fd;
+  background-color: var(--bl-bg-footer);
   padding: 56px 24px;
 }
 
@@ -16,7 +16,7 @@
   font-weight: 800;
   line-height: 1.2;
 
-  color: #171b2f;
+  color: var(--bl-text);
 }
 
 .listings-grid {
@@ -98,7 +98,7 @@
   font-size: 11px;
   font-weight: 600;
 
-  color: #727c98;
+  color: var(--bl-text-muted);
 }
 
 .listing-content h3 {
@@ -107,13 +107,13 @@
   font-size: 16px;
   font-weight: 700;
 
-  color: #171b2f;
+  color: var(--bl-text);
 }
 
 .listing-owner {
   font-size: 13px;
 
-  color: #626b80;
+  color: var(--bl-text-muted);
 }
 
 .view-all {
@@ -130,7 +130,7 @@
   font-size: 14px;
   font-weight: 500;
 
-  color: #50576b;
+  color: var(--bl-text-muted);
 
   cursor: pointer;
 }

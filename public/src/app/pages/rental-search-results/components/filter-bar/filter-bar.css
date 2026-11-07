@@ -32,7 +32,7 @@
 
   background: #ffffff;
 
-  color: #4a4e68;
+  color: var(--bl-text);
 
   font-family: inherit;
   font-size: 13px;
@@ -207,7 +207,7 @@
 
 
 .option:hover {
-  background: #f6f5fb;
+  background: var(--bl-bg-neutral);
 }
 
 
@@ -311,7 +311,7 @@
 
   background: var(--bl-primary);
 
-  color: #ffffff;
+  color: var(--bl-white);
 
   font-family: inherit;
   font-size: var(--bl-fs-small);

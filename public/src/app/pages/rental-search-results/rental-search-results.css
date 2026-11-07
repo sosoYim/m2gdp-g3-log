@@ -68,8 +68,8 @@
   height: 100%;
 
   --df-padding: 0 20px;
-  --df-label-color: #73788d;
-  --df-value-color: #242846;
+  --df-label-color: var(--bl-text-muted);
+  --df-value-color: var(--bl-text);
 }
 
 
@@ -102,7 +102,7 @@
 
   background: var(--bl-primary);
 
-  color: #ffffff;
+  color: var(--bl-white);
 
   font-family: inherit;
   font-size: 12px;
@@ -211,10 +211,10 @@
 .results-left h1 {
   margin: 0 0 20px;
 
-  color: #171925;
+  color: var(--bl-heading);
 
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.2;
 }
 
@@ -276,7 +276,7 @@
 
   border-radius: 8px;
 
-  background: #eee9ff;
+  background: var(--bl-bg-accent);
 }
 
 
@@ -292,9 +292,9 @@
 
   border-radius: 50%;
 
-  background: #8b5cf6;
+  background: var(--bl-primary);
 
-  color: #ffffff;
+  color: var(--bl-white);
 
   font-size: 12px;
   font-weight: 700;
@@ -304,7 +304,7 @@
 .info-banner p {
   margin: 0;
 
-  color: #7459c7;
+  color: var(--bl-primary);
 
   font-size: 12px;
   line-height: 1.4;
@@ -436,7 +436,7 @@
 
   border-radius: 999px;
 
-  background: #eee8ff;
+  background: var(--bl-bg-accent);
 
   color: var(--bl-primary);
 
@@ -499,10 +499,10 @@
 .listing-content h2 {
   margin: 3px 0 4px;
 
-  color: #17194f;
+  color: var(--bl-heading);
 
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.15;
 }
 
@@ -510,10 +510,10 @@
 .listing-location {
   margin: 0 0 8px;
 
-  color: #8b90aa;
+  color: var(--bl-text-muted);
 
-  font-size: 10px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 400;
 
   text-transform: uppercase;
 }
@@ -522,9 +522,10 @@
 .listing-details {
   margin: 0;
 
-  color: #858aa5;
+  color: var(--bl-text-muted);
 
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 400;
   line-height: 1.45;
 }
 
@@ -545,10 +546,10 @@
 
 
 .listing-price {
-  color: #17194f;
+  color: var(--bl-heading);
 
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 
@@ -596,7 +597,7 @@
 
   border-radius: 14px;
 
-  background: #edf0ff;
+  background: var(--bl-bg-footer);
 }
 
 
@@ -612,7 +613,7 @@
 
   z-index: 1;
 
-  background: #edf0ff;
+  background: var(--bl-bg-footer);
 }
 
 

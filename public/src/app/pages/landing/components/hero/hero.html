@@ -1,5 +1,5 @@
 <section
-  class="relative min-h-[603px] overflow-hidden bg-[#eeeeff] bg-cover bg-bottom bg-no-repeat"
+  class="relative min-h-[603px] overflow-hidden bg-[var(--bl-bg-footer)] bg-cover bg-bottom bg-no-repeat"
   style="background-image: url('/images/landing/hero.png')"
 >
 
@@ -8,14 +8,14 @@
   >
 
     <p
-      class="mb-3 text-sm font-medium uppercase tracking-wide text-[#7547f5]"
+      class="mb-3 text-sm font-medium uppercase tracking-wide text-[var(--bl-primary)]"
     >
       Votre prochain chez-vous à Lyon
     </p>
 
 
     <h1
-      class="text-5xl font-extrabold leading-[0.95] text-[#202aaa] md:text-6xl lg:text-7xl"
+      class="text-5xl font-extrabold leading-[0.95] text-[var(--bl-secondary)] md:text-6xl lg:text-7xl"
     >
       Pars serein,<br />
 
@@ -26,7 +26,7 @@
 
 
     <p
-      class="mt-5 text-base text-gray-700 md:text-lg"
+      class="mt-5 text-base text-[var(--bl-text-muted)] md:text-lg"
     >
       Un logement étudiant pour un stage, un échange ou quelques mois
     </p>
@@ -65,7 +65,7 @@
           type="button"
           (click)="search()"
           [disabled]="!arrivalDate || !departureDate"
-          class="w-full rounded-lg bg-[var(--bl-primary)] px-7 py-3 font-semibold text-white transition hover:bg-[#5f24df] disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
+          class="w-full rounded-lg bg-[var(--bl-primary)] px-7 py-3 font-semibold text-[var(--bl-white)] transition hover:bg-[var(--bl-primary-hover)] disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
         >
           Rechercher
         </button>
