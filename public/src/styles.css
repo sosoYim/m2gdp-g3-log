@@ -266,6 +266,12 @@
 }
 
 
+/* Popup de la recherche : mène au logement */
+.leaflet-popup-content .popup-clickable {
+  cursor: pointer;
+}
+
+
 /* =========================
    CONTRÔLES LEAFLET
 ========================= */

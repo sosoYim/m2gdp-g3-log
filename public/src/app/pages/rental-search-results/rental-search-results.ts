@@ -694,6 +694,20 @@ export class RentalSearchResults
       );
 
 
+      /*
+       * Toute la popup mène
+       * au détail du logement.
+       */
+      popup.classList.add(
+        'popup-clickable'
+      );
+
+      popup.addEventListener(
+        'click',
+        () => this.openListing(listing)
+      );
+
+
       marker.bindPopup(
         popup
       );
