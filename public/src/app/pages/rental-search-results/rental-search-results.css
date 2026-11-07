@@ -150,7 +150,52 @@
 
   gap: 34px;
 
-  align-items: stretch;
+  align-items: start;
+}
+
+
+/* ===== LISTE / CARTE (écran étroit) ===== */
+
+.view-switch {
+  display: none;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 4px;
+
+  margin-bottom: 16px;
+  padding: 4px;
+
+  border-radius: 9px;
+
+  background: var(--bl-bg-footer);
+}
+
+
+.view-switch button {
+  height: 36px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: none;
+
+  color: var(--bl-text-muted);
+
+  font-family: inherit;
+  font-size: var(--bl-fs-body);
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+
+.view-switch .view-switch-active {
+  background: #ffffff;
+
+  color: var(--bl-primary);
+
+  font-weight: 700;
 }
 
 
@@ -535,12 +580,17 @@
    CARTE LEAFLET
 ========================= */
 
+/*
+ * Reste visible à côté de la liste au défilement,
+ * sous la navbar (80px) + la zone de recherche (158px).
+ */
 .results-right {
-  position: relative;
+  position: sticky;
+  top: 258px;
 
   width: 100%;
-
-  min-height: 480px;
+  height: calc(100vh - 282px);
+  min-height: 400px;
 
   overflow: hidden;
 
@@ -584,8 +634,23 @@
   }
 
 
+  .view-switch {
+    display: grid;
+  }
+
+
   .results-right {
-    height: 500px;
+    position: relative;
+    top: auto;
+
+    height: max(360px, calc(100svh - 290px));
+  }
+
+
+  .results-layout:not(.view-map) .results-right,
+  .view-map .info-banner,
+  .view-map .listings-container {
+    display: none;
   }
 
 }
@@ -703,8 +768,5 @@
   }
 
 
-  .results-right {
-    height: 420px;
-  }
 
 }

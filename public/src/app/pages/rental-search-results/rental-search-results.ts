@@ -152,6 +152,10 @@ export class RentalSearchResults
   private viewReady = false;
 
 
+  /* Écran étroit : liste ou carte */
+  mobileView: 'list' | 'map' = 'list';
+
+
   constructor(
     private readonly router: Router,
     private readonly route: ActivatedRoute,
@@ -219,6 +223,26 @@ export class RentalSearchResults
      * on peut maintenant dessiner la carte.
      */
     this.refreshMap();
+
+  }
+
+
+  /*
+   * La carte était masquée : Leaflet doit
+   * recalculer sa taille avant de recadrer.
+   */
+  setMobileView(
+    view: 'list' | 'map'
+  ): void {
+
+    this.mobileView = view;
+
+    if (view === 'map') {
+      setTimeout(() => {
+        this.map?.invalidateSize();
+        this.refreshMap();
+      }, 0);
+    }
 
   }
 

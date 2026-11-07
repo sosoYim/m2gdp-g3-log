@@ -62,7 +62,10 @@
 
   <section class="results-section">
 
-    <div class="results-layout">
+    <div
+      class="results-layout"
+      [class.view-map]="mobileView === 'map'"
+    >
 
 
       <!-- =========================
@@ -98,6 +101,34 @@
           }
 
         </h1>
+
+
+        <!-- Liste / Carte (écran étroit) -->
+        <div
+          class="view-switch"
+          role="group"
+          aria-label="Affichage des résultats"
+        >
+
+          <button
+            type="button"
+            [class.view-switch-active]="mobileView === 'list'"
+            [attr.aria-pressed]="mobileView === 'list'"
+            (click)="setMobileView('list')"
+          >
+            Liste
+          </button>
+
+          <button
+            type="button"
+            [class.view-switch-active]="mobileView === 'map'"
+            [attr.aria-pressed]="mobileView === 'map'"
+            (click)="setMobileView('map')"
+          >
+            Carte
+          </button>
+
+        </div>
 
 
         <!-- =========================
