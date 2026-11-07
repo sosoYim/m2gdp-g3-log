@@ -15,6 +15,7 @@ import {
 
 import * as L from 'leaflet';
 
+import { DateField } from '../../shared/components/date-field/date-field';
 import { Navbar } from '../../shared/components/navbar/navbar';
 
 import { ContactSection } from '../landing/components/contact-section/contact-section';
@@ -81,6 +82,7 @@ interface RentalListing {
     Navbar,
     FormsModule,
     FilterBar,
+    DateField,
     ContactSection,
     Footer
   ],
@@ -730,15 +732,6 @@ export class RentalSearchResults
    * RECHERCHE
    * =========================================
    */
-
-  /** Ouvre le calendrier natif au clic sur toute la zone de date. */
-  openDatePicker(input: HTMLInputElement): void {
-    try {
-      input.showPicker();
-    } catch {
-      input.focus();
-    }
-  }
 
   search(): void {
 

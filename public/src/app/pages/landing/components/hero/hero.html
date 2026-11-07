@@ -35,68 +35,26 @@
     <!-- Recherche -->
 
     <div
-      class="mt-48 flex w-full max-w-2xl flex-col overflow-hidden rounded-xl bg-white shadow-lg md:flex-row"
+      class="mt-48 flex w-full max-w-2xl flex-col rounded-xl bg-white shadow-lg md:flex-row"
     >
 
 
       <!-- Arrivée -->
 
-      <div
-        class="flex flex-1 cursor-pointer items-center gap-3 border-b px-5 py-4 text-left md:border-b-0 md:border-r"
-        (click)="openDatePicker(arrivalInput)"
-      >
-
-        <span class="flex w-full flex-col">
-
-          <span
-            class="text-xs font-semibold uppercase text-gray-500"
-          >
-            Arrivée
-          </span>
-
-
-          <input
-            #arrivalInput
-            type="date"
-            aria-label="Arrivée"
-            [(ngModel)]="arrivalDate"
-            name="arrivalDate"
-            class="date-input w-full cursor-pointer bg-transparent text-sm text-gray-700 outline-none"
-          />
-
-        </span>
-
-      </div>
+      <app-date-field
+        class="hero-date flex-1 border-b md:border-b-0 md:border-r"
+        label="Arrivée"
+        [(value)]="arrivalDate"
+      />
 
 
       <!-- Départ -->
 
-      <div
-        class="flex flex-1 cursor-pointer items-center gap-3 border-b px-5 py-4 text-left md:border-b-0"
-        (click)="openDatePicker(departureInput)"
-      >
-
-        <span class="flex w-full flex-col">
-
-          <span
-            class="text-xs font-semibold uppercase text-gray-500"
-          >
-            Départ
-          </span>
-
-
-          <input
-            #departureInput
-            type="date"
-            aria-label="Départ"
-            [(ngModel)]="departureDate"
-            name="departureDate"
-            class="date-input w-full cursor-pointer bg-transparent text-sm text-gray-700 outline-none"
-          />
-
-        </span>
-
-      </div>
+      <app-date-field
+        class="hero-date flex-1 border-b md:border-b-0"
+        label="Départ"
+        [(value)]="departureDate"
+      />
 
 
       <!-- Rechercher -->

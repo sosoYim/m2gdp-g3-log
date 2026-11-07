@@ -15,58 +15,22 @@
     >
 
       <!-- Arrivée -->
-      <div
+      <app-date-field
         class="date-field"
-        (click)="openDatePicker(arrivalInput)"
-      >
-
-        <div class="date-content">
-
-          <span class="date-label">
-            ARRIVÉE
-          </span>
-
-          <input
-            #arrivalInput
-            id="arrival"
-            name="arrival"
-            aria-label="Arrivée"
-            type="date"
-            [(ngModel)]="arrivalDate"
-          />
-
-        </div>
-
-      </div>
+        label="Arrivée"
+        [(value)]="arrivalDate"
+      />
 
 
       <div class="separator"></div>
 
 
       <!-- Départ -->
-      <div
+      <app-date-field
         class="date-field"
-        (click)="openDatePicker(departureInput)"
-      >
-
-        <div class="date-content">
-
-          <span class="date-label">
-            DÉPART
-          </span>
-
-          <input
-            #departureInput
-            id="departure"
-            name="departure"
-            aria-label="Départ"
-            type="date"
-            [(ngModel)]="departureDate"
-          />
-
-        </div>
-
-      </div>
+        label="Départ"
+        [(value)]="departureDate"
+      />
 
 
       <button
@@ -77,6 +41,17 @@
       </button>
 
     </form>
+
+
+    <!-- Filtres -->
+    <div class="search-filters">
+
+      <app-filter-bar
+        [filters]="filters"
+        (filtersChange)="applyFilters($event)"
+      />
+
+    </div>
 
   </section>
 
@@ -123,16 +98,6 @@
           }
 
         </h1>
-
-
-        <!-- =========================
-             FILTRES
-        ========================== -->
-
-        <app-filter-bar
-          [filters]="filters"
-          (filtersChange)="applyFilters($event)"
-        />
 
 
         <!-- =========================

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+
+import { DateField } from '../../../../shared/components/date-field/date-field';
 
 @Component({
   selector: 'app-hero',
@@ -8,7 +9,7 @@ import { Router } from '@angular/router';
   standalone: true,
 
   imports: [
-    FormsModule
+    DateField
   ],
 
   styleUrl: './hero.css',
@@ -22,16 +23,6 @@ export class Hero {
   constructor(
     private readonly router: Router
   ) {}
-
-
-  /** Ouvre le calendrier natif au clic sur toute la zone de date. */
-  openDatePicker(input: HTMLInputElement): void {
-    try {
-      input.showPicker();
-    } catch {
-      input.focus();
-    }
-  }
 
 
   async search(): Promise<void> {

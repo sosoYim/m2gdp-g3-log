@@ -9,12 +9,25 @@
    ZONE RECHERCHE
 ========================= */
 
+/* Reste visible sous la navbar (80px, 64px mobile) au défilement */
 .search-zone {
+  position: sticky;
+  top: 80px;
+  z-index: 1050;
+
   width: 100%;
 
-  padding: 10px 0;
+  padding: 23px 0 22px;
 
-  background: #eeeeff;
+  background: var(--bl-bg-footer);
+}
+
+
+.search-filters {
+  width: calc(100% - 180px);
+  max-width: 1280px;
+
+  margin: 13px auto 0;
 }
 
 
@@ -22,7 +35,7 @@
   width: calc(100% - 180px);
   max-width: 1280px;
 
-  height: 54px;
+  height: 64px;
 
   margin: 0 auto;
 
@@ -54,62 +67,9 @@
 .date-field {
   height: 100%;
 
-  display: flex;
-  align-items: center;
-
-  gap: 11px;
-
-  padding: 0 20px;
-
-  cursor: pointer;
-}
-
-
-.date-content {
-  width: 100%;
-
-  display: flex;
-  flex-direction: column;
-
-  gap: 2px;
-}
-
-
-.date-content .date-label {
-  margin: 0;
-
-  color: #73788d;
-
-  font-size: 9px;
-  font-weight: 700;
-  line-height: 1.1;
-}
-
-
-.date-content input {
-  width: 100%;
-
-  margin: 0;
-  padding: 0;
-
-  border: none;
-  outline: none;
-
-  background: transparent;
-
-  color: #242846;
-
-  font-family: inherit;
-  font-size: 12px;
-  line-height: 1.2;
-
-  cursor: pointer;
-}
-
-
-/* Icône native masquée : toute la zone ouvre le calendrier */
-.date-content input::-webkit-calendar-picker-indicator {
-  display: none;
+  --df-padding: 0 20px;
+  --df-label-color: #73788d;
+  --df-value-color: #242846;
 }
 
 
@@ -613,6 +573,7 @@
 @media (max-width: 1200px) {
 
   .search-bar,
+  .search-filters,
   .results-section {
     width: calc(100% - 80px);
   }
@@ -654,6 +615,16 @@
    MOBILE
 ========================= */
 
+/* Navbar mobile : 64px */
+@media (max-width: 760px) {
+
+  .search-zone {
+    top: 64px;
+  }
+
+}
+
+
 @media (max-width: 700px) {
 
   .search-zone {
@@ -661,40 +632,43 @@
   }
 
 
-  .search-bar {
+  /* Compact : dates côte à côte, bouton en dessous */
+  .search-bar,
+  .search-filters {
     width: calc(100% - 32px);
+  }
 
+
+  .search-bar {
     height: auto;
 
-    display: flex;
-    flex-direction: column;
+    grid-template-columns: 1fr 1px 1fr;
 
-    align-items: stretch;
+    row-gap: 10px;
 
-    gap: 14px;
-
-    padding: 16px;
+    padding: 10px 12px 12px;
   }
 
 
   .date-field {
     height: auto;
 
-    padding: 0;
-  }
-
-
-  .separator {
-    width: 100%;
-    height: 1px;
+    --df-padding: 0 10px;
   }
 
 
   .search-button {
+    grid-column: 1 / -1;
+
     width: 100%;
     height: 42px;
 
     margin: 0;
+  }
+
+
+  .search-filters {
+    margin-top: 10px;
   }
 
 
