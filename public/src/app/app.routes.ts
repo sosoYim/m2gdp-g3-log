@@ -37,13 +37,15 @@ import { HostListingForm } from './pages/host-listing-form/host-listing-form';
 import { HostListingPublished } from './pages/host-listing-published/host-listing-published';
 
 import { authGuard } from './core/guards/auth.guard';
+import { hostHomeGuard } from './core/guards/host-home.guard';
 
 
 export const routes: Routes = [
 
   {
     path: '',
-    component: Landing
+    component: Landing,
+    canActivate: [hostHomeGuard]
   },
 
   {
