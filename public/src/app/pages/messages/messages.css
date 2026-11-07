@@ -634,8 +634,8 @@
 
   height: 48px;
 
-  /* À gauche : place du bouton « + » */
-  padding: 0 18px 0 48px;
+  /* Place des boutons « + » (gauche) et Envoyer (droite) */
+  padding: 0 48px;
 
   border: 1px solid #dfe1ea;
 
@@ -667,11 +667,20 @@
    BOUTON ENVOYER
    ========================================================= */
 
+/*
+ * Dans le champ, à droite (comme « + ») :
+ * 13px (gap) + 36px + 6px = 55px
+ */
 .send-button {
-  width: 48px;
-  height: 48px;
+  position: relative;
+  z-index: 1;
+
+  width: 36px;
+  height: 36px;
 
   flex-shrink: 0;
+
+  margin: 0 6px 0 -55px;
 
   display: flex;
 
@@ -705,8 +714,8 @@
 
 
 .send-button svg {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
 
   fill: none;
 
@@ -1005,12 +1014,6 @@
 
 
   .message-form input {
-    height: 44px;
-  }
-
-
-  .send-button {
-    width: 44px;
     height: 44px;
   }
 
