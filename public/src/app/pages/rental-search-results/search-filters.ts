@@ -262,3 +262,32 @@ export function matchesFilters(
     && filters.amenities.every(amenity => listing.amenities.includes(amenity));
 
 }
+
+
+/*
+ * Tri croissant selon le filtre de tranche actif :
+ * budget → loyer, surface → m², disponibilités → durée.
+ * Plusieurs filtres : budget, puis surface, puis durée.
+ * Aucun filtre de tranche : ordre d'origine (0).
+ */
+export function compareByFilters(
+  a: ListingDocument,
+  b: ListingDocument,
+  filters: SearchFilters
+): number {
+
+  if (filters.budget && a.price !== b.price) {
+    return a.price - b.price;
+  }
+
+  if (filters.surface && a.surface !== b.surface) {
+    return (a.surface ?? 0) - (b.surface ?? 0);
+  }
+
+  if (filters.duration) {
+    return (getAvailableMonths(a) ?? 0) - (getAvailableMonths(b) ?? 0);
+  }
+
+  return 0;
+
+}

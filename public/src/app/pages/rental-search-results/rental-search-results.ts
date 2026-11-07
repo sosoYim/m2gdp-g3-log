@@ -27,6 +27,7 @@ import { FilterBar } from './components/filter-bar/filter-bar';
 
 import {
   SearchFilters,
+  compareByFilters,
   createEmptyFilters,
   filtersFromParams,
   filtersToParams,
@@ -392,7 +393,14 @@ export class RentalSearchResults
 
         return !!document && matchesFilters(document, this.filters);
 
-      });
+      })
+      .sort((a, b) =>
+        compareByFilters(
+          this.documents.get(a.id)!,
+          this.documents.get(b.id)!,
+          this.filters
+        )
+      );
 
 
     this.cdr.detectChanges();
