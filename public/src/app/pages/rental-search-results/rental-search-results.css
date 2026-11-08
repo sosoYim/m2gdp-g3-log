@@ -694,80 +694,153 @@
 @media (max-width: 700px) {
 
   .search-zone {
-    padding: 12px 0;
+    padding: 10px 0;
   }
 
-
-  /* Compact : dates côte à côte, bouton en dessous */
   .search-bar,
   .search-filters {
-    width: calc(100% - 32px);
+    width: calc(100% - 24px);
   }
-
 
   .search-bar {
     height: auto;
 
     grid-template-columns: 1fr 1px 1fr;
 
-    row-gap: 10px;
+    row-gap: 8px;
 
-    padding: 10px 12px 12px;
+    padding: 8px 10px 10px;
   }
-
 
   .date-field {
     height: auto;
 
-    --df-padding: 0 10px;
+    --df-padding: 0 8px;
   }
-
 
   .search-button {
     grid-column: 1 / -1;
 
     width: 100%;
-    height: 42px;
+    height: 38px;
 
     margin: 0;
   }
 
-
   .search-filters {
-    margin-top: 10px;
+    margin-top: 8px;
   }
-
 
   .results-section {
-    width: calc(100% - 36px);
+    width: calc(100% - 24px);
 
-    padding: 28px 0 38px;
+    padding: 20px 0 30px;
   }
-
 
   .results-left h1 {
-    font-size: 21px;
+    margin-bottom: 12px;
+
+    font-size: 18px;
   }
 
+  .view-switch {
+    margin-bottom: 10px;
+  }
+
+  .info-banner {
+    min-height: 36px;
+
+    gap: 7px;
+
+    padding: 6px 9px;
+  }
+
+  .info-icon {
+    width: 19px;
+    height: 19px;
+
+    font-size: 10px;
+  }
+
+  .info-banner p {
+    font-size: 10px;
+  }
+
+  .listings-container {
+    gap: 10px;
+
+    margin-top: 9px;
+  }
 
   .listing-card {
     display: block;
 
-    padding: 10px;
-  }
+    min-height: 0;
 
+    padding: 7px;
+
+    border-radius: 11px;
+  }
 
   .listing-image-wrapper {
-    height: 210px;
+    height: 145px;
 
-    margin-bottom: 12px;
+    margin-bottom: 7px;
+
+    border-radius: 8px;
   }
 
+  .listing-top {
+    min-height: 22px;
+  }
+
+  .verified-badge {
+    min-height: 20px;
+
+    padding: 0 8px;
+
+    font-size: 9px;
+  }
+
+  .favorite-button {
+    width: 28px;
+    height: 28px;
+  }
+
+  .favorite-button svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  .listing-content h2 {
+    margin: 2px 0 3px;
+
+    font-size: 16px;
+  }
+
+  .listing-location {
+    margin-bottom: 4px;
+
+    font-size: 9px;
+  }
+
+  .listing-details {
+    font-size: 9px;
+
+    line-height: 1.3;
+  }
 
   .listing-footer {
-    margin-top: 18px;
+    margin-top: 8px;
+
+    gap: 8px;
   }
 
+  .listing-price {
+    font-size: 16px;
+  }
 
-
+  .listing-link {
+    font-size: 10px;
+  }
 }

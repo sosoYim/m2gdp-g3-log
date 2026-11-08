@@ -33,6 +33,19 @@
           </div>
 
           <div class="listing-content">
+
+            <div class="listing-top-row">
+              @if (listing.verified) {
+                <span class="verified-badge">
+                  ✓ Profil vérifié
+                </span>
+              }
+
+              <span class="listing-rating">
+                ★ {{ listing.rating }}
+              </span>
+            </div>
+
             <p class="listing-city">
               {{ listing.city }}
             </p>
@@ -41,14 +54,25 @@
               {{ listing.title }}
             </h3>
 
-            <p class="listing-owner">
-              {{ listing.owner }}
+            <p class="listing-details">
+              {{ listing.details }}
             </p>
+
+            <p class="listing-price">
+              {{ listing.price }}
+            </p>
+
           </div>
 
         </article>
       }
 
+    </div>
+
+    <div class="view-all">
+      <button type="button">
+        Voir les logements
+      </button>
     </div>
 
   </div>

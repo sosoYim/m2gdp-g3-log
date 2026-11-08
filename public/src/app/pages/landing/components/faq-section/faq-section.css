@@ -4,26 +4,20 @@
 
 .faq-section {
   width: 100%;
-
   padding: 64px 24px;
-
   background-color: #ffffff;
 }
 
 .faq-container {
   width: 100%;
   max-width: 1200px;
-
   margin: 0 auto;
 
   display: grid;
   grid-template-columns: 360px 1fr;
-
-  align-items: center;
-
+  align-items: start;
   gap: 70px;
 }
-
 
 /* =========================================================
    COLONNE GAUCHE
@@ -40,9 +34,8 @@
 }
 
 .faq-intro > p {
-  margin: 0 0 22px;
-
   max-width: 360px;
+  margin: 0 0 22px;
 
   font-size: 15px;
   line-height: 1.5;
@@ -51,15 +44,15 @@
 }
 
 .faq-image {
-  width: 100%;
-  max-width: 410px;
-  height: auto;
-
   display: block;
 
-  object-fit: contain;
+  width: 100%;
+  max-width: 330px;
+  height: auto;
 
-  margin-top: 10px;
+  margin-top: 26px;
+
+  object-fit: contain;
 }
 
 /* =========================================================
@@ -70,67 +63,78 @@
   display: flex;
   flex-direction: column;
 
-  gap: 14px;
+  gap: 0;
+
+  border: 1px solid #e1e4ef;
+  overflow: hidden;
 }
 
-
-/* Bloc question */
+/* =========================================================
+   BLOC FAQ
+   ========================================================= */
 
 .faq-item {
   overflow: hidden;
 
-  border: 1px solid #e1e4ef;
-  border-radius: 8px;
-
   background-color: #ffffff;
+
+  border: none;
+  border-bottom: 1px solid #e1e4ef;
+  border-radius: 0;
 
   transition: background-color 0.2s ease;
 }
 
-.faq-item.active {
-  background-color: var(--bl-bg-accent);
+.faq-item:last-child {
+  border-bottom: none;
 }
 
+/* Alternance comme Figma */
 
-/* Bouton question */
+.faq-item.active {
+  background-color: #eeeeff;
+}
+
+/* =========================================================
+   QUESTION
+   ========================================================= */
 
 .faq-question {
   width: 100%;
 
-  padding: 20px 22px;
+  padding: 18px 20px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 20px;
 
   border: none;
-
   background: transparent;
 
   color: var(--bl-text);
 
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
+  line-height: 1.25;
 
   text-align: left;
 
   cursor: pointer;
 }
 
-
-/* + */
+/* =========================================================
+   ICONE +
+   ========================================================= */
 
 .faq-icon {
   flex-shrink: 0;
 
-  font-size: 25px;
-  line-height: 1;
-
-  font-weight: 300;
-
   color: var(--bl-text-muted);
+
+  font-size: 21px;
+  line-height: 1;
+  font-weight: 300;
 
   transition: transform 0.2s ease;
 }
@@ -139,35 +143,30 @@
   transform: rotate(45deg);
 }
 
-
-/* Réponse */
+/* =========================================================
+   REPONSE
+   ========================================================= */
 
 .faq-answer {
-  padding:
-    0
-    22px
-    20px;
+  padding: 0 20px 18px;
 }
 
 .faq-answer p {
   margin: 0;
 
-  font-size: 14px;
-  line-height: 1.5;
-
   color: var(--bl-text-muted);
-}
 
+  font-size: 13px;
+  line-height: 1.45;
+}
 
 /* =========================================================
    TABLETTE
    ========================================================= */
 
 @media (max-width: 900px) {
-
   .faq-container {
     grid-template-columns: 1fr;
-
     gap: 40px;
   }
 
@@ -181,25 +180,22 @@
   }
 
   .faq-image {
-    max-width: 340px;
-    margin: 0 auto;
+    max-width: 300px;
+    margin: 20px auto 0;
   }
-
 }
-
 
 /* =========================================================
    MOBILE
    ========================================================= */
 
 @media (max-width: 600px) {
-
   .faq-section {
     padding: 42px 20px;
   }
 
   .faq-container {
-    gap: 32px;
+    gap: 30px;
   }
 
   .faq-intro h2 {
@@ -211,23 +207,20 @@
   }
 
   .faq-image {
-    max-width: 290px;
+    max-width: 250px;
   }
 
   .faq-question {
-    padding: 18px 16px;
+    padding: 16px;
 
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .faq-answer {
-    padding:
-      0
-      16px
-      18px;
+    padding: 0 16px 16px;
   }
 
   .faq-answer p {
-    font-size: 13px;
+    font-size: 12px;
   }
 }
