@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 interface Listing {
   city: string;
@@ -13,7 +14,7 @@ interface Listing {
 @Component({
   selector: 'app-featured-listings',
   standalone: true,
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './featured-listings.html',
   styleUrl: './featured-listings.css'
 })
