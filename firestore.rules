@@ -110,25 +110,30 @@ service cloud.firestore {
 
 
       /*
-       * Le demandeur modifie les dates ou annule
+       * Le demandeur modifie les dates de
        * sa demande, tant qu'elle est en attente.
        */
       allow update:
         if request.auth != null
         && resource.data.requesterId == request.auth.uid
         && resource.data.status == 'pending'
-        && (
-          (
-            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['arrivalDate', 'departureDate', 'updatedAt'])
-            && request.resource.data.arrivalDate is string
-            && request.resource.data.departureDate is string
-            && request.resource.data.arrivalDate < request.resource.data.departureDate
-          )
-          || (
-            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt'])
-            && request.resource.data.status == 'cancelled'
-          )
-        );
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['arrivalDate', 'departureDate', 'updatedAt'])
+        && request.resource.data.arrivalDate is string
+        && request.resource.data.departureDate is string
+        && request.resource.data.arrivalDate < request.resource.data.departureDate;
+
+
+      /*
+       * Annulation d'un séjour confirmé :
+       * annonceur seulement.
+       */
+      allow update:
+        if request.auth != null
+        && resource.data.ownerId == request.auth.uid
+        && resource.data.status == 'accepted'
+        && request.resource.data.status == 'cancelled'
+        && request.resource.data.cancelledBy == 'owner'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'cancelledBy', 'updatedAt']);
 
 
       /*
@@ -206,6 +211,41 @@ service cloud.firestore {
       allow read, write:
         if request.auth != null
         && get(/databases/$(database)/documents/listings/$(listingId)).data.ownerId == request.auth.uid;
+    }
+
+
+    /*
+     * =========================================
+     * SÉJOURS CONFIRMÉS (DATES BLOQUÉES)
+     * =========================================
+     *
+     * bookedPeriods/{requestId}, lisible par tous.
+     * Créé par l'annonceur pour une demande
+     * acceptée (mêmes dates), supprimé par
+     * l'annonceur une fois le séjour annulé.
+     */
+    match /bookedPeriods/{requestId} {
+
+      allow read:
+        if true;
+
+      allow create:
+        if request.auth != null
+        && request.resource.data.ownerId == request.auth.uid
+        && get(/databases/$(database)/documents/bookingRequests/$(requestId)).data.ownerId == request.auth.uid
+        && get(/databases/$(database)/documents/bookingRequests/$(requestId)).data.status == 'accepted'
+        && request.resource.data.requesterId == get(/databases/$(database)/documents/bookingRequests/$(requestId)).data.requesterId
+        && request.resource.data.listingId == get(/databases/$(database)/documents/bookingRequests/$(requestId)).data.listingId
+        && request.resource.data.from == get(/databases/$(database)/documents/bookingRequests/$(requestId)).data.arrivalDate
+        && request.resource.data.to == get(/databases/$(database)/documents/bookingRequests/$(requestId)).data.departureDate;
+
+      allow delete:
+        if request.auth != null
+        && resource.data.ownerId == request.auth.uid
+        && get(/databases/$(database)/documents/bookingRequests/$(requestId)).data.status == 'cancelled';
+
+      allow update:
+        if false;
     }
 
 

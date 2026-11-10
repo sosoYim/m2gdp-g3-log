@@ -1,12 +1,10 @@
 import {
   ChangeDetectorRef,
   Component,
-  EventEmitter,
   HostListener,
   Input,
   OnDestroy,
-  OnInit,
-  Output
+  OnInit
 } from '@angular/core';
 
 import { Media } from '../../../../core/media/media';
@@ -44,20 +42,6 @@ export class MessageAttachment implements OnInit, OnDestroy {
    */
   @Input()
   mine = false;
-
-  /*
-   * PDF déjà épinglé comme bail
-   */
-  @Input()
-  pinned = false;
-
-  /*
-   * Épingler ce PDF comme bail
-   */
-  @Output()
-  pin =
-    new EventEmitter<void>();
-
 
   /*
    * URL locale de la photo

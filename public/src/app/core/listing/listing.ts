@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 
 import {
-  arrayUnion,
   collection,
   deleteDoc,
   deleteField,
@@ -634,10 +633,14 @@ export class Listing {
       );
 
 
-    const snapshot =
-      await getDoc(
-        listingRef
-      );
+    const [snapshot, booked] =
+      await Promise.all([
+        getDoc(listingRef),
+        this.getBookedPeriods(listingId).catch(err => {
+          console.error('Séjours confirmés non chargés :', err);
+          return [];
+        })
+      ]);
 
 
     if (!snapshot.exists()) {
@@ -724,7 +727,7 @@ export class Listing {
 
       bookedPeriods:
 
-        getBookedPeriods(data['bookedPeriods']),
+        mergeBookedPeriods(data['bookedPeriods'], booked),
 
       status:
         data['status'] === 'draft'
@@ -764,10 +767,14 @@ export class Listing {
       );
 
 
-    const snapshot =
-      await getDocs(
-        listingsQuery
-      );
+    const [snapshot, booked] =
+      await Promise.all([
+        getDocs(listingsQuery),
+        this.getAllBookedPeriods().catch(err => {
+          console.error('Séjours confirmés non chargés :', err);
+          return new Map<string, BookedPeriod[]>();
+        })
+      ]);
 
 
     return snapshot.docs.map(
@@ -850,7 +857,7 @@ export class Listing {
 
           bookedPeriods:
 
-            getBookedPeriods(data['bookedPeriods']),
+            mergeBookedPeriods(data['bookedPeriods'], booked.get(documentSnapshot.id) ?? []),
 
           status:
             data['status'] === 'draft'
@@ -999,21 +1006,85 @@ export class Listing {
 
   /*
    * =========================================
-   * BLOQUER LES DATES D'UN SÉJOUR CONFIRMÉ
+   * SÉJOURS CONFIRMÉS (DATES BLOQUÉES)
    * =========================================
+   *
+   * bookedPeriods/{requestId} : collection
+   * publique, créée par l'annonceur quand il
+   * accepte, supprimée par l'annonceur ou le
+   * demandeur quand le séjour est annulé.
    */
   async addBookedPeriod(
-    listingId: string,
-    period: BookedPeriod
+    request: { id: string; listingId: string; ownerId: string; requesterId: string; arrivalDate: string; departureDate: string }
   ): Promise<void> {
 
-    await updateDoc(
-      doc(firestore, 'listings', listingId),
+    await setDoc(
+      doc(firestore, 'bookedPeriods', request.id),
       {
-        bookedPeriods: arrayUnion(period),
-        updatedAt: serverTimestamp()
+        listingId: request.listingId,
+        ownerId: request.ownerId,
+        requesterId: request.requesterId,
+        from: request.arrivalDate,
+        to: request.departureDate,
+        createdAt: serverTimestamp()
       }
     );
+
+  }
+
+
+  async removeBookedPeriod(
+    requestId: string
+  ): Promise<void> {
+
+    await deleteDoc(
+      doc(firestore, 'bookedPeriods', requestId)
+    );
+
+  }
+
+
+  /*
+   * Une erreur de lecture des séjours confirmés
+   * n'empêche pas d'afficher l'annonce
+   * (getListingById, getPublishedListings).
+   */
+  async getBookedPeriods(
+    listingId: string
+  ): Promise<BookedPeriod[]> {
+
+    const snapshot =
+      await getDocs(
+        query(collection(firestore, 'bookedPeriods'), where('listingId', '==', listingId))
+      );
+
+    return snapshot.docs.map(toBookedPeriod);
+
+  }
+
+
+  /*
+   * Toutes les annonces (recherche) :
+   * listingId → séjours confirmés
+   */
+  async getAllBookedPeriods(): Promise<Map<string, BookedPeriod[]>> {
+
+    const snapshot =
+      await getDocs(collection(firestore, 'bookedPeriods'));
+
+    const periods =
+      new Map<string, BookedPeriod[]>();
+
+    for (const documentSnapshot of snapshot.docs) {
+
+      const listingId =
+        documentSnapshot.data()['listingId'] ?? '';
+
+      periods.set(listingId, [...(periods.get(listingId) ?? []), toBookedPeriod(documentSnapshot)]);
+
+    }
+
+    return periods;
 
   }
 
@@ -1148,5 +1219,42 @@ function getBookedPeriods(
       from: period.from,
       to: period.to
     }));
+
+}
+
+
+function toBookedPeriod(
+  documentSnapshot: { id: string; data: () => Record<string, any> }
+): BookedPeriod {
+
+  const data =
+    documentSnapshot.data();
+
+  return {
+    requestId: documentSnapshot.id,
+    from: typeof data['from'] === 'string' ? data['from'] : '',
+    to: typeof data['to'] === 'string' ? data['to'] : ''
+  };
+
+}
+
+
+/*
+ * Anciennes annonces : séjours encore stockés
+ * dans listings/{id}.bookedPeriods (tableau),
+ * ajoutés à ceux de la collection.
+ */
+function mergeBookedPeriods(
+  legacy: unknown,
+  periods: BookedPeriod[]
+): BookedPeriod[] {
+
+  const ids =
+    new Set(periods.map(period => period.requestId));
+
+  return [
+    ...periods,
+    ...getBookedPeriods(legacy).filter(period => !ids.has(period.requestId))
+  ];
 
 }

@@ -40,7 +40,7 @@ const STATUS_LABELS: Record<BookingStatus, string> = {
   pending: 'EN ATTENTE DE VOTRE RÉPONSE',
   accepted: 'ACCEPTÉE',
   rejected: 'REFUSÉE',
-  cancelled: 'ANNULÉE PAR LE DEMANDEUR'
+  cancelled: 'ANNULÉE'
 };
 
 
@@ -354,7 +354,9 @@ export class HostRequestDetail implements OnInit {
       case 'accepted':
         return 'Vous avez accepté cette demande.';
       case 'cancelled':
-        return 'Le demandeur a annulé cette demande.';
+        return this.request()?.cancelledBy === 'owner'
+          ? 'Vous avez annulé ce séjour.'
+          : 'Le demandeur a annulé cette demande.';
       default:
         return 'Vous avez refusé cette demande.';
     }

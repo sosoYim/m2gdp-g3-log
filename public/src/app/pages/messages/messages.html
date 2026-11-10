@@ -174,7 +174,7 @@
             </header>
 
 
-            <!-- DEMANDE LIÉE (actions + bail épinglé) -->
+            <!-- DEMANDE LIÉE (actions) -->
 
             <app-request-card
               [request]="selectedDetails?.request ?? null"
@@ -185,6 +185,7 @@
               [otherName]="conversation.name"
               [userId]="currentUserId"
               [pinnedFile]="conversation.pinnedFile"
+              [pdfFiles]="conversationPdfs"
               (changed)="onRequestChanged(conversation.id, $event)"
             />
 
@@ -229,8 +230,6 @@
                       <app-message-attachment
                         [attachment]="message.attachment"
                         [mine]="message.sender === 'me'"
-                        [pinned]="message.attachment.url === conversation.pinnedFile?.url"
-                        (pin)="pinFile(message.attachment)"
                       />
                     }
 

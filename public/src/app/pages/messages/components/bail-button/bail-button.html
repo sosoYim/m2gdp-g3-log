@@ -1,0 +1,75 @@
+<button
+  type="button"
+  class="bail-icon"
+  [class.bail-icon-set]="pinnedFile"
+  [attr.aria-label]="pinnedFile ? 'Bail : ' + pinnedFile.name : 'Ajouter un bail'"
+  [attr.aria-expanded]="menuOpen"
+  [title]="pinnedFile ? 'Bail : ' + pinnedFile.name : 'Ajouter un bail'"
+  (click)="toggleMenu()"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z" />
+    <path d="M14 3v5h5" />
+    <path d="M9 13h6M9 17h4" />
+  </svg>
+</button>
+
+
+@if (menuOpen) {
+
+  <div class="bail-menu" role="menu">
+
+    <p class="bail-title">
+      @if (pinnedFile) {
+        Bail · <span>{{ pinnedFile.name }}</span>
+      } @else {
+        Aucun bail épinglé
+      }
+    </p>
+
+
+    @if (pinnedFile && !choosing) {
+
+      <button type="button" role="menuitem" [disabled]="saving" (click)="openFile()">
+        Voir le bail
+      </button>
+
+      <button type="button" role="menuitem" [disabled]="saving" (click)="choosing = true">
+        Remplacer
+      </button>
+
+      <button type="button" role="menuitem" class="bail-delete" [disabled]="saving" (click)="pin(null)">
+        Supprimer
+      </button>
+
+    } @else {
+
+      @for (file of otherPdfs; track file.url) {
+        <button type="button" role="menuitem" class="bail-file" [disabled]="saving" (click)="pin(file)">
+          {{ file.name }}
+        </button>
+      }
+
+      <button type="button" role="menuitem" class="bail-upload" [disabled]="saving" (click)="pickFile()">
+        {{ saving ? 'Envoi...' : 'Importer un PDF' }}
+      </button>
+
+    }
+
+
+    @if (error) {
+      <p class="bail-error" role="alert">{{ error }}</p>
+    }
+
+  </div>
+
+}
+
+
+<input
+  #fileInput
+  type="file"
+  accept="application/pdf"
+  hidden
+  (change)="uploadFile($event)"
+/>

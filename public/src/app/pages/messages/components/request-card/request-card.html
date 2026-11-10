@@ -34,6 +34,13 @@
       </span>
     }
 
+    <app-bail-button
+      [conversationId]="conversationId"
+      [userId]="userId"
+      [pinnedFile]="pinnedFile"
+      [pdfFiles]="pdfFiles"
+    />
+
   </div>
 
 
@@ -46,6 +53,18 @@
     <p class="request-confirmed">
       ✓ Séjour confirmé · ces dates sont réservées
     </p>
+
+    @if (isOwner) {
+
+      <div class="request-actions">
+
+        <button type="button" class="action-link" [disabled]="saving" (click)="togglePanel('cancel')">
+          Annuler le séjour
+        </button>
+
+      </div>
+
+    }
 
   } @else if (isPending && isOwner) {
 
@@ -89,15 +108,6 @@
         Modifier les dates
       </button>
 
-      <button
-        type="button"
-        class="action-link"
-        [disabled]="saving"
-        (click)="togglePanel('cancel')"
-      >
-        Annuler la demande
-      </button>
-
     </div>
 
 
@@ -139,11 +149,18 @@
 
       </div>
 
-    } @else if (panel === 'cancel') {
+    }
+
+  }
+
+
+  <!-- Confirmation d'annulation du séjour (annonceur) -->
+
+  @if (panel === 'cancel' && canCancel) {
 
       <div class="request-panel panel-inline">
 
-        <p>Annuler votre demande ? L’annonceur sera prévenu.</p>
+        <p>{{ cancelQuestion }}</p>
 
         <div class="request-actions">
 
@@ -159,8 +176,6 @@
 
       </div>
 
-    }
-
   }
 
 
@@ -168,37 +183,6 @@
     <p class="request-error" role="alert">{{ error }}</p>
   }
 
-
-  <!-- =========================
-       BAIL ÉPINGLÉ
-  ========================== -->
-
-  @if (pinnedFile; as file) {
-
-    <div class="pinned-file">
-
-      <button type="button" class="pinned-open" (click)="openPinnedFile()">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z" />
-          <path d="M14 3v5h5" />
-        </svg>
-        <span class="pinned-label">Bail</span>
-        <span class="pinned-name">{{ file.name }}</span>
-        <span class="pinned-cta">Ouvrir</span>
-      </button>
-
-      <button
-        type="button"
-        class="pinned-remove"
-        aria-label="Retirer le bail épinglé"
-        (click)="unpinFile()"
-      >
-        ✕
-      </button>
-
-    </div>
-
-  }
 
 </section>
 
