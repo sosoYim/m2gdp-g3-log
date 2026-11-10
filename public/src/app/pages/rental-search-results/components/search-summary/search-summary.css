@@ -94,7 +94,7 @@ svg {
   padding: 0;
   border-radius: 999px;
   background: transparent;
-  color: var(--bl-secondary);
+  color: var(--bl-text-muted);
 }
 
 .collapse-handle svg {
