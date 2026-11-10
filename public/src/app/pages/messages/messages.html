@@ -174,33 +174,19 @@
             </header>
 
 
-            <!-- DEMANDE LIÉE -->
+            <!-- DEMANDE LIÉE (actions + bail épinglé) -->
 
-            <div class="request-card">
-
-              @if (selectedSummary?.image) {
-                <img [src]="selectedSummary?.image" [alt]="conversation.listingTitle" />
-              }
-
-              <div class="request-card-content">
-
-                <strong>{{ conversation.listingTitle }}</strong>
-
-                @if (conversation.isOwner) {
-                  <a [routerLink]="['/host/requests', conversation.id]">Demande reçue · voir</a>
-                } @else {
-                  <span>Demande envoyée</span>
-                }
-
-              </div>
-
-              @if (selectedStatusLabel) {
-                <span class="request-status" [class]="'request-status status-' + selectedSummary?.status">
-                  {{ selectedStatusLabel }}
-                </span>
-              }
-
-            </div>
+            <app-request-card
+              [request]="selectedDetails?.request ?? null"
+              [listing]="selectedDetails?.listing ?? null"
+              [conversationId]="conversation.id"
+              [listingTitle]="conversation.listingTitle"
+              [isOwner]="conversation.isOwner"
+              [otherName]="conversation.name"
+              [userId]="currentUserId"
+              [pinnedFile]="conversation.pinnedFile"
+              (changed)="onRequestChanged(conversation.id, $event)"
+            />
 
 
             <!-- MESSAGES -->
@@ -225,6 +211,15 @@
 
                 @for (message of group.messages; track message.id) {
 
+                  @if (message.system) {
+
+                    <p class="system-notice">
+                      {{ message.text }}
+                      <span>{{ message.time }}</span>
+                    </p>
+
+                  } @else {
+
                   <div
                     class="message-row"
                     [class.message-row-me]="message.sender === 'me'"
@@ -234,6 +229,8 @@
                       <app-message-attachment
                         [attachment]="message.attachment"
                         [mine]="message.sender === 'me'"
+                        [pinned]="message.attachment.url === conversation.pinnedFile?.url"
+                        (pin)="pinFile(message.attachment)"
                       />
                     }
 
@@ -253,6 +250,8 @@
                     </span>
 
                   </div>
+
+                  }
 
                 }
 

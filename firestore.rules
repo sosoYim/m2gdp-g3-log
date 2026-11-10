@@ -110,6 +110,28 @@ service cloud.firestore {
 
 
       /*
+       * Le demandeur modifie les dates ou annule
+       * sa demande, tant qu'elle est en attente.
+       */
+      allow update:
+        if request.auth != null
+        && resource.data.requesterId == request.auth.uid
+        && resource.data.status == 'pending'
+        && (
+          (
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['arrivalDate', 'departureDate', 'updatedAt'])
+            && request.resource.data.arrivalDate is string
+            && request.resource.data.departureDate is string
+            && request.resource.data.arrivalDate < request.resource.data.departureDate
+          )
+          || (
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt'])
+            && request.resource.data.status == 'cancelled'
+          )
+        );
+
+
+      /*
        * L'annonceur accepte ou refuse une
        * demande en attente (statut + motif de refus).
        */

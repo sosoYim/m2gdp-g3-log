@@ -13,9 +13,17 @@
 
         ".write": "auth != null && ((!data.exists() && newData.child('requesterId').val() === auth.uid) || (data.exists() && (data.child('requesterId').val() === auth.uid || data.child('ownerId').val() === auth.uid) && newData.child('requesterId').val() === data.child('requesterId').val() && newData.child('ownerId').val() === data.child('ownerId').val()))",
 
+        "pinnedFile": {
+          ".validate": "newData.hasChildren(['url', 'name', 'type']) && newData.child('url').isString() && newData.child('url').val().contains('/api/media/messages/' + $conversationId + '/') && newData.child('name').isString() && newData.child('name').val().length <= 200 && newData.child('type').val() === 'application/pdf'"
+        },
+
         "messages": {
           "$messageId": {
             ".validate": "newData.hasChildren(['senderId', 'text', 'createdAt']) && newData.child('senderId').val() === auth.uid && newData.child('text').isString() && (newData.child('text').val().length > 0 || newData.hasChild('attachment')) && newData.child('text').val().length <= 2000",
+
+            "kind": {
+              ".validate": "newData.val() === 'system'"
+            },
 
             "attachment": {
               ".validate": "newData.hasChildren(['url', 'name', 'type'])",

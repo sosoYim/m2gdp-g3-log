@@ -1,0 +1,220 @@
+<section class="request-card">
+
+
+  <!-- =========================
+       RÉSUMÉ
+  ========================== -->
+
+  <div class="request-summary">
+
+    @if (listing?.image) {
+      <img [src]="listing?.image" [alt]="listingTitle" />
+    }
+
+    <div class="request-info">
+
+      <strong>{{ listingTitle }}</strong>
+
+      <span>
+        @if (dateRange) {
+          {{ dateRange }} ·
+        }
+        @if (isOwner) {
+          <a [routerLink]="['/host/requests', conversationId]">Demande reçue · voir</a>
+        } @else {
+          Demande envoyée
+        }
+      </span>
+
+    </div>
+
+    @if (status) {
+      <span class="request-status" [class]="'request-status status-' + request?.status">
+        {{ status }}
+      </span>
+    }
+
+  </div>
+
+
+  <!-- =========================
+       ACTIONS
+  ========================== -->
+
+  @if (request?.status === 'accepted') {
+
+    <p class="request-confirmed">
+      ✓ Séjour confirmé · ces dates sont réservées
+    </p>
+
+  } @else if (isPending && isOwner) {
+
+    <div class="request-actions">
+
+      <button
+        type="button"
+        class="action-primary"
+        [disabled]="saving || bookedOverlap"
+        (click)="openModal('accept')"
+      >
+        Accepter
+      </button>
+
+      <button
+        type="button"
+        class="action-outline"
+        [disabled]="saving"
+        (click)="openModal('refuse')"
+      >
+        Refuser
+      </button>
+
+    </div>
+
+    @if (bookedOverlap) {
+      <p class="request-error">Ces dates sont déjà réservées pour un autre séjour.</p>
+    }
+
+  } @else if (isPending) {
+
+    <div class="request-actions">
+
+      <button
+        type="button"
+        class="action-outline"
+        [class.action-active]="panel === 'dates'"
+        [disabled]="saving"
+        (click)="togglePanel('dates')"
+      >
+        Modifier les dates
+      </button>
+
+      <button
+        type="button"
+        class="action-link"
+        [disabled]="saving"
+        (click)="togglePanel('cancel')"
+      >
+        Annuler la demande
+      </button>
+
+    </div>
+
+
+    @if (panel === 'dates') {
+
+      <div class="request-panel">
+
+        <div class="panel-dates">
+
+          <app-date-field
+            label="Arrivée"
+            [min]="stayLimits.arrivalMin"
+            [max]="stayLimits.arrivalMax"
+            [value]="arrivalDate"
+            (valueChange)="setArrivalDate($event)"
+          />
+
+          <app-date-field
+            label="Départ"
+            [min]="stayLimits.departureMin"
+            [max]="stayLimits.departureMax"
+            [value]="departureDate"
+            (valueChange)="departureDate = $event"
+          />
+
+        </div>
+
+        <div class="request-actions">
+
+          <button type="button" class="action-primary" [disabled]="saving" (click)="saveDates()">
+            Enregistrer
+          </button>
+
+          <button type="button" class="action-link" [disabled]="saving" (click)="panel = null">
+            Fermer
+          </button>
+
+        </div>
+
+      </div>
+
+    } @else if (panel === 'cancel') {
+
+      <div class="request-panel panel-inline">
+
+        <p>Annuler votre demande ? L’annonceur sera prévenu.</p>
+
+        <div class="request-actions">
+
+          <button type="button" class="action-danger" [disabled]="saving" (click)="cancelRequest()">
+            Oui, annuler
+          </button>
+
+          <button type="button" class="action-link" [disabled]="saving" (click)="panel = null">
+            Non
+          </button>
+
+        </div>
+
+      </div>
+
+    }
+
+  }
+
+
+  @if (error) {
+    <p class="request-error" role="alert">{{ error }}</p>
+  }
+
+
+  <!-- =========================
+       BAIL ÉPINGLÉ
+  ========================== -->
+
+  @if (pinnedFile; as file) {
+
+    <div class="pinned-file">
+
+      <button type="button" class="pinned-open" (click)="openPinnedFile()">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z" />
+          <path d="M14 3v5h5" />
+        </svg>
+        <span class="pinned-label">Bail</span>
+        <span class="pinned-name">{{ file.name }}</span>
+        <span class="pinned-cta">Ouvrir</span>
+      </button>
+
+      <button
+        type="button"
+        class="pinned-remove"
+        aria-label="Retirer le bail épinglé"
+        (click)="unpinFile()"
+      >
+        ✕
+      </button>
+
+    </div>
+
+  }
+
+</section>
+
+
+@if (modal && request) {
+
+  <app-answer-modal
+    [mode]="modal"
+    [firstName]="firstName"
+    [ofFirstName]="withDe(firstName)"
+    [listingTitle]="listingTitle"
+    [dateRange]="dateRange"
+    [price]="listing?.price ?? null"
+    [saving]="saving"
+    (confirmed)="onAnswer($event)"
+    (closed)="closeModal()"
+  />
+
+}

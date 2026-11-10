@@ -355,6 +355,9 @@ export class RenterAccount implements OnInit {
       case 'rejected':
         return 'REFUSÉ';
 
+      case 'cancelled':
+        return 'ANNULÉ';
+
       default:
         return 'EN ATTENTE';
 
@@ -373,6 +376,7 @@ export class RenterAccount implements OnInit {
         return 'confirmed-badge';
 
       case 'rejected':
+      case 'cancelled':
         return 'rejected-badge';
 
       default:

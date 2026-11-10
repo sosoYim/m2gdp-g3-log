@@ -143,3 +143,44 @@ export function getMinStayError(
     : '';
 
 }
+
+
+/*
+ * =========================================
+ * PÉRIODES DÉJÀ RÉSERVÉES
+ * =========================================
+ *
+ * Une demande acceptée bloque ses dates
+ * (listings/{id}.bookedPeriods) : le reste
+ * de la disponibilité reste réservable.
+ */
+export interface BookedPeriod {
+
+  requestId: string;
+
+  from: string;
+
+  to: string;
+
+}
+
+
+/*
+ * Le départ d'un séjour peut être le jour
+ * d'arrivée du suivant (bornes exclusives).
+ */
+export function findBookedOverlap(
+  periods: BookedPeriod[],
+  arrivalDate: string,
+  departureDate: string
+): BookedPeriod | null {
+
+  if (!arrivalDate || !departureDate) {
+    return null;
+  }
+
+  return periods.find(period =>
+    period.from < departureDate && arrivalDate < period.to
+  ) ?? null;
+
+}

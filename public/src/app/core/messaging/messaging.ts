@@ -72,6 +72,12 @@ export interface RealtimeConversation {
    */
   readBy: Record<string, number>;
 
+  /*
+   * Bail (PDF) épinglé en haut de la
+   * conversation, null si aucun
+   */
+  pinnedFile: MessageAttachment | null;
+
   updatedAt: number;
 
 }
@@ -102,9 +108,21 @@ export interface RealtimeMessage {
 
   attachment: MessageAttachment | null;
 
+  /*
+   * 'system' : notification affichée au centre
+   * (dates modifiées, demande annulée,
+   * logement confirmé pour une autre demande)
+   */
+  kind: MessageKind;
+
   createdAt: number;
 
 }
+
+
+export type MessageKind =
+  | 'text'
+  | 'system';
 
 
 /*
@@ -321,7 +339,8 @@ export class Messaging {
     conversationId: string,
     senderId: string,
     text: string,
-    attachment: MessageAttachment | null = null
+    attachment: MessageAttachment | null = null,
+    kind: MessageKind = 'text'
   ): Promise<void> {
 
     const cleanText =
@@ -390,6 +409,8 @@ export class Messaging {
               cleanText,
 
             ...(attachment ? { attachment } : {}),
+
+            ...(kind === 'system' ? { kind } : {}),
 
             createdAt:
               serverTimestamp()
@@ -550,6 +571,29 @@ export class Messaging {
   }
 
 
+  /*
+   * =========================================
+   * ÉPINGLER LE BAIL
+   * =========================================
+   *
+   * Un seul fichier épinglé par conversation
+   * (null pour le retirer).
+   */
+  async setPinnedFile(
+    conversationId: string,
+    file: MessageAttachment | null
+  ): Promise<void> {
+
+    await update(
+      ref(realtimeDatabase, `conversations/${conversationId}`),
+      {
+        pinnedFile: file
+      }
+    );
+
+  }
+
+
   private mapAttachment(
     data: Record<string, any> | undefined
   ): MessageAttachment | null {
@@ -620,6 +664,9 @@ export class Messaging {
 
       readBy,
 
+      pinnedFile:
+        this.mapAttachment(data['pinnedFile']),
+
       updatedAt:
         typeof data['updatedAt'] === 'number'
           ? data['updatedAt']
@@ -680,6 +727,9 @@ export class Messaging {
 
                 attachment:
                   this.mapAttachment(data['attachment']),
+
+                kind:
+                  data['kind'] === 'system' ? 'system' : 'text',
 
                 createdAt:
                   typeof data['createdAt'] === 'number'

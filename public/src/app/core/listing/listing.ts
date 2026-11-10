@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import {
+  arrayUnion,
   collection,
   deleteDoc,
   deleteField,
@@ -15,6 +16,7 @@ import {
 } from 'firebase/firestore';
 
 import { firestore } from '../firebase/firebase';
+import { BookedPeriod, findBookedOverlap } from '../dates/dates';
 
 
 export interface ListingDocument {
@@ -68,6 +70,11 @@ export interface ListingDocument {
   amenities: string[];
 
   minStayMonths: number;
+
+  /*
+   * Séjours confirmés (demandes acceptées)
+   */
+  bookedPeriods: BookedPeriod[];
 
   status:
     | 'published'
@@ -714,6 +721,11 @@ export class Listing {
       minStayMonths:
         typeof data['minStayMonths'] === 'number' ? data['minStayMonths'] : 1,
 
+
+      bookedPeriods:
+
+        getBookedPeriods(data['bookedPeriods']),
+
       status:
         data['status'] === 'draft'
           ? 'draft'
@@ -834,6 +846,11 @@ export class Listing {
 
           minStayMonths:
             typeof data['minStayMonths'] === 'number' ? data['minStayMonths'] : 1,
+
+
+          bookedPeriods:
+
+            getBookedPeriods(data['bookedPeriods']),
 
           status:
             data['status'] === 'draft'
@@ -960,6 +977,11 @@ export class Listing {
           minStayMonths:
             typeof data['minStayMonths'] === 'number' ? data['minStayMonths'] : 1,
 
+
+          bookedPeriods:
+
+            getBookedPeriods(data['bookedPeriods']),
+
           status:
             data['status'] === 'draft'
               ? 'draft'
@@ -969,6 +991,27 @@ export class Listing {
 
         } satisfies ListingDocument;
 
+      }
+    );
+
+  }
+
+
+  /*
+   * =========================================
+   * BLOQUER LES DATES D'UN SÉJOUR CONFIRMÉ
+   * =========================================
+   */
+  async addBookedPeriod(
+    listingId: string,
+    period: BookedPeriod
+  ): Promise<void> {
+
+    await updateDoc(
+      doc(firestore, 'listings', listingId),
+      {
+        bookedPeriods: arrayUnion(period),
+        updatedAt: serverTimestamp()
       }
     );
 
@@ -1077,11 +1120,33 @@ export class Listing {
           listing.availableFrom <= arrivalDate
           &&
           listing.availableTo >= departureDate
+          &&
+          !findBookedOverlap(listing.bookedPeriods, arrivalDate, departureDate)
         );
 
       }
     );
 
   }
+
+}
+
+function getBookedPeriods(
+  value: unknown
+): BookedPeriod[] {
+
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter(period =>
+      typeof period?.from === 'string' && typeof period?.to === 'string'
+    )
+    .map(period => ({
+      requestId: typeof period.requestId === 'string' ? period.requestId : '',
+      from: period.from,
+      to: period.to
+    }));
 
 }

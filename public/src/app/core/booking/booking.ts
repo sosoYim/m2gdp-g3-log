@@ -14,12 +14,20 @@ import {
 } from 'firebase/firestore';
 
 import { firestore } from '../firebase/firebase';
+import { formatIsoDate } from '../dates/dates';
+import { Listing } from '../listing/listing';
+import { Messaging } from '../messaging/messaging';
 
 
 export type BookingStatus =
   | 'pending'
   | 'accepted'
-  | 'rejected';
+  | 'rejected'
+  /*
+   * Retirée par le demandeur
+   * (seulement en attente)
+   */
+  | 'cancelled';
 
 
 /*
@@ -36,6 +44,24 @@ export const REJECTION_REASON_LABELS: Record<RejectionReason, string> = {
   already_booked: 'Déjà réservé',
   other: 'Autre raison'
 };
+
+
+/*
+ * Réponse de l'annonceur
+ * (modale accepter / refuser)
+ */
+export interface BookingAnswer {
+
+  status: 'accepted' | 'rejected';
+
+  reason: RejectionReason | '';
+
+  /*
+   * Mot du refus (facultatif)
+   */
+  message: string;
+
+}
 
 
 export interface CreateBookingRequest {
@@ -134,6 +160,12 @@ function readStoredPendingCount(): StoredPendingCount | null {
   providedIn: 'root'
 })
 export class Booking {
+
+
+  constructor(
+    private readonly listingService: Listing,
+    private readonly messagingService: Messaging
+  ) {}
 
 
   /*
@@ -610,6 +642,154 @@ export class Booking {
 
   /*
    * =========================================
+   * RÉPONSE DE L'ANNONCEUR
+   * =========================================
+   *
+   * Accepter : les dates sont bloquées sur
+   * l'annonce, et les autres demandes en
+   * attente qui chevauchent sont refusées
+   * (« Déjà réservé ») avec une notification
+   * dans leur conversation.
+   *
+   * Retourne les demandes refusées
+   * automatiquement.
+   */
+  async answerRequest(
+    request: BookingRequest,
+    answer: BookingAnswer,
+    hostId: string,
+    listingTitle: string,
+    dateRange: string
+  ): Promise<BookingRequest[]> {
+
+    await this.updateRequestStatus(request.id, answer.status, answer.reason);
+
+
+    const text =
+      answer.status === 'accepted'
+        ? `Bonne nouvelle : j'ai accepté votre demande pour « ${listingTitle} » (${dateRange}).`
+        : answer.message;
+
+    if (text) {
+      await this.messagingService
+        .sendMessage(request.id, hostId, text)
+        .catch(err => console.error('Message au demandeur non envoyé :', err));
+    }
+
+
+    if (answer.status !== 'accepted') {
+      return [];
+    }
+
+
+    try {
+
+      await this.listingService.addBookedPeriod(request.listingId, {
+        requestId: request.id,
+        from: request.arrivalDate,
+        to: request.departureDate
+      });
+
+    } catch (err) {
+
+      /*
+       * Anciennes annonces de démonstration
+       * (sans ownerId) : la demande reste acceptée.
+       */
+      console.error('Dates non bloquées sur l\'annonce :', err);
+
+    }
+
+
+    const overlapping =
+      (await this.getRequestsForOwner(hostId)).filter(other =>
+        other.id !== request.id
+        && other.status === 'pending'
+        && other.listingId === request.listingId
+        && other.arrivalDate < request.departureDate
+        && request.arrivalDate < other.departureDate
+      );
+
+
+    await Promise.all(
+      overlapping.map(async other => {
+
+        await this.updateRequestStatus(other.id, 'rejected', 'already_booked');
+
+        await this.messagingService
+          .sendMessage(
+            other.id,
+            hostId,
+            `« ${listingTitle} » vient d'être confirmé pour un autre séjour sur ces dates. Votre demande a été refusée automatiquement.`,
+            null,
+            'system'
+          )
+          .catch(err => console.error('Notification non envoyée :', err));
+
+      })
+    );
+
+
+    return overlapping.map(other => ({
+      ...other,
+      status: 'rejected',
+      rejectionReason: 'already_booked'
+    }));
+
+  }
+
+
+  /*
+   * =========================================
+   * MODIFIER / ANNULER (DEMANDEUR)
+   * =========================================
+   *
+   * Seulement en attente. L'annonceur est
+   * prévenu dans la conversation.
+   */
+  async changeRequestDates(
+    request: BookingRequest,
+    arrivalDate: string,
+    departureDate: string
+  ): Promise<void> {
+
+    await updateDoc(
+      doc(firestore, 'bookingRequests', request.id),
+      {
+        arrivalDate,
+        departureDate,
+        updatedAt: serverTimestamp()
+      }
+    );
+
+    await this.messagingService
+      .sendMessage(
+        request.id,
+        request.requesterId,
+        `Dates modifiées : du ${formatIsoDate(arrivalDate)} au ${formatIsoDate(departureDate)}.`,
+        null,
+        'system'
+      )
+      .catch(err => console.error('Notification non envoyée :', err));
+
+  }
+
+
+  async cancelRequest(
+    request: BookingRequest
+  ): Promise<void> {
+
+    await this.updateRequestStatus(request.id, 'cancelled');
+
+    await this.messagingService
+      .sendMessage(request.id, request.requesterId, 'Demande annulée par le demandeur.', null, 'system')
+      .catch(err => console.error('Notification non envoyée :', err));
+
+  }
+
+
+  /*
+   * =========================================
    * ANTI-DOUBLON
    * =========================================
    */
@@ -661,7 +841,8 @@ export class Booking {
 
     if (
       status === 'accepted' ||
-      status === 'rejected'
+      status === 'rejected' ||
+      status === 'cancelled'
     ) {
 
       return status;
