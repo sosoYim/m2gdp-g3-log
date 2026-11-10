@@ -160,37 +160,64 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
   margin-bottom: 20px;
 }
 
-/* Écran étroit seulement */
+/* Écran étroit seulement : deux icônes,
+   pastille blanche sous la vue active */
 .view-toggle {
+  position: relative;
   display: none;
   flex-shrink: 0;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--bl-bg-accent);
+}
+
+.view-toggle::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 32px;
+  height: 30px;
+  border-radius: 999px;
+  background: var(--bl-white);
+  box-shadow: 0 1px 4px rgba(25, 21, 79, 0.15);
+  transition: transform 0.2s ease;
+}
+
+.view-toggle-map::before {
+  transform: translateX(32px);
+}
+
+.view-toggle button {
+  position: relative;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 30px;
   padding: 0;
   border: none;
-  border-radius: 50%;
-  background: var(--bl-bg-accent);
+  background: none;
   cursor: pointer;
 }
 
-.view-toggle:hover {
-  background: var(--bl-bg-footer);
-}
-
 .view-toggle svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   fill: none;
-  stroke: var(--bl-primary);
+  stroke: var(--bl-text-muted);
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+  transition: stroke 0.2s ease;
+}
+
+.view-toggle [aria-pressed='true'] svg {
+  stroke: var(--bl-primary);
 }
 
 
