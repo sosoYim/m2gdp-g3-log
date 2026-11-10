@@ -76,8 +76,7 @@ svg {
   font-weight: 700;
 }
 
-.summary-edit svg,
-.collapse-handle svg {
+.summary-edit svg {
   width: 16px;
   height: 16px;
 }
@@ -88,14 +87,19 @@ svg {
 .collapse-handle {
   display: flex;
   align-items: center;
-  gap: 2px;
-  margin: 6px auto 0;
-  padding: 4px 10px;
+  justify-content: center;
+  width: 44px;
+  height: 20px;
+  margin: 0 auto;
+  padding: 0;
   border-radius: 999px;
   background: transparent;
   color: var(--bl-secondary);
-  font-size: var(--bl-fs-small);
-  font-weight: 600;
+}
+
+.collapse-handle svg {
+  width: 18px;
+  height: 18px;
 }
 
 .collapse-handle:hover {

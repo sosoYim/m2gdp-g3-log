@@ -38,6 +38,6 @@ Code : `pages/rental-search-results/map-markers.ts` (styles globaux dans `src/st
 
 Composant `pages/rental-search-results/components/search-summary`.
 
-- Après « Rechercher », ou en arrivant avec des dates dans l'URL (recherche de l'accueil), la zone dates + filtres se replie en une ligne : « 📅 1 déc. → 1 févr. · 2 filtres — Modifier ». Clic → zone dépliée ; poignée « Réduire » pour la replier.
+- Après « Rechercher », ou en arrivant avec des dates dans l'URL (recherche de l'accueil), la zone dates + filtres se replie en une ligne : « 📅 1 déc. → 1 févr. · 2 filtres — Modifier ». Clic → zone dépliée ; poignée (double chevron ⌃⌃, « Réduire la recherche » pour les lecteurs d'écran) pour la replier.
 - Repliée, la carte prend toute la hauteur sous la navbar et le résumé (`calc(100svh - 150px)`, min. 360 px).
 - Sur grand écran (liste et carte côte à côte), la zone reste toujours dépliée.
