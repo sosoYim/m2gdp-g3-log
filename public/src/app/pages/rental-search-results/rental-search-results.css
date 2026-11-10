@@ -643,8 +643,10 @@
   }
 
 
+  /* Liste OU carte : même écart sous l'information */
   .results-layout {
     grid-template-columns: 1fr;
+    row-gap: 0;
   }
 
 
@@ -658,11 +660,11 @@
     top: auto;
 
     height: max(360px, calc(100svh - 290px));
+    margin-top: 12px;
   }
 
 
   .results-layout:not(.view-map) .results-right,
-  .view-map .info-banner,
   .view-map .listings-container {
     display: none;
   }
@@ -780,6 +782,10 @@
   .listings-container {
     gap: 10px;
 
+    margin-top: 9px;
+  }
+
+  .results-right {
     margin-top: 9px;
   }
 
