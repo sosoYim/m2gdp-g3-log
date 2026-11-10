@@ -273,6 +273,178 @@
 
 
 /* =========================
+   CARTE DE RECHERCHE : POPUPS + GROUPES
+   (pages/rental-search-results/map-markers.ts)
+========================= */
+
+/* Pastille : plusieurs logements superposés */
+.baillYon-map-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+
+  box-sizing: border-box;
+
+  border: 4px solid var(--bl-white);
+  border-radius: 50%;
+
+  background: var(--bl-primary);
+  box-shadow: 0 4px 12px rgba(50, 30, 120, 0.3);
+
+  color: var(--bl-white);
+  font-family: var(--font-sans);
+  font-size: var(--bl-fs-body);
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.baillYon-map-group:hover {
+  background: var(--bl-primary-hover);
+}
+
+.baillYon-map-popup .leaflet-popup-content {
+  min-width: 0;
+  margin: 8px;
+}
+
+/* Fermer : lisible au-dessus de la photo */
+.baillYon-map-popup a.leaflet-popup-close-button {
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bl-white);
+  color: var(--bl-heading);
+  font: 700 16px/24px var(--font-sans);
+}
+
+.baillYon-map-popup button {
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Un logement : photo en haut */
+.map-popup-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.map-popup-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 130px;
+  border-radius: 7px;
+  background: var(--bl-bg-accent);
+  object-fit: cover;
+}
+
+.map-popup-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 0 4px 2px;
+}
+
+.baillYon-map-popup .map-popup-title {
+  margin: 0;
+  overflow: hidden;
+  color: var(--bl-heading);
+  font-size: var(--bl-fs-body);
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-popup-location {
+  color: var(--bl-text-muted);
+  font-size: var(--bl-fs-small);
+}
+
+.map-popup-price {
+  color: var(--bl-heading);
+  font-size: var(--bl-fs-small);
+  font-weight: 700;
+}
+
+/* Plusieurs logements : liste à choisir */
+.map-popup-group-title {
+  margin: 4px 4px 8px;
+  color: var(--bl-text);
+  font-size: var(--bl-fs-small);
+  font-weight: 700;
+}
+
+.map-popup-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 236px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.baillYon-map-popup .map-popup-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px;
+  border-radius: 7px;
+}
+
+.map-popup-row .map-popup-text {
+  gap: 0;
+  padding: 0;
+}
+
+.baillYon-map-popup .map-popup-row:hover {
+  background: var(--bl-bg-accent);
+}
+
+.map-popup-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 56px;
+  height: 44px;
+  border-radius: 5px;
+  background: var(--bl-bg-accent);
+  object-fit: cover;
+}
+
+.map-popup-no-image svg {
+  width: 22px;
+  height: 22px;
+  fill: var(--bl-icon-placeholder);
+}
+
+.baillYon-map-popup .map-popup-zoom {
+  margin-top: 6px;
+  padding: 8px 4px 4px;
+  border-top: 1px solid #ececf2;
+  color: var(--bl-primary);
+  font-size: var(--bl-fs-small);
+  font-weight: 700;
+  text-align: center;
+}
+
+
+/* =========================
    CONTRÔLES LEAFLET
 ========================= */
 
