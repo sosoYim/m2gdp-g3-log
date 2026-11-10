@@ -1,0 +1,103 @@
+/* ===== RÉSUMÉ (écran étroit seulement) ===== */
+
+:host {
+  display: none;
+}
+
+@media (max-width: 1200px) {
+  :host {
+    display: block;
+  }
+}
+
+button {
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+/* ===== REPLIÉE ===== */
+
+.summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border-radius: 7px;
+  background: var(--bl-white);
+  box-shadow: 0 2px 8px rgba(25, 21, 79, 0.08);
+  color: var(--bl-text);
+  text-align: left;
+}
+
+.summary-icon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--bl-primary);
+}
+
+.summary-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--bl-fs-body);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.summary-text strong {
+  color: var(--bl-heading);
+}
+
+.summary-filters {
+  margin-left: 4px;
+  color: var(--bl-text-muted);
+}
+
+.summary-edit {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 2px;
+  color: var(--bl-primary);
+  font-size: var(--bl-fs-small);
+  font-weight: 700;
+}
+
+.summary-edit svg,
+.collapse-handle svg {
+  width: 16px;
+  height: 16px;
+}
+
+
+/* ===== DÉPLIÉE : POIGNÉE ===== */
+
+.collapse-handle {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: 6px auto 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--bl-secondary);
+  font-size: var(--bl-fs-small);
+  font-weight: 600;
+}
+
+.collapse-handle:hover {
+  background: var(--bl-bg-accent);
+}

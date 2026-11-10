@@ -1,7 +1,10 @@
 <app-navbar />
 
 
-<main class="search-results-page">
+<main
+  class="search-results-page"
+  [class.search-collapsed]="searchCollapsed"
+>
 
   <!-- =========================
        BARRE DE RECHERCHE
@@ -52,6 +55,18 @@
       />
 
     </div>
+
+
+    <!-- Écran étroit : replier / déplier
+         (résumé dates + filtres) -->
+    <app-search-summary
+      class="search-summary"
+      [collapsed]="searchCollapsed"
+      [arrivalDate]="arrivalDate"
+      [departureDate]="departureDate"
+      [filterCount]="activeFilterCount"
+      (collapsedChange)="setSearchCollapsed($event)"
+    />
 
   </section>
 

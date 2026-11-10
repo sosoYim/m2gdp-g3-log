@@ -23,7 +23,8 @@
 }
 
 
-.search-filters {
+.search-filters,
+.search-summary {
   width: calc(100% - 180px);
   max-width: 1280px;
 
@@ -638,8 +639,29 @@
 
   .search-bar,
   .search-filters,
+  .search-summary,
   .results-section {
     width: calc(100% - 80px);
+  }
+
+
+  /* Zone repliée : résumé seul */
+  .search-collapsed .search-zone {
+    padding: 10px 0;
+  }
+
+  .search-collapsed .search-bar,
+  .search-collapsed .search-filters {
+    display: none;
+  }
+
+  .search-collapsed .search-summary {
+    margin-top: 0;
+  }
+
+  /* Carte : toute la hauteur sous la navbar + le résumé */
+  .search-collapsed .results-right {
+    height: max(360px, calc(100svh - 150px));
   }
 
 
@@ -713,7 +735,8 @@
   }
 
   .search-bar,
-  .search-filters {
+  .search-filters,
+  .search-summary {
     width: calc(100% - 24px);
   }
 

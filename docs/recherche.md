@@ -33,3 +33,11 @@ Code : `pages/rental-search-results/map-markers.ts` (styles globaux dans `src/st
 - **Marqueurs superposés** (moins de 34 px à l'écran, recalculé à chaque zoom) : une pastille violette avec le nombre de logements. Clic → liste à choisir (miniature, titre, prix ; défilante au-delà de ~4). « Zoomer sur la zone » n'apparaît que si les logements peuvent être séparés en zoomant : les positions sont approximatives et plusieurs annonces peuvent avoir exactement le même point.
 - La popup garde une marge en haut pour ne pas cacher les boutons de zoom sur mobile.
 - Contenu des popups construit en DOM (`textContent`), jamais en HTML brut.
+
+## Zone de recherche repliable (écran ≤ 1200 px)
+
+Composant `pages/rental-search-results/components/search-summary`.
+
+- Après « Rechercher », ou en arrivant avec des dates dans l'URL (recherche de l'accueil), la zone dates + filtres se replie en une ligne : « 📅 1 déc. → 1 févr. · 2 filtres — Modifier ». Clic → zone dépliée ; poignée « Réduire » pour la replier.
+- Repliée, la carte prend toute la hauteur sous la navbar et le résumé (`calc(100svh - 150px)`, min. 360 px).
+- Sur grand écran (liste et carte côte à côte), la zone reste toujours dépliée.

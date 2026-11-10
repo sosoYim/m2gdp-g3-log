@@ -24,6 +24,7 @@ import { Footer } from '../landing/components/footer/footer';
 import { Auth } from '../../core/auth/auth';
 
 import { FilterBar } from './components/filter-bar/filter-bar';
+import { SearchSummary } from './components/search-summary/search-summary';
 
 import {
   POPUP_OPTIONS,
@@ -39,6 +40,7 @@ import {
 import {
   SearchFilters,
   compareByFilters,
+  countActiveFilters,
   createEmptyFilters,
   filtersFromParams,
   filtersToParams,
@@ -94,6 +96,7 @@ interface RentalListing {
     Navbar,
     FormsModule,
     FilterBar,
+    SearchSummary,
     DateField,
     ContactSection,
     Footer
@@ -173,6 +176,16 @@ export class RentalSearchResults
   mobileView: 'list' | 'map' = 'list';
 
 
+  /*
+   * Écran étroit : zone dates + filtres
+   * repliée (résumé sur une ligne) après une
+   * recherche, pour agrandir les résultats
+   */
+  searchCollapsed = false;
+
+  private firstParams = true;
+
+
   constructor(
     private readonly router: Router,
     private readonly route: ActivatedRoute,
@@ -202,6 +215,16 @@ export class RentalSearchResults
 
         this.filters =
           filtersFromParams(params);
+
+
+        /*
+         * Arrivée avec des dates (recherche de
+         * l'accueil) : zone déjà repliée
+         */
+        if (this.firstParams) {
+          this.firstParams = false;
+          this.searchCollapsed = !!this.arrivalDate && !!this.departureDate;
+        }
 
 
         /*
@@ -755,6 +778,28 @@ export class RentalSearchResults
    * =========================================
    */
 
+  get activeFilterCount(): number {
+
+    return countActiveFilters(this.filters);
+
+  }
+
+
+  /*
+   * La carte change de hauteur :
+   * Leaflet recalcule sa taille.
+   */
+  setSearchCollapsed(
+    collapsed: boolean
+  ): void {
+
+    this.searchCollapsed = collapsed;
+
+    setTimeout(() => this.map?.invalidateSize(), 0);
+
+  }
+
+
   search(): void {
 
     if (
@@ -775,6 +820,9 @@ export class RentalSearchResults
       return;
 
     }
+
+
+    this.setSearchCollapsed(true);
 
 
     this.router.navigate(

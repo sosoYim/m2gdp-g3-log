@@ -1,0 +1,50 @@
+@if (collapsed) {
+
+  <!-- REPLIÉE : résumé, clic pour modifier -->
+
+  <button
+    type="button"
+    class="summary"
+    aria-expanded="false"
+    aria-label="Modifier la recherche"
+    (click)="toggle()"
+  >
+
+    <svg class="summary-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M16 3v4M8 3v4M3 10h18" />
+    </svg>
+
+    <span class="summary-text">
+      <strong>{{ datesLabel }}</strong>
+      @if (filtersLabel) {
+        <span class="summary-filters">· {{ filtersLabel }}</span>
+      }
+    </span>
+
+    <span class="summary-edit">
+      Modifier
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m6 9 6 6 6-6" />
+      </svg>
+    </span>
+
+  </button>
+
+} @else {
+
+  <!-- DÉPLIÉE : poignée pour replier -->
+
+  <button
+    type="button"
+    class="collapse-handle"
+    aria-expanded="true"
+    (click)="toggle()"
+  >
+    Réduire
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="m6 15 6-6 6 6" />
+    </svg>
+  </button>
+
+}
