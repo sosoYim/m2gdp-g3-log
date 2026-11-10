@@ -154,62 +154,48 @@
 }
 
 
-/* ===== LISTE / CARTE (écran étroit) ===== */
+/* ===== TITRE + BASCULE LISTE / CARTE ===== */
 
-.view-switch {
-  display: none;
-
-  grid-template-columns: 1fr 1fr;
-
-  gap: 4px;
-
-  margin-bottom: 16px;
-  padding: 4px;
-
-  border-radius: 9px;
-
-  background: var(--bl-bg-footer);
+.results-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
-
-.view-switch button {
-  height: 36px;
-
+/* Écran étroit seulement */
+.view-toggle {
+  display: none;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
   border: none;
-  border-radius: 7px;
-
-  background: none;
-
-  color: var(--bl-text-muted);
-
-  font-family: inherit;
-  font-size: var(--bl-fs-body);
-  font-weight: 600;
-
+  border-radius: 50%;
+  background: var(--bl-bg-accent);
   cursor: pointer;
 }
 
-
-.view-switch .view-switch-active {
-  background: #ffffff;
-
-  color: var(--bl-primary);
-
-  font-weight: 700;
+.view-toggle:hover {
+  background: var(--bl-bg-footer);
 }
 
-
-/* =========================
-   COLONNE GAUCHE
-========================= */
-
-.results-left {
-  min-width: 0;
+.view-toggle svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: var(--bl-primary);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 
 .results-left h1 {
-  margin: 0 0 20px;
+  margin: 0;
 
   color: var(--bl-heading);
 
@@ -635,8 +621,8 @@
   }
 
 
-  .view-switch {
-    display: grid;
+  .view-toggle {
+    display: flex;
   }
 
 
@@ -737,14 +723,12 @@
     padding: 20px 0 30px;
   }
 
-  .results-left h1 {
+  .results-heading {
     margin-bottom: 12px;
-
-    font-size: 18px;
   }
 
-  .view-switch {
-    margin-bottom: 10px;
+  .results-left h1 {
+    font-size: 18px;
   }
 
   .info-banner {

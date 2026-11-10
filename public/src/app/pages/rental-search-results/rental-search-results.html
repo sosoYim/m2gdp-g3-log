@@ -74,58 +74,57 @@
 
       <div class="results-left">
 
-        <h1>
+        <div class="results-heading">
 
-          @if (loadingListings) {
+          <h1>
 
-            Chargement des logements...
+            @if (loadingListings) {
 
-          } @else if (listingError) {
+              Chargement des logements...
 
-            Impossible de charger les logements
+            } @else if (listingError) {
 
-          } @else {
-
-            {{ listings.length }}
-
-            @if (listings.length > 1) {
-
-              appartements disponibles
+              Impossible de charger les logements
 
             } @else {
 
-              appartement disponible
+              {{ listings.length }}
+
+              @if (listings.length > 1) {
+
+                appartements disponibles
+
+              } @else {
+
+                appartement disponible
+
+              }
 
             }
 
-          }
-
-        </h1>
+          </h1>
 
 
-        <!-- Liste / Carte (écran étroit) -->
-        <div
-          class="view-switch"
-          role="group"
-          aria-label="Affichage des résultats"
-        >
-
+          <!-- Liste / Carte (écran étroit) : une icône
+               qui montre la vue vers laquelle on bascule -->
           <button
             type="button"
-            [class.view-switch-active]="mobileView === 'list'"
-            [attr.aria-pressed]="mobileView === 'list'"
-            (click)="setMobileView('list')"
+            class="view-toggle"
+            [attr.aria-label]="mobileView === 'list' ? 'Voir la carte' : 'Voir la liste'"
+            [title]="mobileView === 'list' ? 'Voir la carte' : 'Voir la liste'"
+            (click)="setMobileView(mobileView === 'list' ? 'map' : 'list')"
           >
-            Liste
-          </button>
-
-          <button
-            type="button"
-            [class.view-switch-active]="mobileView === 'map'"
-            [attr.aria-pressed]="mobileView === 'map'"
-            (click)="setMobileView('map')"
-          >
-            Carte
+            @if (mobileView === 'list') {
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2Z" />
+                <path d="M9 4v14M15 6v14" />
+              </svg>
+            } @else {
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 6h13M8 12h13M8 18h13" />
+                <path d="M3.5 6h.01M3.5 12h.01M3.5 18h.01" />
+              </svg>
+            }
           </button>
 
         </div>
