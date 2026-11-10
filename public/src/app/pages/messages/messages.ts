@@ -24,6 +24,7 @@ import { Footer } from '../landing/components/footer/footer';
 import { Auth } from '../../core/auth/auth';
 import { Profile, getDisplayName } from '../../core/profile/profile';
 import { Listing, ListingDocument } from '../../core/listing/listing';
+import { findBookedOverlap } from '../../core/dates/dates';
 import { Booking, BookingRequest } from '../../core/booking/booking';
 import { Media } from '../../core/media/media';
 
@@ -496,6 +497,38 @@ export class Messages implements OnInit, OnDestroy {
         ]);
 
       this.requestDetails.set(conversation.id, { request, listing });
+
+
+      /*
+       * Annonceur : demande restée « en attente »
+       * alors que ses dates sont déjà confirmées
+       * pour un autre séjour → refusée + demandeur
+       * prévenu (cas des séjours confirmés avant
+       * le refus automatique).
+       */
+      if (
+        request?.status === 'pending'
+        && request.ownerId === this.currentUserId
+        && listing
+        && findBookedOverlap(
+          listing.bookedPeriods.filter(period => period.requestId !== request.id),
+          request.arrivalDate,
+          request.departureDate
+        )
+      ) {
+
+        const rejected =
+          await this.bookingService.rejectAsAlreadyBooked(
+            request,
+            this.currentUserId,
+            conversation.listingTitle || listing.title
+          );
+
+        this.requestDetails.set(conversation.id, { request: rejected, listing });
+
+        void this.bookingService.refreshPendingCount(this.currentUserId);
+
+      }
 
     } catch (err) {
 

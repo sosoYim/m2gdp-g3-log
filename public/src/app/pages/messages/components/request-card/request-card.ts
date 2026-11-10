@@ -1,7 +1,9 @@
 import {
   ChangeDetectorRef,
   Component,
+  ElementRef,
   EventEmitter,
+  HostListener,
   Input,
   OnChanges,
   Output
@@ -120,6 +122,7 @@ export class RequestCard implements OnChanges {
 
   constructor(
     private readonly bookingService: Booking,
+    private readonly host: ElementRef<HTMLElement>,
     private readonly cdr: ChangeDetectorRef
   ) {}
 
@@ -146,7 +149,24 @@ export class RequestCard implements OnChanges {
 
   get status(): string {
 
+    if (this.isPending && this.bookedOverlap) {
+      return 'INDISPONIBLE';
+    }
+
     return this.request ? STATUS_LABELS[this.request.status] : '';
+
+  }
+
+
+  /*
+   * Dates confirmées pour une autre demande :
+   * en attente (pas encore refusée) ou déjà
+   * refusée pour ce motif
+   */
+  get unavailable(): boolean {
+
+    return (this.isPending && this.bookedOverlap)
+      || (this.request?.status === 'rejected' && this.request.rejectionReason === 'already_booked');
 
   }
 
@@ -314,11 +334,47 @@ export class RequestCard implements OnChanges {
   }
 
 
+  setDepartureDate(
+    value: string
+  ): void {
+
+    this.departureDate = value;
+
+    this.error = '';
+
+  }
+
+
+  /*
+   * Modification des dates : un clic en
+   * dehors de la carte ferme le panneau
+   * (composedPath : le jour cliqué du
+   * calendrier a déjà pu disparaître).
+   */
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(
+    event: MouseEvent
+  ): void {
+
+    if (
+      this.panel === 'dates'
+      && !this.saving
+      && !event.composedPath().includes(this.host.nativeElement)
+    ) {
+      this.panel = null;
+      this.error = '';
+    }
+
+  }
+
+
   setArrivalDate(
     value: string
   ): void {
 
     this.arrivalDate = value;
+
+    this.error = '';
 
     if (this.departureDate && this.departureDate <= value) {
       this.departureDate = '';
