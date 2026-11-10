@@ -1,0 +1,124 @@
+/* ===== BOUTON ICÔNE ===== */
+
+:host {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.bail-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px dashed var(--bl-text-muted);
+  border-radius: 7px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.bail-icon svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: var(--bl-text-muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.bail-icon:hover {
+  background: var(--bl-bg-neutral);
+}
+
+/* Bail épinglé */
+.bail-icon-set {
+  border: none;
+  background: var(--bl-bg-accent);
+}
+
+.bail-icon-set svg {
+  stroke: var(--bl-primary);
+}
+
+.bail-icon-set:hover {
+  background: var(--bl-bg-accent);
+  filter: brightness(0.96);
+}
+
+
+/* ===== MENU ===== */
+
+.bail-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  width: 230px;
+  padding: 6px;
+  border: 1px solid #e2e3eb;
+  border-radius: 7px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(25, 21, 79, 0.12);
+}
+
+.bail-title {
+  margin: 0;
+  padding: 6px 8px 8px;
+  border-bottom: 1px solid #ececf2;
+  color: var(--bl-heading);
+  font-size: var(--bl-fs-small);
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bail-title span {
+  color: var(--bl-text-muted);
+  font-weight: 500;
+}
+
+.bail-menu button {
+  padding: 8px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--bl-text);
+  font-family: inherit;
+  font-size: var(--bl-fs-small);
+  text-align: left;
+  cursor: pointer;
+}
+
+.bail-menu button:hover:not(:disabled) {
+  background: var(--bl-bg-accent);
+}
+
+.bail-menu button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bail-menu .bail-file {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bail-menu .bail-upload {
+  color: var(--bl-primary);
+  font-weight: 700;
+}
+
+.bail-menu .bail-delete {
+  color: var(--bl-secondary);
+}
+
+.bail-error {
+  margin: 4px 8px;
+  color: #c43b3b;
+  font-size: 11px;
+}

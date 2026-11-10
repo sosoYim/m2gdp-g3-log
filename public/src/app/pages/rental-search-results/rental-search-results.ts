@@ -24,10 +24,23 @@ import { Footer } from '../landing/components/footer/footer';
 import { Auth } from '../../core/auth/auth';
 
 import { FilterBar } from './components/filter-bar/filter-bar';
+import { SearchSummary } from './components/search-summary/search-summary';
+
+import {
+  POPUP_OPTIONS,
+  createGroupIcon,
+  createGroupPopup,
+  createListingIcon,
+  createListingPopup,
+  getGroupCenter,
+  groupOverlapping,
+  isSamePoint
+} from './map-markers';
 
 import {
   SearchFilters,
   compareByFilters,
+  countActiveFilters,
   createEmptyFilters,
   filtersFromParams,
   filtersToParams,
@@ -83,6 +96,7 @@ interface RentalListing {
     Navbar,
     FormsModule,
     FilterBar,
+    SearchSummary,
     DateField,
     ContactSection,
     Footer
@@ -150,11 +164,26 @@ export class RentalSearchResults
   private markersLayer:
     L.LayerGroup | null = null;
 
+  /*
+   * Logements géolocalisés affichés
+   */
+  private mapListings: RentalListing[] = [];
+
   private viewReady = false;
 
 
   /* Écran étroit : liste ou carte */
   mobileView: 'list' | 'map' = 'list';
+
+
+  /*
+   * Écran étroit : zone dates + filtres
+   * repliée (résumé sur une ligne) après une
+   * recherche, pour agrandir les résultats
+   */
+  searchCollapsed = false;
+
+  private firstParams = true;
 
 
   constructor(
@@ -186,6 +215,16 @@ export class RentalSearchResults
 
         this.filters =
           filtersFromParams(params);
+
+
+        /*
+         * Arrivée avec des dates (recherche de
+         * l'accueil) : zone déjà repliée
+         */
+        if (this.firstParams) {
+          this.firstParams = false;
+          this.searchCollapsed = !!this.arrivalDate && !!this.departureDate;
+        }
 
 
         /*
@@ -528,6 +567,12 @@ export class RentalSearchResults
             this.map
           );
 
+
+      this.map.on(
+        'zoomend',
+        () => this.renderMarkers()
+      );
+
     }
 
 
@@ -595,137 +640,18 @@ export class RentalSearchResults
       const listing of validListings
     ) {
 
-      const coordinates:
-        L.LatLngExpression = [
+      bounds.push(
+        [
           listing.latitude,
           listing.longitude
-        ];
-
-
-      bounds.push(
-        coordinates
-      );
-
-
-      /*
-       * Marqueur BailLyon.
-       */
-      const markerIcon =
-        L.divIcon(
-          {
-            className:
-              'baillYon-map-marker',
-
-            html:
-              '<div class="baillYon-map-marker-dot"></div>',
-
-            iconSize:
-              [
-                34,
-                34
-              ],
-
-            iconAnchor:
-              [
-                17,
-                34
-              ],
-
-            popupAnchor:
-              [
-                0,
-                -30
-              ]
-          }
-        );
-
-
-      const marker =
-        L.marker(
-          coordinates,
-          {
-            icon:
-              markerIcon
-          }
-        );
-
-
-      /*
-       * Popup sécurisée.
-       */
-      const popup =
-        document.createElement(
-          'div'
-        );
-
-
-      const title =
-        document.createElement(
-          'strong'
-        );
-
-
-      title.textContent =
-        listing.title;
-
-
-      const location =
-        document.createElement(
-          'div'
-        );
-
-
-      location.textContent =
-        listing.location;
-
-
-      const price =
-        document.createElement(
-          'div'
-        );
-
-
-      price.textContent =
-        `${listing.price} € / mois`;
-
-
-      popup.appendChild(
-        title
-      );
-
-      popup.appendChild(
-        location
-      );
-
-      popup.appendChild(
-        price
-      );
-
-
-      /*
-       * Toute la popup mène
-       * au détail du logement.
-       */
-      popup.classList.add(
-        'popup-clickable'
-      );
-
-      popup.addEventListener(
-        'click',
-        () => this.openListing(listing)
-      );
-
-
-      marker.bindPopup(
-        popup
-      );
-
-
-      marker.addTo(
-        this.markersLayer!
+        ]
       );
 
     }
+
+
+    this.mapListings =
+      validListings;
 
 
     /*
@@ -764,6 +690,9 @@ export class RentalSearchResults
     }
 
 
+    this.renderMarkers();
+
+
     setTimeout(
       () =>
         this.map?.invalidateSize(),
@@ -775,9 +704,101 @@ export class RentalSearchResults
 
   /*
    * =========================================
+   * MARQUEURS (REGROUPÉS SI SUPERPOSÉS)
+   * =========================================
+   *
+   * Recalculés à chaque zoom : les logements
+   * proches se séparent en zoomant.
+   */
+  private renderMarkers(): void {
+
+    const map =
+      this.map;
+
+    const layer =
+      this.markersLayer;
+
+    if (!map || !layer) {
+      return;
+    }
+
+
+    layer.clearLayers();
+
+
+    for (const group of groupOverlapping(map, this.mapListings)) {
+
+      if (group.length === 1) {
+
+        const listing =
+          group[0];
+
+        L.marker([listing.latitude, listing.longitude], { icon: createListingIcon() })
+          .bindPopup(createListingPopup(listing, () => this.openListing(listing)), POPUP_OPTIONS)
+          .addTo(layer);
+
+        continue;
+
+      }
+
+
+      /*
+       * Zoom proposé seulement s'il peut
+       * séparer les logements
+       */
+      const canZoom =
+        !isSamePoint(group) && map.getZoom() < map.getMaxZoom();
+
+      const zoomToGroup = () =>
+        map.fitBounds(
+          L.latLngBounds(group.map(listing => [listing.latitude, listing.longitude] as L.LatLngTuple)),
+          { padding: [60, 60], maxZoom: map.getMaxZoom() }
+        );
+
+
+      L.marker(getGroupCenter(group), { icon: createGroupIcon(group.length) })
+        .bindPopup(
+          createGroupPopup(
+            group,
+            listing => this.openListing(listing as RentalListing),
+            canZoom ? zoomToGroup : null
+          ),
+          POPUP_OPTIONS
+        )
+        .addTo(layer);
+
+    }
+
+  }
+
+
+  /*
+   * =========================================
    * RECHERCHE
    * =========================================
    */
+
+  get activeFilterCount(): number {
+
+    return countActiveFilters(this.filters);
+
+  }
+
+
+  /*
+   * La carte change de hauteur :
+   * Leaflet recalcule sa taille.
+   */
+  setSearchCollapsed(
+    collapsed: boolean
+  ): void {
+
+    this.searchCollapsed = collapsed;
+
+    setTimeout(() => this.map?.invalidateSize(), 0);
+
+  }
+
 
   search(): void {
 
@@ -799,6 +820,9 @@ export class RentalSearchResults
       return;
 
     }
+
+
+    this.setSearchCollapsed(true);
 
 
     this.router.navigate(

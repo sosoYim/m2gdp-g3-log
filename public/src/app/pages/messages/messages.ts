@@ -97,6 +97,9 @@ interface Conversation {
 
   unread: boolean;
 
+  /*
+   * Bail (PDF) épinglé
+   */
   pinnedFile: Attachment | null;
 }
 
@@ -171,6 +174,12 @@ export class Messages implements OnInit, OnDestroy {
   conversations: Conversation[] = [];
 
   messageGroups: MessageGroup[] = [];
+
+  /*
+   * PDF envoyés dans la conversation ouverte
+   * (choix du bail), plus récents en premier
+   */
+  conversationPdfs: Attachment[] = [];
 
 
   private realtimeConversations: RealtimeConversation[] = [];
@@ -363,41 +372,14 @@ export class Messages implements OnInit, OnDestroy {
 
 
     /*
-     * Accepté : dates bloquées sur l'annonce
+     * Accepté / annulé : dates bloquées ou
+     * libérées sur l'annonce
      */
-    if (request.status === 'accepted' && details?.listing) {
+    if (request.status !== 'pending' && details?.listing) {
       void this.reloadDetails(conversationId);
     }
 
     this.cdr.detectChanges();
-
-  }
-
-
-  async pinFile(
-    attachment: Attachment | null
-  ): Promise<void> {
-
-    if (!attachment || !this.selectedConversationId) {
-      return;
-    }
-
-
-    this.sendError = '';
-
-    try {
-
-      await this.messagingService.setPinnedFile(this.selectedConversationId, attachment);
-
-    } catch (err) {
-
-      console.error('Erreur bail épinglé :', err);
-
-      this.sendError = 'Le bail n\'a pas pu être épinglé.';
-
-      this.cdr.detectChanges();
-
-    }
 
   }
 
@@ -579,6 +561,8 @@ export class Messages implements OnInit, OnDestroy {
 
     this.messageGroups = [];
 
+    this.conversationPdfs = [];
+
 
     let lastMessageId = '';
 
@@ -600,6 +584,12 @@ export class Messages implements OnInit, OnDestroy {
 
           this.messageGroups =
             this.groupByDay(realtimeMessages);
+
+          this.conversationPdfs =
+            realtimeMessages
+              .map(message => message.attachment)
+              .filter((file): file is Attachment => file?.type === 'application/pdf')
+              .reverse();
 
           this.cdr.detectChanges();
 

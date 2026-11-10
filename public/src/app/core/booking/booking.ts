@@ -39,6 +39,11 @@ export type RejectionReason =
   | 'other';
 
 
+export type CancelledBy =
+  | 'requester'
+  | 'owner';
+
+
 export const REJECTION_REASON_LABELS: Record<RejectionReason, string> = {
   dates_unavailable: 'Dates indisponibles',
   already_booked: 'Déjà réservé',
@@ -116,6 +121,12 @@ export interface BookingRequest {
    * '' si non refusée ou sans motif
    */
   rejectionReason: RejectionReason | '';
+
+  /*
+   * Annulation : par le demandeur ou
+   * l'annonceur ('' si non annulée)
+   */
+  cancelledBy: CancelledBy | '';
 
   createdAt: Timestamp | null;
 
@@ -374,6 +385,13 @@ export class Booking {
 
               this.normalizeReason(data['rejectionReason']),
 
+
+
+            cancelledBy:
+
+
+              data['cancelledBy'] === 'requester' || data['cancelledBy'] === 'owner' ? data['cancelledBy'] : '',
+
             createdAt:
               data['createdAt'] instanceof Timestamp
                 ? data['createdAt']
@@ -490,6 +508,13 @@ export class Booking {
 
               this.normalizeReason(data['rejectionReason']),
 
+
+
+            cancelledBy:
+
+
+              data['cancelledBy'] === 'requester' || data['cancelledBy'] === 'owner' ? data['cancelledBy'] : '',
+
             createdAt:
               data['createdAt'] instanceof Timestamp
                 ? data['createdAt']
@@ -594,6 +619,13 @@ export class Booking {
 
         this.normalizeReason(data['rejectionReason']),
 
+
+
+      cancelledBy:
+
+
+        data['cancelledBy'] === 'requester' || data['cancelledBy'] === 'owner' ? data['cancelledBy'] : '',
+
       createdAt:
         data['createdAt'] instanceof Timestamp
           ? data['createdAt']
@@ -684,11 +716,7 @@ export class Booking {
 
     try {
 
-      await this.listingService.addBookedPeriod(request.listingId, {
-        requestId: request.id,
-        from: request.arrivalDate,
-        to: request.departureDate
-      });
+      await this.listingService.addBookedPeriod(request);
 
     } catch (err) {
 
@@ -741,7 +769,7 @@ export class Booking {
 
   /*
    * =========================================
-   * MODIFIER / ANNULER (DEMANDEUR)
+   * MODIFIER LES DATES (DEMANDEUR)
    * =========================================
    *
    * Seulement en attente. L'annonceur est
@@ -775,14 +803,34 @@ export class Booking {
   }
 
 
+  /*
+   * Séjour confirmé annulé par l'annonceur :
+   * les dates redeviennent disponibles et le
+   * demandeur est prévenu. (Le demandeur ne
+   * peut pas annuler.)
+   */
   async cancelRequest(
-    request: BookingRequest
+    request: BookingRequest,
+    userId: string
   ): Promise<void> {
 
-    await this.updateRequestStatus(request.id, 'cancelled');
+    await updateDoc(
+      doc(firestore, 'bookingRequests', request.id),
+      {
+        status: 'cancelled',
+        cancelledBy: 'owner',
+        updatedAt: serverTimestamp()
+      }
+    );
+
+
+    await this.listingService
+      .removeBookedPeriod(request.id)
+      .catch(err => console.error('Dates non libérées :', err));
+
 
     await this.messagingService
-      .sendMessage(request.id, request.requesterId, 'Demande annulée par le demandeur.', null, 'system')
+      .sendMessage(request.id, userId, 'Séjour annulé par l\'annonceur. Les dates sont de nouveau disponibles.', null, 'system')
       .catch(err => console.error('Notification non envoyée :', err));
 
   }

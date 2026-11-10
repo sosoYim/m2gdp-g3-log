@@ -11,11 +11,11 @@ import { RouterLink } from '@angular/router';
 
 import { DateField } from '../../../../shared/components/date-field/date-field';
 import { AnswerConfirm, AnswerModal } from '../../../host-request-detail/components/answer-modal/answer-modal';
+import { BailButton } from '../bail-button/bail-button';
 
 import { Booking, BookingRequest } from '../../../../core/booking/booking';
 import { ListingDocument } from '../../../../core/listing/listing';
-import { Media } from '../../../../core/media/media';
-import { Messaging, MessageAttachment } from '../../../../core/messaging/messaging';
+import { MessageAttachment } from '../../../../core/messaging/messaging';
 
 import {
   findBookedOverlap,
@@ -35,8 +35,8 @@ import { STATUS_LABELS, getDateRange, withDe } from '../../../host-requests/requ
  * En haut du chat : résumé de la demande et
  * actions principales sans quitter la messagerie.
  *  - annonceur : accepter / refuser
- *  - demandeur : modifier les dates / annuler
- * + bail (PDF) épinglé, sur une seule ligne.
+ *  - demandeur : modifier les dates (en attente)
+ *  - bail épinglé : icône à côté du statut
  */
 @Component({
   selector: 'app-request-card',
@@ -46,7 +46,8 @@ import { STATUS_LABELS, getDateRange, withDe } from '../../../host-requests/requ
   imports: [
     RouterLink,
     DateField,
-    AnswerModal
+    AnswerModal,
+    BailButton
   ],
 
   templateUrl: './request-card.html',
@@ -81,8 +82,14 @@ export class RequestCard implements OnChanges {
   @Input()
   userId = '';
 
+  /*
+   * Bail épinglé (icône à côté du statut)
+   */
   @Input()
   pinnedFile: MessageAttachment | null = null;
+
+  @Input()
+  pdfFiles: MessageAttachment[] = [];
 
 
   /*
@@ -113,8 +120,6 @@ export class RequestCard implements OnChanges {
 
   constructor(
     private readonly bookingService: Booking,
-    private readonly messagingService: Messaging,
-    private readonly mediaService: Media,
     private readonly cdr: ChangeDetectorRef
   ) {}
 
@@ -184,6 +189,25 @@ export class RequestCard implements OnChanges {
       request.arrivalDate,
       request.departureDate
     );
+
+  }
+
+
+  /*
+   * Seul l'annonceur annule, et seulement
+   * un séjour confirmé (le demandeur ne
+   * peut que modifier ses dates en attente).
+   */
+  get canCancel(): boolean {
+
+    return this.isOwner && this.request?.status === 'accepted';
+
+  }
+
+
+  get cancelQuestion(): string {
+
+    return `Annuler ce séjour confirmé ? Les dates redeviendront disponibles et ${this.firstName} sera prévenu.`;
 
   }
 
@@ -358,13 +382,17 @@ export class RequestCard implements OnChanges {
 
     await this.run(async () => {
 
-      await this.bookingService.cancelRequest(request);
+      await this.bookingService.cancelRequest(request, this.userId);
 
       this.panel = null;
 
-      this.changed.emit({ ...request, status: 'cancelled' });
+      this.changed.emit({
+        ...request,
+        status: 'cancelled',
+        cancelledBy: 'owner'
+      });
 
-    }, 'La demande n\'a pas pu être annulée. Réessayez.');
+    }, 'L\'annulation n\'a pas pu être enregistrée. Réessayez.');
 
   }
 
@@ -396,73 +424,6 @@ export class RequestCard implements OnChanges {
     }
 
     return getMinStayError(this.arrivalDate, this.departureDate, listing.minStayMonths);
-
-  }
-
-
-  /*
-   * =========================================
-   * BAIL ÉPINGLÉ
-   * =========================================
-   *
-   * Même ouverture que dans le fil :
-   * onglet ouvert au clic, puis fichier
-   * téléchargé avec le jeton Firebase.
-   */
-  async openPinnedFile(): Promise<void> {
-
-    const file = this.pinnedFile;
-
-    if (!file) {
-      return;
-    }
-
-
-    const tab =
-      window.open('', '_blank');
-
-
-    try {
-
-      const url =
-        URL.createObjectURL(await this.mediaService.fetchAttachment(file.url));
-
-      if (tab) {
-        tab.location.href = url;
-      } else {
-        window.location.href = url;
-      }
-
-    } catch (err) {
-
-      console.error('Erreur ouverture du bail :', err);
-
-      tab?.close();
-
-      this.error = 'Le bail n\'a pas pu être ouvert.';
-
-      this.cdr.detectChanges();
-
-    }
-
-  }
-
-
-  async unpinFile(): Promise<void> {
-
-    try {
-
-      await this.messagingService.setPinnedFile(this.conversationId, null);
-
-    } catch (err) {
-
-      console.error('Erreur bail épinglé :', err);
-
-      this.error = 'Le bail n\'a pas pu être retiré.';
-
-      this.cdr.detectChanges();
-
-    }
 
   }
 
