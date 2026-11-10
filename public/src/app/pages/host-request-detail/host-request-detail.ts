@@ -22,7 +22,6 @@ import {
   BookingStatus,
   REJECTION_REASON_LABELS
 } from '../../core/booking/booking';
-import { Messaging } from '../../core/messaging/messaging';
 
 import { AnswerConfirm, AnswerModal } from './components/answer-modal/answer-modal';
 
@@ -40,7 +39,8 @@ import {
 const STATUS_LABELS: Record<BookingStatus, string> = {
   pending: 'EN ATTENTE DE VOTRE RÉPONSE',
   accepted: 'ACCEPTÉE',
-  rejected: 'REFUSÉE'
+  rejected: 'REFUSÉE',
+  cancelled: 'ANNULÉE PAR LE DEMANDEUR'
 };
 
 
@@ -116,7 +116,6 @@ export class HostRequestDetail implements OnInit {
     private readonly bookingService: Booking,
     private readonly listingService: Listing,
     private readonly profileService: Profile,
-    private readonly messagingService: Messaging,
     private readonly route: ActivatedRoute,
     private readonly cdr: ChangeDetectorRef
   ) {}
@@ -349,6 +348,20 @@ export class HostRequestDetail implements OnInit {
     withDe;
 
 
+  get answerDoneLabel(): string {
+
+    switch (this.request()?.status) {
+      case 'accepted':
+        return 'Vous avez accepté cette demande.';
+      case 'cancelled':
+        return 'Le demandeur a annulé cette demande.';
+      default:
+        return 'Vous avez refusé cette demande.';
+    }
+
+  }
+
+
   get rejectionLabel(): string {
 
     const reason =
@@ -415,7 +428,7 @@ export class HostRequestDetail implements OnInit {
     }
 
 
-    const status: BookingStatus =
+    const status =
       mode === 'accept' ? 'accepted' : 'rejected';
 
 
@@ -426,22 +439,29 @@ export class HostRequestDetail implements OnInit {
 
     try {
 
-      await this.bookingService.updateRequestStatus(request.id, status, answer.reason);
+      const autoRejected =
+        await this.bookingService.answerRequest(
+          request,
+          { status, reason: answer.reason, message: answer.message },
+          this.userId,
+          this.listing()?.title ?? 'le logement',
+          getDateRange(request)
+        );
 
       const updated: BookingRequest =
         { ...request, status, rejectionReason: answer.reason };
 
       this.request.set(updated);
 
+      const changed =
+        new Map([updated, ...autoRejected].map(r => [r.id, r]));
+
       this.ownerRequests =
-        this.ownerRequests.map(other => (other.id === request.id ? updated : other));
+        this.ownerRequests.map(other => changed.get(other.id) ?? other);
 
       this.updatePendingCount();
 
       this.closeModal();
-
-
-      await this.notifyRequester(request, status, answer.message);
 
     } catch (err) {
 
@@ -456,43 +476,6 @@ export class HostRequestDetail implements OnInit {
       this.saving.set(false);
 
       this.cdr.detectChanges();
-
-    }
-
-  }
-
-
-  /*
-   * Message dans la conversation de la demande
-   * (même ID). Sans conversation (anciennes
-   * demandes), la réponse reste enregistrée.
-   */
-  private async notifyRequester(
-    request: BookingRequest,
-    status: BookingStatus,
-    message: string
-  ): Promise<void> {
-
-    const listingTitle =
-      this.listing()?.title ?? 'le logement';
-
-    const text =
-      status === 'accepted'
-        ? `Bonne nouvelle : j'ai accepté votre demande pour « ${listingTitle} » (${getDateRange(request)}).`
-        : message;
-
-    if (!text) {
-      return;
-    }
-
-
-    try {
-
-      await this.messagingService.sendMessage(request.id, this.userId, text);
-
-    } catch (err) {
-
-      console.error('Message au demandeur non envoyé :', err);
 
     }
 

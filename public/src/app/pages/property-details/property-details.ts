@@ -23,11 +23,14 @@ import { Auth } from '../../core/auth/auth';
 import { Profile } from '../../core/profile/profile';
 
 import {
+  BookedPeriod,
   StayLimits,
+  findBookedOverlap,
   formatIsoDate,
   getMinStayError,
   getStayLimits,
-  isStayInAvailability
+  isStayInAvailability,
+  toIsoDate
 } from '../../core/dates/dates';
 
 import {
@@ -124,6 +127,11 @@ export class PropertyDetails implements OnInit {
   /* Période de disponibilité du logement ('YYYY-MM-DD') */
   availableFrom = '';
   availableTo = '';
+
+  /*
+   * Séjours déjà confirmés
+   */
+  bookedPeriods: BookedPeriod[] = [];
 
   minStayMonths = 0;
 
@@ -287,6 +295,9 @@ export class PropertyDetails implements OnInit {
 
       this.availableTo =
         firestoreListing.availableTo;
+
+      this.bookedPeriods =
+        firestoreListing.bookedPeriods;
 
 
       /*
@@ -461,6 +472,26 @@ export class PropertyDetails implements OnInit {
 
 
   /*
+   * « Déjà réservé du 01/07/2027 au 31/08/2027 »
+   * (séjours à venir seulement)
+   */
+  get bookedText(): string {
+
+    const today =
+      toIsoDate(new Date());
+
+    const periods =
+      this.bookedPeriods
+        .filter(period => period.to > today)
+        .sort((a, b) => a.from.localeCompare(b.from))
+        .map(period => `du ${formatIsoDate(period.from)} au ${formatIsoDate(period.to)}`);
+
+    return periods.length ? `Déjà réservé ${periods.join(', ')}` : '';
+
+  }
+
+
+  /*
    * Le départ doit rester après l'arrivée :
    * sinon on le vide.
    */
@@ -501,7 +532,9 @@ export class PropertyDetails implements OnInit {
      * Séjour minimum du logement
      */
     const minStayError =
-      getMinStayError(this.arrivalDate, this.departureDate, this.minStayMonths);
+      findBookedOverlap(this.bookedPeriods, this.arrivalDate, this.departureDate)
+        ? 'Ce logement est déjà réservé sur une partie de ces dates.'
+        : getMinStayError(this.arrivalDate, this.departureDate, this.minStayMonths);
 
     this.bookingError.set(minStayError);
 

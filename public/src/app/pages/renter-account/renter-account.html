@@ -141,6 +141,7 @@
                   type="button"
                   class="manage-button"
                   routerLink="/messages"
+                  [queryParams]="{ conversationId: booking.id }"
                 >
 
                   @if (booking.status === 'accepted') {

@@ -215,7 +215,7 @@
               } @else {
 
                 <p class="answer-done">
-                  {{ request.status === 'accepted' ? 'Vous avez accepté cette demande.' : 'Vous avez refusé cette demande.' }}
+                  {{ answerDoneLabel }}
                   @if (rejectionLabel) {
                     <br />Motif : {{ rejectionLabel }}
                   }

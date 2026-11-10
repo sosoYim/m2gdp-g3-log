@@ -111,5 +111,6 @@ export function withDe(
 export const STATUS_LABELS: Record<BookingStatus, string> = {
   pending: 'EN ATTENTE',
   accepted: 'ACCEPTÉE',
-  rejected: 'REFUSÉE'
+  rejected: 'REFUSÉE',
+  cancelled: 'ANNULÉE'
 };

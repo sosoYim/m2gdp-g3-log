@@ -23,12 +23,13 @@ import { Footer } from '../landing/components/footer/footer';
 
 import { Auth } from '../../core/auth/auth';
 import { Profile, getDisplayName } from '../../core/profile/profile';
-import { Listing } from '../../core/listing/listing';
-import { Booking, BookingStatus } from '../../core/booking/booking';
+import { Listing, ListingDocument } from '../../core/listing/listing';
+import { Booking, BookingRequest } from '../../core/booking/booking';
 import { Media } from '../../core/media/media';
 
 import {
   Messaging,
+  MessageAttachment as Attachment,
   RealtimeConversation,
   RealtimeMessage,
   isConversationUnread
@@ -36,6 +37,7 @@ import {
 
 import { AttachButton } from './components/attach-button/attach-button';
 import { MessageAttachment } from './components/message-attachment/message-attachment';
+import { RequestCard } from './components/request-card/request-card';
 
 
 interface ChatMessage {
@@ -44,6 +46,12 @@ interface ChatMessage {
   text: string;
 
   attachment: RealtimeMessage['attachment'];
+
+  /*
+   * Notification centrée (dates modifiées,
+   * demande annulée, logement confirmé)
+   */
+  system: boolean;
 
   sender:
     | 'me'
@@ -88,25 +96,20 @@ interface Conversation {
   time: string;
 
   unread: boolean;
+
+  pinnedFile: Attachment | null;
 }
 
 
 /*
  * Demande liée à la conversation
- * (même ID) : statut + photo de l'annonce
+ * (même ID) et son annonce
  */
-interface RequestSummary {
-  status: BookingStatus;
+interface RequestDetails {
+  request: BookingRequest | null;
 
-  image: string;
+  listing: ListingDocument | null;
 }
-
-
-const STATUS_LABELS: Record<BookingStatus, string> = {
-  pending: 'EN ATTENTE',
-  accepted: 'ACCEPTÉE',
-  rejected: 'REFUSÉE'
-};
 
 
 @Component({
@@ -123,7 +126,8 @@ const STATUS_LABELS: Record<BookingStatus, string> = {
     ContactSection,
     Footer,
     AttachButton,
-    MessageAttachment
+    MessageAttachment,
+    RequestCard
   ],
 
   templateUrl: './messages.html',
@@ -174,8 +178,8 @@ export class Messages implements OnInit, OnDestroy {
   private requesterNames =
     new Map<string, string>();
 
-  private requestSummaries =
-    new Map<string, RequestSummary>();
+  private requestDetails =
+    new Map<string, RequestDetails>();
 
   private unsubscribeConversations:
     (() => void) | null = null;
@@ -183,7 +187,7 @@ export class Messages implements OnInit, OnDestroy {
   private unsubscribeMessages:
     (() => void) | null = null;
 
-  private currentUserId = '';
+  currentUserId = '';
 
 
   constructor(
@@ -333,19 +337,67 @@ export class Messages implements OnInit, OnDestroy {
   }
 
 
-  get selectedSummary(): RequestSummary | null {
+  get selectedDetails(): RequestDetails | null {
 
-    return this.requestSummaries.get(this.selectedConversationId) ?? null;
+    return this.requestDetails.get(this.selectedConversationId) ?? null;
 
   }
 
 
-  get selectedStatusLabel(): string {
+  /*
+   * Action faite depuis la carte demande
+   * (accepter, refuser, dates, annulation)
+   */
+  onRequestChanged(
+    conversationId: string,
+    request: BookingRequest
+  ): void {
 
-    const summary =
-      this.selectedSummary;
+    const details =
+      this.requestDetails.get(conversationId);
 
-    return summary ? STATUS_LABELS[summary.status] : '';
+    this.requestDetails.set(conversationId, {
+      request,
+      listing: details?.listing ?? null
+    });
+
+
+    /*
+     * Accepté : dates bloquées sur l'annonce
+     */
+    if (request.status === 'accepted' && details?.listing) {
+      void this.reloadDetails(conversationId);
+    }
+
+    this.cdr.detectChanges();
+
+  }
+
+
+  async pinFile(
+    attachment: Attachment | null
+  ): Promise<void> {
+
+    if (!attachment || !this.selectedConversationId) {
+      return;
+    }
+
+
+    this.sendError = '';
+
+    try {
+
+      await this.messagingService.setPinnedFile(this.selectedConversationId, attachment);
+
+    } catch (err) {
+
+      console.error('Erreur bail épinglé :', err);
+
+      this.sendError = 'Le bail n\'a pas pu être épinglé.';
+
+      this.cdr.detectChanges();
+
+    }
 
   }
 
@@ -422,11 +474,11 @@ export class Messages implements OnInit, OnDestroy {
       }
 
 
-      if (!this.requestSummaries.has(conversation.id)) {
+      if (!this.requestDetails.has(conversation.id)) {
 
-        this.requestSummaries.set(conversation.id, { status: 'pending', image: '' });
+        this.requestDetails.set(conversation.id, { request: null, listing: null });
 
-        tasks.push(this.loadSummary(conversation));
+        tasks.push(this.loadDetails(conversation));
 
       }
 
@@ -447,7 +499,7 @@ export class Messages implements OnInit, OnDestroy {
   }
 
 
-  private async loadSummary(
+  private async loadDetails(
     conversation: RealtimeConversation
   ): Promise<void> {
 
@@ -461,16 +513,36 @@ export class Messages implements OnInit, OnDestroy {
             : null
         ]);
 
-      this.requestSummaries.set(conversation.id, {
-        status: request?.status ?? 'pending',
-        image: listing?.image ?? ''
-      });
+      this.requestDetails.set(conversation.id, { request, listing });
 
     } catch (err) {
 
       console.error('Erreur résumé conversation :', err);
 
     }
+
+  }
+
+
+  /*
+   * L'autre personne a pu changer la demande
+   * (réponse, dates, annulation) : rechargée
+   * à chaque nouveau message reçu.
+   */
+  private async reloadDetails(
+    conversationId: string
+  ): Promise<void> {
+
+    const conversation =
+      this.realtimeConversations.find(c => c.id === conversationId);
+
+    if (!conversation) {
+      return;
+    }
+
+    await this.loadDetails(conversation);
+
+    this.cdr.detectChanges();
 
   }
 
@@ -508,11 +580,23 @@ export class Messages implements OnInit, OnDestroy {
     this.messageGroups = [];
 
 
+    let lastMessageId = '';
+
     this.unsubscribeMessages =
       this.messagingService.observeMessages(
         conversationId,
 
         realtimeMessages => {
+
+          const last =
+            realtimeMessages[realtimeMessages.length - 1];
+
+          if (last && last.id !== lastMessageId && lastMessageId && last.senderId !== this.currentUserId) {
+            void this.reloadDetails(conversationId);
+          }
+
+          lastMessageId = last?.id ?? '';
+
 
           this.messageGroups =
             this.groupByDay(realtimeMessages);
@@ -747,7 +831,8 @@ export class Messages implements OnInit, OnDestroy {
         ? previewPrefix + conversation.lastMessage
         : 'Nouvelle conversation',
       time: this.formatConversationTime(conversation.lastMessageAt || conversation.updatedAt),
-      unread
+      unread,
+      pinnedFile: conversation.pinnedFile
     };
 
   }
@@ -789,6 +874,7 @@ export class Messages implements OnInit, OnDestroy {
         id: message.id,
         text: message.text,
         attachment: message.attachment,
+        system: message.kind === 'system',
         sender: message.senderId === this.currentUserId ? 'me' : 'other',
         time: this.formatTime(message.createdAt)
       });

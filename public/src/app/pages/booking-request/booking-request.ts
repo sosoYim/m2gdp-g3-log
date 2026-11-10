@@ -27,7 +27,9 @@ import { Listing } from '../../core/listing/listing';
 import { Profile } from '../../core/profile/profile';
 
 import {
+  BookedPeriod,
   StayLimits,
+  findBookedOverlap,
   getMinStayError,
   getStayLimits,
   isStayInAvailability
@@ -123,7 +125,9 @@ export class BookingRequest implements OnInit {
 
     availableTo: '',
 
-    minStayMonths: 0
+    minStayMonths: 0,
+
+    bookedPeriods: [] as BookedPeriod[]
 
   };
 
@@ -293,7 +297,10 @@ export class BookingRequest implements OnInit {
           firestoreListing.availableTo,
 
         minStayMonths:
-          firestoreListing.minStayMonths
+          firestoreListing.minStayMonths,
+
+        bookedPeriods:
+          firestoreListing.bookedPeriods
 
       };
 
@@ -448,6 +455,17 @@ export class BookingRequest implements OnInit {
 
       this.errorMessage.set(
         'Ces dates ne sont pas dans la période de disponibilité du logement.'
+      );
+
+      return;
+
+    }
+
+
+    if (findBookedOverlap(this.listing.bookedPeriods, this.arrivalDate, this.departureDate)) {
+
+      this.errorMessage.set(
+        'Ce logement est déjà réservé sur une partie de ces dates.'
       );
 
       return;

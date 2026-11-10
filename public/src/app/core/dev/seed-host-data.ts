@@ -7,6 +7,8 @@ import {
 import { auth, firestore } from '../firebase/firebase';
 
 import { Booking } from '../booking/booking';
+import { Listing } from '../listing/listing';
+import { Messaging } from '../messaging/messaging';
 
 
 /*
@@ -120,7 +122,7 @@ export async function seedHostData(): Promise<void> {
    * l'utilisateur est donc aussi le demandeur.
    */
   const bookingService =
-    new Booking();
+    new Booking(new Listing(), new Messaging());
 
 
   const requests = [

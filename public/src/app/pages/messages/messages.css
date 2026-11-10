@@ -385,86 +385,6 @@
 
 
 /* =========================================================
-   CARTE DEMANDE
-   ========================================================= */
-
-.request-card {
-  flex-shrink: 0;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 12px;
-
-  margin: 12px;
-
-  padding: 8px 10px;
-
-  border: 1px solid #e2e3eb;
-
-  border-radius: 7px;
-
-  background: #ffffff;
-}
-
-
-.request-card img {
-  width: 58px;
-  height: 48px;
-
-  flex-shrink: 0;
-
-  object-fit: cover;
-
-  border-radius: 4px;
-}
-
-
-.request-card-content {
-  flex: 1;
-
-  min-width: 0;
-
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 4px;
-}
-
-
-.request-card-content strong {
-  color: #171925;
-
-  font-size: 11px;
-}
-
-
-.request-card-content span {
-  color: #858a9d;
-
-  font-size: 9px;
-}
-
-
-.request-status {
-  flex-shrink: 0;
-
-  padding: 5px 13px;
-
-  border-radius: 999px;
-
-  background: #fff0e7;
-
-  color: #2731a1;
-
-  font-size: 8px;
-  font-weight: 800;
-}
-
-
-/* =========================================================
    ZONE DES MESSAGES
    ========================================================= */
 
@@ -766,22 +686,6 @@
   font-weight: 700;
 }
 
-.request-card-content a {
-  color: var(--bl-primary);
-  font-size: 10px;
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.status-accepted {
-  background: var(--bl-bg-accent);
-  color: var(--bl-primary);
-}
-
-.status-rejected {
-  background: #ececf2;
-  color: var(--bl-text);
-}
 
 .send-error {
   margin: 0 20px 6px;
@@ -880,11 +784,6 @@
   }
 
 
-  .request-card {
-    margin: 10px;
-  }
-
-
   .message-bubble {
     max-width: 80%;
   }
@@ -950,16 +849,6 @@
   }
 
 
-  .request-card {
-    align-items: flex-start;
-  }
-
-
-  .request-status {
-    padding: 4px 9px;
-  }
-
-
   .message-bubble {
     max-width: 85%;
   }
@@ -1002,19 +891,27 @@
   }
 
 
-  .request-card img {
-    width: 50px;
-    height: 44px;
-  }
-
-
-  .request-card-content strong {
-    font-size: 10px;
-  }
-
-
   .message-form input {
     height: 44px;
   }
 
+}
+/* ===== NOTIFICATION (MESSAGE SYSTÈME) ===== */
+
+.system-notice {
+  align-self: center;
+  max-width: 85%;
+  margin: 6px auto 12px;
+  padding: 7px 12px;
+  border-radius: 7px;
+  background: var(--bl-bg-neutral);
+  color: var(--bl-secondary);
+  font-size: 11px;
+  text-align: center;
+}
+
+.system-notice span {
+  margin-left: 6px;
+  color: var(--bl-text-muted);
+  font-size: 10px;
 }
