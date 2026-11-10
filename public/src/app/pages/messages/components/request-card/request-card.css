@@ -74,9 +74,27 @@
   color: var(--bl-text);
 }
 
-.request-confirmed {
+.request-unavailable {
   margin: 0;
   padding: 6px 10px;
+  border-radius: 7px;
+  background: var(--bl-bg-neutral);
+  color: var(--bl-secondary);
+  font-size: var(--bl-fs-small);
+}
+
+.status-unavailable {
+  background: #ececf2;
+  color: var(--bl-text);
+}
+
+.request-confirmed {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  padding: 6px 6px 6px 10px;
   border-radius: 7px;
   background: var(--bl-bg-accent);
   color: var(--bl-primary);
@@ -115,6 +133,25 @@
   color: var(--bl-white);
 }
 
+/* Bouton icône (enregistrer les dates) */
+.request-actions .action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  padding: 0;
+}
+
+.action-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .action-primary:hover:not(:disabled) {
   background: var(--bl-primary-hover);
 }
@@ -139,8 +176,33 @@
 
 .action-danger {
   border: none;
-  background: var(--bl-secondary);
+  background: var(--bl-danger);
   color: var(--bl-white);
+}
+
+.action-danger:hover:not(:disabled),
+.confirmed-cancel:hover:not(:disabled) {
+  filter: brightness(0.92);
+}
+
+/* Annuler le séjour, dans l'encadré « Séjour confirmé » */
+.confirmed-cancel {
+  flex-shrink: 0;
+  height: 28px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 7px;
+  background: var(--bl-danger);
+  color: var(--bl-white);
+  font-family: inherit;
+  font-size: var(--bl-fs-small);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.confirmed-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 
@@ -154,9 +216,10 @@
   border-top: 1px solid #ececf2;
 }
 
-.panel-dates {
+.request-panel.panel-dates {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: center;
   gap: 8px;
 }
 

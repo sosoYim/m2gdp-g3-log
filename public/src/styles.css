@@ -33,6 +33,7 @@
   --bl-bg-footer: #e7e8fd;      /* fond du bloc de bas de page */
   --bl-bg-neutral: #f1f1f7;     /* fond gris clair neutre (icône Messagerie du menu, survol des boutons icône) */
   --bl-white: #fffffd;          /* blanc : texte sur fond violet (rôle sélectionné Je viens / J'accueille) */
+  --bl-danger: #c43b3b;         /* action destructive (Annuler un séjour confirmé, Oui, annuler) */
 
   /* Tailles de texte (police Montserrat) */
   --bl-fs-title: 27px;          /* titre de page */

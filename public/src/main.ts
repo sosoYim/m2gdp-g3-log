@@ -6,6 +6,7 @@ import { App } from './app/app';
 import { seedHostData } from './app/core/dev/seed-host-data';
 import { migrateListingAddress } from './app/core/dev/migrate-listing-address';
 import { migrateBookedPeriods } from './app/core/dev/migrate-booked-periods';
+import { inspectRequests } from './app/core/dev/inspect-requests';
 
 /*
  * TODO(dev) À SUPPRIMER en fin de développement — début
@@ -14,6 +15,7 @@ import { migrateBookedPeriods } from './app/core/dev/migrate-booked-periods';
  * via la console (await seedHostData()).
  * Migration des adresses : await migrateListingAddress().
  * Migration des séjours confirmés : await migrateBookedPeriods().
+ * Diagnostic des demandes reçues : await inspectRequests().
  * Supprimer aussi l'import de isDevMode ci-dessus
  * et le dossier app/core/dev/.
  */
@@ -21,6 +23,7 @@ if (isDevMode()) {
   (window as any).seedHostData = seedHostData;
   (window as any).migrateListingAddress = migrateListingAddress;
   (window as any).migrateBookedPeriods = migrateBookedPeriods;
+  (window as any).inspectRequests = inspectRequests;
 }
 // TODO(dev) À SUPPRIMER en fin de développement — fin
 

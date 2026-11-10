@@ -46,6 +46,8 @@ Accepter une demande (`Booking.answerRequest`, depuis la messagerie ou `/host/re
 2. création de `bookedPeriods/{requestId}` (`listingId`, `ownerId`, `requesterId`, `from`, `to` ; lecture publique) : seules ces dates sont bloquées, le reste de la disponibilité reste réservable. Le service `Listing` les ajoute à `ListingDocument.bookedPeriods` (`getListingById`, `getPublishedListings`). Les anciens séjours stockés en tableau dans `listings/{id}.bookedPeriods` sont encore lus ;
 3. les autres demandes **en attente** de la même annonce dont les dates chevauchent sont refusées (`already_booked`) et reçoivent une notification système dans leur conversation.
 
+Demande restée « en attente » alors que ses dates sont déjà confirmées (séjour accepté avant le refus automatique) : la carte affiche **INDISPONIBLE** + « Ces dates ont été confirmées pour un autre séjour : cette demande n'est plus possible. » (aussi côté demandeur). Quand l'annonceur ouvre la conversation, elle est refusée (`already_booked`, `Booking.rejectAsAlreadyBooked`) et le demandeur reçoit la notification système. Une demande refusée pour ce motif garde le même message.
+
 Les dates bloquées sont refusées sur la fiche logement (« Déjà réservé du … au … » + erreur au clic), dans `/booking-request` et à la modification des dates ; la recherche par dates exclut les annonces dont un séjour confirmé chevauche les dates cherchées.
 
 Annuler un séjour confirmé : la demande passe à `cancelled` puis `bookedPeriods/{requestId}` est supprimé.

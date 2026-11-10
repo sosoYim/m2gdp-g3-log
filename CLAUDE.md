@@ -102,6 +102,7 @@ Template: `@if (loading()) { <div class="state-box">Chargement...</div> } @else 
   | `--bl-bg-footer` | `#E7E8FD` | bottom block background (contact section) |
   | `--bl-bg-neutral` | `#F1F1F7` | neutral light grey background (Messagerie icon in the main menu, icon button hover e.g. messagerie « + ») |
   | `--bl-white` | `#FFFFFD` | white text on purple (selected role in Je viens / J'accueille) |
+  | `--bl-danger` | `#C43B3B` | destructive actions (messagerie « Annuler » a confirmed stay, « Oui, annuler ») |
 
   **Always use a token** when the color is in this palette (CSS `var(--bl-…)`, Tailwind arbitrary classes `text-[var(--bl-primary)]`). If a needed color has no token, propose adding one to `src/styles.css` + this table instead of hardcoding it.
   Off-palette hex still in the code (`#171925`, `#17194f`, `#eee9ff`, `#777c92`, `#5f24df`, greys/borders…) is left as is on purpose: the team reviews all colors in a **pre-release color check**. Don't silently remap them to a "close" token; leave them or ask.

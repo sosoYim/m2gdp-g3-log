@@ -29,7 +29,7 @@
     </div>
 
     @if (status) {
-      <span class="request-status" [class]="'request-status status-' + request?.status">
+      <span class="request-status" [class]="'request-status status-' + (isPending && bookedOverlap ? 'unavailable' : request?.status)">
         {{ status }}
       </span>
     }
@@ -48,23 +48,35 @@
        ACTIONS
   ========================== -->
 
-  @if (request?.status === 'accepted') {
+  @if (unavailable) {
 
-    <p class="request-confirmed">
-      ✓ Séjour confirmé · ces dates sont réservées
+    <p class="request-unavailable">
+      Ces dates ont été confirmées pour un autre séjour : cette demande n'est plus possible.
     </p>
 
-    @if (isOwner) {
+  }
 
-      <div class="request-actions">
 
-        <button type="button" class="action-link" [disabled]="saving" (click)="togglePanel('cancel')">
-          Annuler le séjour
+  @if (request?.status === 'accepted') {
+
+    <!-- Annuler (annonceur) : à droite, dans l'encadré -->
+    <div class="request-confirmed">
+
+      <span>✓ Séjour confirmé · ces dates sont réservées</span>
+
+      @if (isOwner) {
+        <button
+          type="button"
+          class="confirmed-cancel"
+          aria-label="Annuler le séjour"
+          [disabled]="saving"
+          (click)="togglePanel('cancel')"
+        >
+          Annuler
         </button>
+      }
 
-      </div>
-
-    }
+    </div>
 
   } @else if (isPending && isOwner) {
 
@@ -90,11 +102,8 @@
 
     </div>
 
-    @if (bookedOverlap) {
-      <p class="request-error">Ces dates sont déjà réservées pour un autre séjour.</p>
-    }
 
-  } @else if (isPending) {
+  } @else if (isPending && !isOwner && !bookedOverlap) {
 
     <div class="request-actions">
 
@@ -113,38 +122,39 @@
 
     @if (panel === 'dates') {
 
-      <div class="request-panel">
+      <!-- Dates + Enregistrer sur une ligne ;
+           clic en dehors de la carte : fermé -->
+      <div class="request-panel panel-dates">
 
-        <div class="panel-dates">
+        <app-date-field
+          label="Arrivée"
+          [min]="stayLimits.arrivalMin"
+          [max]="stayLimits.arrivalMax"
+          [value]="arrivalDate"
+          (valueChange)="setArrivalDate($event)"
+        />
 
-          <app-date-field
-            label="Arrivée"
-            [min]="stayLimits.arrivalMin"
-            [max]="stayLimits.arrivalMax"
-            [value]="arrivalDate"
-            (valueChange)="setArrivalDate($event)"
-          />
-
-          <app-date-field
-            label="Départ"
-            [min]="stayLimits.departureMin"
-            [max]="stayLimits.departureMax"
-            [value]="departureDate"
-            (valueChange)="departureDate = $event"
-          />
-
-        </div>
+        <app-date-field
+          label="Départ"
+          [min]="stayLimits.departureMin"
+          [max]="stayLimits.departureMax"
+          [value]="departureDate"
+          (valueChange)="setDepartureDate($event)"
+        />
 
         <div class="request-actions">
-
-          <button type="button" class="action-primary" [disabled]="saving" (click)="saveDates()">
-            Enregistrer
+          <button
+            type="button"
+            class="action-primary action-icon"
+            aria-label="Enregistrer les dates"
+            title="Enregistrer les dates"
+            [disabled]="saving"
+            (click)="saveDates()"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m5 12.5 4.5 4.5L19 7.5" />
+            </svg>
           </button>
-
-          <button type="button" class="action-link" [disabled]="saving" (click)="panel = null">
-            Fermer
-          </button>
-
         </div>
 
       </div>

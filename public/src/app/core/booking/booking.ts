@@ -739,30 +739,42 @@ export class Booking {
       );
 
 
-    await Promise.all(
-      overlapping.map(async other => {
-
-        await this.updateRequestStatus(other.id, 'rejected', 'already_booked');
-
-        await this.messagingService
-          .sendMessage(
-            other.id,
-            hostId,
-            `« ${listingTitle} » vient d'être confirmé pour un autre séjour sur ces dates. Votre demande a été refusée automatiquement.`,
-            null,
-            'system'
-          )
-          .catch(err => console.error('Notification non envoyée :', err));
-
-      })
+    return Promise.all(
+      overlapping.map(other => this.rejectAsAlreadyBooked(other, hostId, listingTitle))
     );
 
+  }
 
-    return overlapping.map(other => ({
-      ...other,
-      status: 'rejected',
-      rejectionReason: 'already_booked'
-    }));
+
+  /*
+   * Demande en attente dont les dates sont déjà
+   * confirmées pour un autre séjour : refusée
+   * (« Déjà réservé ») et le demandeur est prévenu
+   * dans sa conversation.
+   *
+   * Aussi utilisé pour les anciennes demandes
+   * restées « en attente » (séjour confirmé
+   * avant le refus automatique).
+   */
+  async rejectAsAlreadyBooked(
+    request: BookingRequest,
+    hostId: string,
+    listingTitle: string
+  ): Promise<BookingRequest> {
+
+    await this.updateRequestStatus(request.id, 'rejected', 'already_booked');
+
+    await this.messagingService
+      .sendMessage(
+        request.id,
+        hostId,
+        `« ${listingTitle} » a été confirmé pour un autre séjour sur ces dates. Cette demande n'est plus possible et a été refusée automatiquement.`,
+        null,
+        'system'
+      )
+      .catch(err => console.error('Notification non envoyée :', err));
+
+    return { ...request, status: 'rejected', rejectionReason: 'already_booked' };
 
   }
 
